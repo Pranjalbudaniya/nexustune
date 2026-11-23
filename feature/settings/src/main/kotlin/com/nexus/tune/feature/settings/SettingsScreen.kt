@@ -99,6 +99,45 @@ fun SettingsScreen(
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
                 Text(
+                    text = "Equalizer & Sound FX",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                ListItem(
+                    headlineContent = { Text("Equalizer & Bass Boost") },
+                    supportingContent = { Text("5-band hardware DSP audio enhancement") },
+                    trailingContent = {
+                        Switch(
+                            checked = true,
+                            onCheckedChange = {}
+                        )
+                    }
+                )
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+                Text(
+                    text = "Data & Backup",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                ListItem(
+                    headlineContent = { Text("Backup to JSON") },
+                    supportingContent = { Text("Export playlists, favorites, and settings") }
+                )
+
+                ListItem(
+                    headlineContent = { Text("Restore from JSON") },
+                    supportingContent = { Text("Import previous NexusTune backup") }
+                )
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+                Text(
                     text = "Player Layout",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
@@ -120,6 +159,45 @@ fun SettingsScreen(
                         label = { Text("Minimalist") }
                     )
                 }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+                Text(
+                    text = "Equalizer & Sound FX",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                ListItem(
+                    headlineContent = { Text("Equalizer & Bass Boost") },
+                    supportingContent = { Text("5-band hardware DSP audio enhancement") },
+                    trailingContent = {
+                        Switch(
+                            checked = true,
+                            onCheckedChange = {}
+                        )
+                    }
+                )
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+                Text(
+                    text = "Data & Backup",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                ListItem(
+                    headlineContent = { Text("Backup to JSON") },
+                    supportingContent = { Text("Export playlists, favorites, and settings") }
+                )
+
+                ListItem(
+                    headlineContent = { Text("Restore from JSON") },
+                    supportingContent = { Text("Import previous NexusTune backup") }
+                )
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
