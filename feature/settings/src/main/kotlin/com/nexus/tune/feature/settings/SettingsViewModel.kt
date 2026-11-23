@@ -64,6 +64,11 @@ class SettingsViewModel(
         updateTheme(current.copy(miniPlayerStyle = style))
     }
 
+    fun setCrossfade(seconds: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(crossfadeSeconds = seconds))
+    }
+
     fun startSleepTimer(minutes: Int) {
         sleepTimerManager?.startTimer(minutes)
     }

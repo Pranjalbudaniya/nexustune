@@ -67,6 +67,12 @@ class MainActivity : ComponentActivity() {
             sleepTimerManager = app.sleepTimerManager
         )
 
+        lifecycleScope.launch {
+            app.playerController.playbackState.collect {
+                com.nexus.tune.widget.NexusTuneWidgetProvider.notifyPlaybackChanged(this@MainActivity)
+            }
+        }
+
         setContent {
             val themeConfig by settingsViewModel.themeConfig.collectAsState()
             val playbackState by app.playerController.playbackState.collectAsState()

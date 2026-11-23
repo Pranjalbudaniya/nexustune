@@ -296,6 +296,47 @@ fun SettingsScreen(
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
             }
 
+            // --- Playback Transitions & Crossfade ---
+            item {
+                Text(
+                    text = "Audio Crossfade & Transitions",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                Text(
+                    text = "Dynamic Crossfade Duration",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listOf(
+                        0 to "Off (Gapless)",
+                        2 to "2s",
+                        4 to "4s",
+                        6 to "6s",
+                        8 to "8s",
+                        12 to "12s"
+                    ).forEach { (sec, label) ->
+                        FilterChip(
+                            selected = themeConfig.crossfadeSeconds == sec,
+                            onClick = { viewModel.setCrossfade(sec) },
+                            label = { Text(label) }
+                        )
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            }
+
             // --- Data & Backup ---
             item {
                 Text(
@@ -315,6 +356,11 @@ fun SettingsScreen(
                     supportingContent = { Text("Import previous NexusTune backup") }
                 )
 
+                ListItem(
+                    headlineContent = { Text("Import from NewPipe") },
+                    supportingContent = { Text("Import playlists and history from NewPipe export") }
+                )
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
             }
 
@@ -328,8 +374,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v1.1.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid") }
+                    headlineContent = { Text("NexusTune v1.2.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Widgets & Crossfade") }
                 )
             }
         }

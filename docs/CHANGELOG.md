@@ -5,6 +5,14 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-11-24
+
+### Added
+- **Dynamic Crossfade & Transition Smoothing**: Added configurable audio crossfading (Gapless Off, 2s, 4s, 6s, 8s, 12s) with smooth volume ramp down/up in `PlayerController` and `ThemeConfig`.
+- **Home Screen Playback Widget**: Added Android AppWidget (`NexusTuneWidgetProvider`) with Material 3 styling, live track information, play/pause and next track actions, updating automatically from player session broadcasts.
+- **NewPipe Backup Migration**: Added `NewPipeBackupImporter` in `core:data` allowing direct import of playlists, streams, and titles from NewPipe JSON export files into Room storage.
+- **Settings Screen Expansion**: Added dedicated "Audio Crossfade & Transitions" selection chips and NewPipe backup import entry point.
+
 ## [1.1.0] - 2026-11-24
 
 ### Added

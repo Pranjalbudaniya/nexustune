@@ -21,6 +21,7 @@ class SettingsDataStore(private val context: Context) {
         val PLAYER_LAYOUT = stringPreferencesKey("theme_player_layout")
         val MINI_PLAYER_STYLE = stringPreferencesKey("theme_mini_player_style")
         val REFRESH_RATE = intPreferencesKey("display_refresh_rate")
+        val CROSSFADE_SECONDS = intPreferencesKey("theme_crossfade_seconds")
         val CONTENT_COUNTRY = stringPreferencesKey("content_country")
         val AUDIO_QUALITY = stringPreferencesKey("audio_quality")
         val EQUALIZER_ENABLED = booleanPreferencesKey("equalizer_enabled")
@@ -36,7 +37,8 @@ class SettingsDataStore(private val context: Context) {
             shapePreset = ShapePreset.valueOf(prefs[PreferencesKeys.SHAPE_PRESET] ?: ShapePreset.SOFT_ROUNDED.name),
             playerLayout = PlayerLayout.valueOf(prefs[PreferencesKeys.PLAYER_LAYOUT] ?: PlayerLayout.ART_FORWARD.name),
             miniPlayerStyle = MiniPlayerStyle.valueOf(prefs[PreferencesKeys.MINI_PLAYER_STYLE] ?: MiniPlayerStyle.DOCKED_BAR.name),
-            refreshRatePreferred = prefs[PreferencesKeys.REFRESH_RATE] ?: 120
+            refreshRatePreferred = prefs[PreferencesKeys.REFRESH_RATE] ?: 120,
+            crossfadeSeconds = prefs[PreferencesKeys.CROSSFADE_SECONDS] ?: 0
         )
     }
 
@@ -50,6 +52,7 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.PLAYER_LAYOUT] = config.playerLayout.name
             prefs[PreferencesKeys.MINI_PLAYER_STYLE] = config.miniPlayerStyle.name
             prefs[PreferencesKeys.REFRESH_RATE] = config.refreshRatePreferred
+            prefs[PreferencesKeys.CROSSFADE_SECONDS] = config.crossfadeSeconds
         }
     }
 

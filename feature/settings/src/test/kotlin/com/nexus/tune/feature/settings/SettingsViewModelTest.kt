@@ -116,4 +116,14 @@ class SettingsViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
         assertEquals(42, viewModel.listeningStats.value.totalPlays)
     }
+
+    @Test
+    fun `setCrossfade updates theme crossfade seconds`() = runTest {
+        viewModel.setCrossfade(6)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.crossfadeSeconds == 6 })
+        }
+    }
 }

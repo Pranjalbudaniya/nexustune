@@ -14,6 +14,7 @@ import com.google.common.util.concurrent.MoreExecutors
 import com.nexus.tune.core.model.PlaybackState
 import com.nexus.tune.core.model.PlaybackStatus
 import com.nexus.tune.core.model.Track
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,6 +27,7 @@ class PlayerController(private val context: Context) {
 
     private val _playbackState = MutableStateFlow(PlaybackState())
     val playbackState: StateFlow<PlaybackState> = _playbackState.asStateFlow()
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     init {
         val sessionToken = SessionToken(
@@ -104,6 +106,41 @@ class PlayerController(private val context: Context) {
             c.play()
         }
         updateState()
+    }
+
+    fun fadeOutAndPause(durationMs: Long = 1000L, onComplete: () -> Unit = {}) {
+        val c = controller ?: return
+        coroutineScope.launch {
+            val steps = 10
+            val stepDuration = (durationMs / steps).coerceAtLeast(10L)
+            for (i in steps downTo 0) {
+                c.volume = i / steps.toFloat()
+                delay(stepDuration)
+            }
+            c.pause()
+            c.volume = 1.0f
+            onComplete()
+            updateState()
+        }
+    }
+
+    fun fadeInAndPlay(track: Track, resolvedStreamUrl: String? = null, durationMs: Long = 1000L) {
+        val c = controller ?: return
+        c.volume = 0.0f
+        playTrack(track, resolvedStreamUrl)
+        coroutineScope.launch {
+            val steps = 10
+            val stepDuration = (durationMs / steps).coerceAtLeast(10L)
+            for (i in 0..steps) {
+                c.volume = i / steps.toFloat()
+                delay(stepDuration)
+            }
+            c.volume = 1.0f
+        }
+    }
+
+    fun setVolume(volume: Float) {
+        controller?.volume = volume.coerceIn(0.0f, 1.0f)
     }
 
     fun seekTo(positionMs: Long) {

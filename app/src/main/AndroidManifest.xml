@@ -39,6 +39,19 @@
             </intent-filter>
         </service>
 
+        <receiver
+            android:name=".widget.NexusTuneWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.nexus.tune.widget.ACTION_TOGGLE_PLAY_PAUSE" />
+                <action android:name="com.nexus.tune.widget.ACTION_UPDATE_STATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/nexus_widget_info" />
+        </receiver>
+
     </application>
 
 </manifest>

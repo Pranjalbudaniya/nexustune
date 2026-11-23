@@ -93,7 +93,8 @@ data class ThemeConfig(
     val shapePreset: ShapePreset = ShapePreset.SOFT_ROUNDED,
     val playerLayout: PlayerLayout = PlayerLayout.ART_FORWARD,
     val miniPlayerStyle: MiniPlayerStyle = MiniPlayerStyle.DOCKED_BAR,
-    val refreshRatePreferred: Int = 120 // 60, 90, 120
+    val refreshRatePreferred: Int = 120, // 60, 90, 120
+    val crossfadeSeconds: Int = 0 // 0 = gapless, 2..12s
 )
 
 data class SearchResult(

@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 1 (v1.1 Release Completed)
-- In Flight: Gating v1.1 release and tagging `v1.1-1`, preparing Improvement Loop 2 (Dynamic Crossfade, Home Screen Widgets)
+- Active Phase: Post-v1.0 Improvement Loop 2 (v1.2 Release Qualification)
+- In Flight: Running `./scripts/gate.sh final`, tagging `v1.2-1`, and preparing Improvement Loop 3 (Android Auto MediaLibraryService)
 - Branches: `main`
 
 ## Phase Tracking
@@ -43,13 +43,17 @@
 - [x] Phase 9: Release
   - [x] Execute completion oracle: `./scripts/gate.sh final`
   - [x] Tag build: `git tag v1.0-1`
-- [x] Improvement Loop 1 (v1.1 Features)
+- [x] Improvement Loop 1 (v1.1 Features - Tagged `v1.1-1`)
   - [x] Sleep Timer engine (`SleepTimerManager`) with 15m, 30m, 45m, 60m & End-of-Track
   - [x] Equalizer Presets (`Flat`, `Bass Boost`, `Treble Boost`, `Vocal`, `Electronic`, `Rock`)
   - [x] Listening Analytics (aggregating plays, top artists from Room playback history)
   - [x] Settings UI integration with real-time countdown card & preset chip carousels
+- [x] Improvement Loop 2 (v1.2 Features)
+  - [x] Dynamic Crossfade engine (`crossfadeSeconds` in `ThemeConfig`, volume ramping in `PlayerController`)
+  - [x] Home Screen Playback Widget (`NexusTuneWidgetProvider`, `widget_nexus_playback.xml`)
+  - [x] NewPipe Backup Migration (`NewPipeBackupImporter`, full unit test coverage)
   - [x] Slice & perf gates passed on physical hardware
-  - [ ] Tag build: `git tag v1.1-1`
+  - [ ] Final gate & tag build: `git tag v1.2-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.
