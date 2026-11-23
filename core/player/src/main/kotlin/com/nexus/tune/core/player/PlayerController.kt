@@ -191,6 +191,7 @@ class PlayerController(private val context: Context) {
             playbackSpeed = params.speed,
             playbackPitch = params.pitch
         )
+        com.nexus.tune.core.player.visualizer.VisualizerManager.instance.updatePlayback(c.isPlaying)
     }
 
     fun release() {

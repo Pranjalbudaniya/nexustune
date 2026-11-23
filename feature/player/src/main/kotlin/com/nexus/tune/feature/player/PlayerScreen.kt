@@ -38,9 +38,12 @@ fun PlayerScreen(
     lyrics: TrackLyrics? = null,
     lyricsOffsetMs: Long = 0L,
     audioOutputDevice: com.nexus.tune.core.model.AudioOutputDevice = com.nexus.tune.core.model.AudioOutputDevice(),
+    visualizerData: com.nexus.tune.core.model.VisualizerData = com.nexus.tune.core.model.VisualizerData(),
+    visualizerMode: com.nexus.tune.core.model.VisualizerMode = com.nexus.tune.core.model.VisualizerMode.SPECTRUM_BARS,
     onAdjustLyricsOffset: (Long) -> Unit = {},
     onResetLyricsOffset: () -> Unit = {},
-    onSetPlaybackSpeed: (Float) -> Unit = {}
+    onSetPlaybackSpeed: (Float) -> Unit = {},
+    onSetVisualizerMode: (com.nexus.tune.core.model.VisualizerMode) -> Unit = {}
 ) {
     val track = playbackState.currentTrack ?: return
     val isPlaying = playbackState.status == PlaybackStatus.PLAYING
@@ -283,7 +286,21 @@ fun PlayerScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Audio Visualizer
+            if (visualizerMode != com.nexus.tune.core.model.VisualizerMode.OFF) {
+                com.nexus.tune.core.ui.AudioVisualizerView(
+                    visualizerData = visualizerData,
+                    mode = visualizerMode,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(36.dp)
+                        .padding(horizontal = 8.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Seekbar
             val progress = if (playbackState.durationMs > 0) {
@@ -351,6 +368,30 @@ fun PlayerScreen(
                     FilterChip(
                         selected = isSelected,
                         onClick = { onSetPlaybackSpeed(speed) },
+                        label = { Text(label, style = MaterialTheme.typography.labelSmall) },
+                        modifier = Modifier.padding(horizontal = 3.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Visualizer Mode Chips
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                listOf(
+                    com.nexus.tune.core.model.VisualizerMode.OFF to "Off",
+                    com.nexus.tune.core.model.VisualizerMode.SPECTRUM_BARS to "Spectrum",
+                    com.nexus.tune.core.model.VisualizerMode.CIRCULAR_WAVE to "Wave",
+                    com.nexus.tune.core.model.VisualizerMode.GLOW_PULSE to "Pulse"
+                ).forEach { (mode, label) ->
+                    val isSelected = visualizerMode == mode
+                    FilterChip(
+                        selected = isSelected,
+                        onClick = { onSetVisualizerMode(mode) },
                         label = { Text(label, style = MaterialTheme.typography.labelSmall) },
                         modifier = Modifier.padding(horizontal = 3.dp)
                     )

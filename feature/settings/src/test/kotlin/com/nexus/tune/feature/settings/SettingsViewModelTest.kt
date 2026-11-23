@@ -182,4 +182,14 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { !it.perTrackGainEnabled })
         }
     }
+
+    @Test
+    fun `setVisualizerMode updates config`() = runTest {
+        viewModel.setVisualizerMode(VisualizerMode.CIRCULAR_WAVE)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.visualizerMode == VisualizerMode.CIRCULAR_WAVE })
+        }
+    }
 }

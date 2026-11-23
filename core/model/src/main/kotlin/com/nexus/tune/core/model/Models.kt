@@ -88,6 +88,28 @@ enum class MiniPlayerStyle {
     DOCKED_BAR, FLOATING_PILL, COMPACT_SLIM
 }
 
+enum class VisualizerMode {
+    OFF, SPECTRUM_BARS, CIRCULAR_WAVE, GLOW_PULSE
+}
+
+data class VisualizerData(
+    val magnitudes: FloatArray = FloatArray(32) { 0f },
+    val amplitude: Float = 0f
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as VisualizerData
+        return magnitudes.contentEquals(other.magnitudes) && amplitude == other.amplitude
+    }
+
+    override fun hashCode(): Int {
+        var result = magnitudes.contentHashCode()
+        result = 31 * result + amplitude.hashCode()
+        return result
+    }
+}
+
 data class ThemeConfig(
     val seedMode: ThemeSeedMode = ThemeSeedMode.DYNAMIC,
     val customSeedColorHex: String = "#6750A4",
@@ -102,7 +124,8 @@ data class ThemeConfig(
     val volumeNormalizationEnabled: Boolean = false,
     val targetGainmB: Int = 0,
     val cacheBudgetMb: Int = 1000,
-    val perTrackGainEnabled: Boolean = true
+    val perTrackGainEnabled: Boolean = true,
+    val visualizerMode: VisualizerMode = VisualizerMode.SPECTRUM_BARS
 )
 
 data class StorageUsage(

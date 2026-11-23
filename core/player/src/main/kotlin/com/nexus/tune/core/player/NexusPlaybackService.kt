@@ -99,6 +99,7 @@ class NexusPlaybackService : MediaLibraryService() {
 
         player?.audioSessionId?.let { sessionId ->
             com.nexus.tune.core.player.effects.NexusAudioEffects.instance.attachToAudioSession(sessionId)
+            com.nexus.tune.core.player.visualizer.VisualizerManager.instance.attachToAudioSession(sessionId)
         }
 
         val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
@@ -122,6 +123,7 @@ class NexusPlaybackService : MediaLibraryService() {
 
     override fun onDestroy() {
         com.nexus.tune.core.player.effects.NexusAudioEffects.instance.release()
+        com.nexus.tune.core.player.visualizer.VisualizerManager.instance.release()
         librarySession?.run {
             player.release()
             release()

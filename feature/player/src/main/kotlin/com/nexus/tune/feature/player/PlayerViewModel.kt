@@ -30,6 +30,20 @@ class PlayerViewModel(
     private val _audioOutputDevice = MutableStateFlow(com.nexus.tune.core.model.AudioOutputDevice())
     val audioOutputDevice: StateFlow<com.nexus.tune.core.model.AudioOutputDevice> = _audioOutputDevice.asStateFlow()
 
+    private val _visualizerData = MutableStateFlow(com.nexus.tune.core.model.VisualizerData())
+    val visualizerData: StateFlow<com.nexus.tune.core.model.VisualizerData> = _visualizerData.asStateFlow()
+
+    private val _visualizerMode = MutableStateFlow(com.nexus.tune.core.model.VisualizerMode.SPECTRUM_BARS)
+    val visualizerMode: StateFlow<com.nexus.tune.core.model.VisualizerMode> = _visualizerMode.asStateFlow()
+
+    fun updateVisualizerData(data: com.nexus.tune.core.model.VisualizerData) {
+        _visualizerData.value = data
+    }
+
+    fun setVisualizerMode(mode: com.nexus.tune.core.model.VisualizerMode) {
+        _visualizerMode.value = mode
+    }
+
     fun updateAudioOutputDevice(device: com.nexus.tune.core.model.AudioOutputDevice) {
         _audioOutputDevice.value = device
     }

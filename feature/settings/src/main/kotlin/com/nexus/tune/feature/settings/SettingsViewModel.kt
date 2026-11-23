@@ -93,6 +93,12 @@ class SettingsViewModel(
         updateTheme(current.copy(perTrackGainEnabled = enabled))
     }
 
+    fun setVisualizerMode(mode: VisualizerMode) {
+        val current = themeConfig.value
+        updateTheme(current.copy(visualizerMode = mode))
+        com.nexus.tune.core.player.visualizer.VisualizerManager.instance.setMode(mode)
+    }
+
     fun startSleepTimer(minutes: Int) {
         sleepTimerManager?.startTimer(minutes)
     }

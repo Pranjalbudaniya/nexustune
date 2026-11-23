@@ -104,5 +104,16 @@ class PlayerViewModelTest {
         assertEquals("AudioQuest Dragonfly", viewModel.audioOutputDevice.value.name)
         assertEquals(true, viewModel.audioOutputDevice.value.isHighRes)
     }
+
+    @Test
+    fun `visualizer mode and data update correctly`() {
+        assertEquals(com.nexus.tune.core.model.VisualizerMode.SPECTRUM_BARS, viewModel.visualizerMode.value)
+        viewModel.setVisualizerMode(com.nexus.tune.core.model.VisualizerMode.GLOW_PULSE)
+        assertEquals(com.nexus.tune.core.model.VisualizerMode.GLOW_PULSE, viewModel.visualizerMode.value)
+
+        val testData = com.nexus.tune.core.model.VisualizerData(amplitude = 0.85f)
+        viewModel.updateVisualizerData(testData)
+        assertEquals(0.85f, viewModel.visualizerData.value.amplitude, 0.001f)
+    }
 }
 

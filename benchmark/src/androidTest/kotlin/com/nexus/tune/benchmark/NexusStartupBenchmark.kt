@@ -17,11 +17,20 @@ class NexusStartupBenchmark {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val device = UiDevice.getInstance(instrumentation)
         device.pressHome()
+        Thread.sleep(500)
 
         val output = device.executeShellCommand("am start -n com.nexus.tune/.MainActivity")
         println("NexusStartupBenchmark: $output")
 
-        val isForeground = device.wait(Until.hasObject(By.pkg("com.nexus.tune")), 5000L)
+        var isForeground = false
+        for (i in 0 until 10) {
+            if (device.hasObject(By.pkg("com.nexus.tune"))) {
+                isForeground = true
+                break
+            }
+            Thread.sleep(500)
+        }
+
         assertTrue(
             "NexusTune should be launched and visible in foreground: $output",
             isForeground || output.contains("com.nexus.tune") || output.contains("Starting")

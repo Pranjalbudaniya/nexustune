@@ -100,6 +100,37 @@ fun SettingsScreen(
                     )
                 }
 
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = "Audio Visualizer Style",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    VisualizerMode.values().forEach { mode ->
+                        FilterChip(
+                            selected = themeConfig.visualizerMode == mode,
+                            onClick = { viewModel.setVisualizerMode(mode) },
+                            label = {
+                                Text(
+                                    when (mode) {
+                                        VisualizerMode.OFF -> "Off"
+                                        VisualizerMode.SPECTRUM_BARS -> "Spectrum"
+                                        VisualizerMode.CIRCULAR_WAVE -> "Circular"
+                                        VisualizerMode.GLOW_PULSE -> "Glow"
+                                    }
+                                )
+                            }
+                        )
+                    }
+                }
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
             }
 
@@ -483,8 +514,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v2.1.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Per-Track LUFS Calibration") }
+                    headlineContent = { Text("NexusTune v2.2.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Real-Time Audio Visualizer & Waveform Engine") }
                 )
             }
         }

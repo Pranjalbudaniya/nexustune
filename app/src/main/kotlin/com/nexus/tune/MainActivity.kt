@@ -168,6 +168,7 @@ class MainActivity : ComponentActivity() {
                             val lyrics by playerViewModel.lyrics.collectAsState()
                             val lyricsOffsetMs by playerViewModel.lyricsOffsetMs.collectAsState()
                             val audioOutputDevice by app.audioOutputRouteManager.currentOutputDevice.collectAsState()
+                            val visualizerData by com.nexus.tune.core.player.visualizer.VisualizerManager.instance.visualizerData.collectAsState()
                             LaunchedEffect(playbackState.currentTrack) {
                                 playbackState.currentTrack?.let { playerViewModel.loadLyrics(it) }
                             }
@@ -180,9 +181,12 @@ class MainActivity : ComponentActivity() {
                                 lyrics = lyrics,
                                 lyricsOffsetMs = lyricsOffsetMs,
                                 audioOutputDevice = audioOutputDevice,
+                                visualizerData = visualizerData,
+                                visualizerMode = themeConfig.visualizerMode,
                                 onAdjustLyricsOffset = { playerViewModel.adjustLyricsOffset(it) },
                                 onResetLyricsOffset = { playerViewModel.resetLyricsOffset() },
-                                onSetPlaybackSpeed = { app.playerController.setPlaybackSpeed(it) }
+                                onSetPlaybackSpeed = { app.playerController.setPlaybackSpeed(it) },
+                                onSetVisualizerMode = { settingsViewModel.setVisualizerMode(it) }
                             )
                         }
                     }
