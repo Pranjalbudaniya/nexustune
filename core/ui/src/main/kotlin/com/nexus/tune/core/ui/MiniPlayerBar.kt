@@ -156,11 +156,11 @@ fun MiniPlayerBar(
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f)
                     )
-                    IconButton(onClick = onPlayPauseClick, modifier = Modifier.size(32.dp)) {
+                    IconButton(onClick = onPlayPauseClick, modifier = Modifier.size(48.dp)) {
                         Icon(
                             imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
                             contentDescription = if (isPlaying) "Pause" else "Play",
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 }
