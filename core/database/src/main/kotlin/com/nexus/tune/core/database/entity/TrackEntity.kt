@@ -19,6 +19,7 @@ data class TrackEntity(
     val isLiked: Boolean = false,
     val isDownloaded: Boolean = false,
     val localFilePath: String? = null,
+    val loudnessGainDb: Float = 0.0f,
     val addedAtTimestamp: Long = System.currentTimeMillis()
 )
 
@@ -35,7 +36,8 @@ fun TrackEntity.toModel(): Track = Track(
     isExplicit = isExplicit,
     isLiked = isLiked,
     isDownloaded = isDownloaded,
-    localFilePath = localFilePath
+    localFilePath = localFilePath,
+    loudnessGainDb = loudnessGainDb
 )
 
 fun Track.toEntity(isLikedOverride: Boolean? = null): TrackEntity = TrackEntity(
@@ -51,6 +53,7 @@ fun Track.toEntity(isLikedOverride: Boolean? = null): TrackEntity = TrackEntity(
     isExplicit = isExplicit,
     isLiked = isLikedOverride ?: isLiked,
     isDownloaded = isDownloaded,
-    localFilePath = localFilePath
+    localFilePath = localFilePath,
+    loudnessGainDb = loudnessGainDb
 )
 

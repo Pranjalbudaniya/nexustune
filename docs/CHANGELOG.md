@@ -5,6 +5,13 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-11-24
+
+### Added
+- **Per-Track Loudness Analysis & Gain Calibration**: Added per-track gain metadata (`loudnessGainDb`) to `Track` and `TrackEntity` with seamless Room database schema integration.
+- **Dynamic DSP Gain Adaptation**: Enhanced `NexusAudioEffects` with `applyTrackLoudnessGain(gainDb, baseTargetGainmB)` computing target millibels with headroom clamping [-12dB, +12dB] to prevent digital clipping, wired directly to `PlayerController` active track changes.
+- **Per-Track Gain Calibration Toggle**: Added user preference `perTrackGainEnabled` in `ThemeConfig` and interactive switch in Settings under Audio Optimization.
+
 ## [2.0.0] - 2026-11-24
 
 ### Added

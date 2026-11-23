@@ -172,4 +172,14 @@ class SettingsViewModelTest {
         val freed = viewModel.clearCache()
         org.junit.Assert.assertEquals(0L, freed)
     }
+
+    @Test
+    fun `togglePerTrackGain updates config`() = runTest {
+        viewModel.togglePerTrackGain(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.perTrackGainEnabled })
+        }
+    }
 }

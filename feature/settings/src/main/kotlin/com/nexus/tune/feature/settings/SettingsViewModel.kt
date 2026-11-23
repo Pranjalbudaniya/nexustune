@@ -88,6 +88,11 @@ class SettingsViewModel(
         NexusAudioEffects.instance.setTargetGain(gainmB)
     }
 
+    fun togglePerTrackGain(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(perTrackGainEnabled = enabled))
+    }
+
     fun startSleepTimer(minutes: Int) {
         sleepTimerManager?.startTimer(minutes)
     }

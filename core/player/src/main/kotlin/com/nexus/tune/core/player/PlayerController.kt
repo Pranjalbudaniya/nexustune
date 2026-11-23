@@ -96,6 +96,9 @@ class PlayerController(private val context: Context) {
             prepare()
             play()
         }
+        if (track.loudnessGainDb != 0.0f) {
+            com.nexus.tune.core.player.effects.NexusAudioEffects.instance.applyTrackLoudnessGain(track.loudnessGainDb)
+        }
         _playbackState.value = _playbackState.value.copy(
             currentTrack = track,
             status = PlaybackStatus.PLAYING

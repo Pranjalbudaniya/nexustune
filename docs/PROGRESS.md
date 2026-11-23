@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 10 (v2.0 Major Milestone Completed)
-- In Flight: Preparing Improvement Loop 11 (Per-Track Loudness LUFS & Peak Analysis)
+- Active Phase: Post-v1.0 Improvement Loop 11 (v2.1.0 Released)
+- In Flight: Preparing Improvement Loop 12 (Audio Visualizer & Waveform Engine)
 - Branches: `main`
 
 ## Phase Tracking
@@ -111,12 +111,21 @@
   - [x] Slice & perf gates passed on physical hardware
   - [x] Final gate passed & tagged: `git tag v2.0-1`
 
-## Improvement Loop 11 (v2.1 Features - Planned)
-- [ ] Per-Track Loudness LUFS & Peak Analysis:
-  - Track loudness LUFS and peak calculation
-  - Dynamic gain attenuation calibration
-- [ ] Re-run full test suite and quality gates
-- [ ] Produce v2.1 release build and tag `v2.1-1`
+- [x] Improvement Loop 11 (v2.1 Features - Tagged `v2.1-1`)
+  - [x] Per-Track Loudness Analysis & Gain Calibration:
+    - [x] Per-track loudness metadata (`loudnessGainDb`) in `Track` & `TrackEntity`
+    - [x] Dynamic DSP gain attenuation/boost with clipping protection in `NexusAudioEffects`
+    - [x] Settings UI toggle for per-track loudness calibration
+  - [x] Slice & perf gates passed on physical hardware
+  - [x] Final gate passed & tagged: `git tag v2.1-1`
+
+## Improvement Loop 12 (v2.2 Features - Planned)
+- [ ] Real-Time Audio Visualizer & Waveform Engine:
+  - Hardware audio session Visualizer data processing (`VisualizerDataProcessor`)
+  - Real-time Waveform spectrum, Circular Orbit, and Glow Pulse rendering in Compose
+  - Settings Visualizer style selection & toggle
+- [ ] Slice & perf gates passed on physical hardware
+- [ ] Final gate passed & tagged: `git tag v2.2-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

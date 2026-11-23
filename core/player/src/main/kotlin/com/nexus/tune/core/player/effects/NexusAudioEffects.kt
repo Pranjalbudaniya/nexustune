@@ -59,6 +59,12 @@ class NexusAudioEffects {
         }
     }
 
+    fun applyTrackLoudnessGain(gainDb: Float, baseTargetGainmB: Int = 0) {
+        val additionalGainmB = (gainDb * 100).toInt()
+        val combinedGainmB = (baseTargetGainmB + additionalGainmB).coerceIn(0, 1000)
+        setTargetGain(combinedGainmB)
+    }
+
     fun setPreset(presetIndex: Int) {
         val eq = equalizer ?: return
         try {

@@ -13,7 +13,8 @@ data class Track(
     val isExplicit: Boolean = false,
     val isLiked: Boolean = false,
     val isDownloaded: Boolean = false,
-    val localFilePath: String? = null
+    val localFilePath: String? = null,
+    val loudnessGainDb: Float = 0.0f
 )
 
 data class Album(
@@ -100,7 +101,8 @@ data class ThemeConfig(
     val autoSkipSegments: Boolean = true,
     val volumeNormalizationEnabled: Boolean = false,
     val targetGainmB: Int = 0,
-    val cacheBudgetMb: Int = 1000
+    val cacheBudgetMb: Int = 1000,
+    val perTrackGainEnabled: Boolean = true
 )
 
 data class StorageUsage(

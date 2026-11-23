@@ -184,6 +184,19 @@ fun SettingsScreen(
                             )
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    ListItem(
+                        headlineContent = { Text("Per-Track LUFS Calibration") },
+                        supportingContent = { Text("Automatically adjust gain according to track loudness metadata") },
+                        trailingContent = {
+                            Switch(
+                                checked = themeConfig.perTrackGainEnabled,
+                                onCheckedChange = { viewModel.togglePerTrackGain(it) }
+                            )
+                        }
+                    )
                 }
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
@@ -470,8 +483,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v2.0.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Audio Output Routing Engine") }
+                    headlineContent = { Text("NexusTune v2.1.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Per-Track LUFS Calibration") }
                 )
             }
         }
