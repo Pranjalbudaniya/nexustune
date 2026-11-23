@@ -96,7 +96,18 @@ class SettingsViewModelTest {
     @Test
     fun `startSleepTimer delegates to sleepTimerManager`() = runTest {
         viewModel.startSleepTimer(30)
-        verify { sleepTimerManager.startTimer(30) }
+        verify { sleepTimerManager.startTimer(30, any()) }
+    }
+
+    @Test
+    fun `setSleepTimerFadeSeconds updates theme config and manager`() = runTest {
+        viewModel.setSleepTimerFadeSeconds(60)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.sleepTimerFadeSeconds == 60 })
+        }
+        verify { sleepTimerManager.setFadeDuration(60) }
     }
 
     @Test

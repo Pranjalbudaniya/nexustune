@@ -99,8 +99,14 @@ class SettingsViewModel(
         com.nexus.tune.core.player.visualizer.VisualizerManager.instance.setMode(mode)
     }
 
+    fun setSleepTimerFadeSeconds(seconds: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(sleepTimerFadeSeconds = seconds))
+        sleepTimerManager?.setFadeDuration(seconds)
+    }
+
     fun startSleepTimer(minutes: Int) {
-        sleepTimerManager?.startTimer(minutes)
+        sleepTimerManager?.startTimer(minutes, themeConfig.value.sleepTimerFadeSeconds)
     }
 
     fun startSleepTimerEndOfTrack() {

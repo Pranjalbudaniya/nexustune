@@ -40,6 +40,31 @@ class SleepTimerManagerTest {
         assertEquals(0L, sleepTimerManager.timerState.value.remainingSeconds)
 
         verify(atLeast = 1) { playerController.togglePlayPause() }
+        verify(atLeast = 1) { playerController.setVolume(1.0f) }
+    }
+
+    @Test
+    fun `fade-out progressively reduces volume during final window`() = runTest {
+        val sleepTimerManager = SleepTimerManager(playerController, this)
+
+        sleepTimerManager.startTimer(1, fadeDurationSec = 30) // 60s total, fade starts at 30s
+        assertEquals(60L, sleepTimerManager.timerState.value.remainingSeconds)
+        assertFalse(sleepTimerManager.timerState.value.isFadingOut)
+
+        // Advance 35 seconds (inside fade window of 30s)
+        advanceTimeBy(35_000L)
+        val fadingState = sleepTimerManager.timerState.value
+        assertTrue(fadingState.remainingSeconds <= 30L)
+        assertTrue(fadingState.isFadingOut)
+        assertTrue(fadingState.fadeVolumeMultiplier < 1.0f)
+        assertTrue(fadingState.fadeVolumeMultiplier > 0.0f)
+
+        verify(atLeast = 1) { playerController.setVolume(match { it < 1.0f }) }
+
+        // Cancel restores volume to 1.0f
+        sleepTimerManager.cancelTimer()
+        assertFalse(sleepTimerManager.timerState.value.isFadingOut)
+        verify(atLeast = 1) { playerController.setVolume(1.0f) }
     }
 
     @Test

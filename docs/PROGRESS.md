@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 12 (v2.2.0 Released)
-- In Flight: Preparing Improvement Loop 13 (Sleep Timer Gentle Audio Fade-out & Dynamic Attenuation)
+- Active Phase: Post-v1.0 Improvement Loop 13 (v2.3.0 Released)
+- In Flight: Preparing Improvement Loop 14 (Smart Dynamic Queue & Auto-Play Infinite Mix)
 - Branches: `main`
 
 ## Phase Tracking
@@ -127,13 +127,21 @@
   - [x] Slice & perf gates passed on physical hardware
   - [x] Final gate passed & tagged: `git tag v2.2-1`
 
-## Improvement Loop 13 (v2.3 Features - Planned)
-- [ ] Sleep Timer Gentle Audio Fade-Out & Dynamic Attenuation:
-  - Exponential volume decay curve over final 30 seconds of sleep timer
-  - Configurable fade-out duration (10s, 30s, 60s)
-  - UI indicators and settings controls
+- [x] Improvement Loop 13 (v2.3 Features - Tagged `v2.3-1`)
+  - [x] Sleep Timer Gentle Audio Fade-Out & Dynamic Attenuation:
+    - [x] Progressive volume decay curve over final sleep timer window in `SleepTimerManager`
+    - [x] Configurable fade duration (Instant, 10s, 30s, 60s) in `ThemeConfig`
+    - [x] Settings UI chips and live fading status in timer active card
+  - [x] Slice & perf gates passed on physical hardware
+  - [x] Final gate passed & tagged: `git tag v2.3-1`
+
+## Improvement Loop 14 (v2.4 Features - Planned)
+- [ ] Smart Dynamic Queue & Auto-Play Infinite Mix:
+  - Automatic queue continuation when upcoming queue nears exhaustion
+  - Contextual recommendation seed based on last played tracks
+  - Settings toggle: Infinite Auto-Play / Endless Mix
 - [ ] Slice & perf gates passed on physical hardware
-- [ ] Final gate passed & tagged: `git tag v2.3-1`
+- [ ] Final gate passed & tagged: `git tag v2.4-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

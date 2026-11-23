@@ -245,6 +245,10 @@ fun SettingsScreen(
                 if (sleepTimerState.isActive) {
                     val formattedTime = if (sleepTimerState.isEndOfTrack) {
                         "Pausing at end of current track"
+                    } else if (sleepTimerState.isFadingOut) {
+                        val minutes = sleepTimerState.remainingSeconds / 60
+                        val seconds = sleepTimerState.remainingSeconds % 60
+                        String.format("%02d:%02d (Fading out %d%%)", minutes, seconds, (sleepTimerState.fadeVolumeMultiplier * 100).toInt())
                     } else {
                         val minutes = sleepTimerState.remainingSeconds / 60
                         val seconds = sleepTimerState.remainingSeconds % 60
@@ -304,6 +308,27 @@ fun SettingsScreen(
                         label = { Text("End of Track") },
                         leadingIcon = { Icon(Icons.Rounded.SkipNext, contentDescription = null, modifier = Modifier.size(16.dp)) }
                     )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Gentle Fade-Out Duration",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listOf(0 to "Instant", 10 to "10s", 30 to "30s", 60 to "60s").forEach { (sec, label) ->
+                        FilterChip(
+                            selected = themeConfig.sleepTimerFadeSeconds == sec,
+                            onClick = { viewModel.setSleepTimerFadeSeconds(sec) },
+                            label = { Text(label) }
+                        )
+                    }
                 }
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
@@ -514,8 +539,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v2.2.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Real-Time Audio Visualizer & Waveform Engine") }
+                    headlineContent = { Text("NexusTune v2.3.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Sleep Timer Gentle Fade-Out") }
                 )
             }
         }

@@ -5,6 +5,13 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2026-11-24
+
+### Added
+- **Sleep Timer Gentle Audio Fade-Out**: Added progressive perceptual volume attenuation over the final countdown seconds (Instant, 10s, 30s, 60s) to avoid abrupt audio interruption.
+- **Dynamic Perceptual Volume Multiplier**: Integrated smooth quadratic perceptual volume scaling in `SleepTimerManager` with automatic volume restoration on timer cancel or completion.
+- **Settings UI Controls**: Added fade-out duration selector chips and live fading state indicator in Settings sleep timer card.
+
 ## [2.2.0] - 2026-11-24
 
 ### Added
