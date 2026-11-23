@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 4 (v1.4 Release Completed)
-- In Flight: Gating v1.4 release, tagging `v1.4-1`, preparing Improvement Loop 5 (SponsorBlock / Audio Silence Trimming & Skip Segments)
+- Active Phase: Post-v1.0 Improvement Loop 5 (v1.5 Release Completed)
+- In Flight: Gating v1.5 release, tagging `v1.5-1`, preparing Improvement Loop 6 (Smart Volume Normalization ReplayGain)
 - Branches: `main`
 
 ## Phase Tracking
@@ -66,11 +66,18 @@
   - [x] Slice & perf gates passed on physical hardware
   - [x] Final gate passed & tagged: `git tag v1.4-1`
 
-- [x] Improvement Loop 5 (v1.5 Features)
+- [x] Improvement Loop 5 (v1.5 Features - Tagged `v1.5-1`)
   - [x] Non-Music & Silence Skip Segment Manager (`SkipSegmentManager`, `SkipSegment`)
   - [x] Settings Auto-Skip Toggle & StateFlow integration
   - [x] Slice & perf gates passed on physical hardware
-  - [ ] Final gate & tag build: `git tag v1.5-1`
+  - [x] Final gate passed & tagged: `git tag v1.5-1`
+
+## Improvement Loop 6 (v1.6 Features - In Flight)
+- [ ] Smart Volume Normalization (ReplayGain / Loudness Normalizer):
+  - Loudness normalization DSP filter in `NexusAudioEffects`
+  - Settings toggle: Volume Normalization (EBU R128)
+- [ ] Re-run full test suite and quality gates
+- [ ] Produce v1.6 release build and tag `v1.6-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.
