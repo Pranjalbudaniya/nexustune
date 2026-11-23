@@ -92,3 +92,18 @@ class DownloadTrackUseCase(private val downloadRepository: DownloadRepository) {
 class GetListeningStatsUseCase(private val musicRepository: MusicRepository) {
     operator fun invoke(): Flow<ListeningStats> = musicRepository.getListeningStats()
 }
+
+class GetAutoPlayRecommendationsUseCase(private val musicRepository: MusicRepository) {
+    suspend operator fun invoke(currentTrack: Track, currentQueue: List<Track>): List<Track> {
+        val query = currentTrack.artist.ifBlank { currentTrack.title }
+        if (query.isBlank()) return emptyList()
+
+        val existingIds = currentQueue.map { it.id }.toSet() + currentTrack.id
+        return when (val result = musicRepository.search(query)) {
+            is MusicResult.Success -> {
+                result.data.tracks.filter { it.id !in existingIds }
+            }
+            is MusicResult.Failure -> emptyList()
+        }
+    }
+}

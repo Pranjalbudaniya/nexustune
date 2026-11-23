@@ -5,6 +5,13 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 2026-11-24
+
+### Added
+- **Smart Dynamic Queue & Auto-Play Infinite Mix**: Implemented `AutoPlayQueueManager` in `core:domain` proactively replenishing queue with similar artist/track discovery when queue drops to 2 or fewer remaining tracks.
+- **Endless Discovery Context Engine**: Added `GetAutoPlayRecommendationsUseCase` querying related tracks and filtering duplicates against active queue and playback history.
+- **Settings UI Controls**: Added "Infinite Auto-Play (Endless Mix)" toggle in Settings under Audio Optimization.
+
 ## [2.3.0] - 2026-11-24
 
 ### Added

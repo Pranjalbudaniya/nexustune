@@ -126,7 +126,8 @@ data class ThemeConfig(
     val cacheBudgetMb: Int = 1000,
     val perTrackGainEnabled: Boolean = true,
     val visualizerMode: VisualizerMode = VisualizerMode.SPECTRUM_BARS,
-    val sleepTimerFadeSeconds: Int = 30
+    val sleepTimerFadeSeconds: Int = 30,
+    val infiniteAutoPlayEnabled: Boolean = true
 )
 
 data class StorageUsage(

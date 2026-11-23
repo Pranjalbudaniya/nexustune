@@ -44,6 +44,10 @@ class NexusTuneApplication : Application() {
         private set
     lateinit var getListeningStatsUseCase: com.nexus.tune.core.domain.usecase.GetListeningStatsUseCase
         private set
+    lateinit var getAutoPlayRecommendationsUseCase: com.nexus.tune.core.domain.usecase.GetAutoPlayRecommendationsUseCase
+        private set
+    lateinit var autoPlayQueueManager: com.nexus.tune.core.domain.queue.AutoPlayQueueManager
+        private set
 
     lateinit var playerController: PlayerController
         private set
@@ -77,6 +81,8 @@ class NexusTuneApplication : Application() {
         resolveStreamUseCase = ResolveStreamUseCase(musicRepository)
         manageQueueUseCase = ManageQueueUseCase(queueRepository)
         getListeningStatsUseCase = com.nexus.tune.core.domain.usecase.GetListeningStatsUseCase(musicRepository)
+        getAutoPlayRecommendationsUseCase = com.nexus.tune.core.domain.usecase.GetAutoPlayRecommendationsUseCase(musicRepository)
+        autoPlayQueueManager = com.nexus.tune.core.domain.queue.AutoPlayQueueManager(getAutoPlayRecommendationsUseCase, queueRepository)
 
         playerController = PlayerController(this)
         sleepTimerManager = com.nexus.tune.core.player.SleepTimerManager(playerController)

@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 13 (v2.3.0 Released)
-- In Flight: Preparing Improvement Loop 14 (Smart Dynamic Queue & Auto-Play Infinite Mix)
+- Active Phase: Post-v1.0 Improvement Loop 14 (v2.4.0 Released)
+- In Flight: Preparing Improvement Loop 15 (Audio Output Bit-Perfect USB Mode & Exclusive Routing)
 - Branches: `main`
 
 ## Phase Tracking
@@ -135,13 +135,21 @@
   - [x] Slice & perf gates passed on physical hardware
   - [x] Final gate passed & tagged: `git tag v2.3-1`
 
-## Improvement Loop 14 (v2.4 Features - Planned)
-- [ ] Smart Dynamic Queue & Auto-Play Infinite Mix:
-  - Automatic queue continuation when upcoming queue nears exhaustion
-  - Contextual recommendation seed based on last played tracks
-  - Settings toggle: Infinite Auto-Play / Endless Mix
+- [x] Improvement Loop 14 (v2.4 Features - Tagged `v2.4-1`)
+  - [x] Smart Dynamic Queue & Auto-Play Infinite Mix:
+    - [x] Contextual related tracks query in `GetAutoPlayRecommendationsUseCase`
+    - [x] Dynamic queue replenishment in `AutoPlayQueueManager`
+    - [x] Reactive queue observation in `MainActivity` and toggle in `SettingsScreen`
+  - [x] Slice & perf gates passed on physical hardware
+  - [x] Final gate passed & tagged: `git tag v2.4-1`
+
+## Improvement Loop 15 (v2.5 Features - Planned)
+- [ ] Bit-Perfect USB DAC Mode & Exclusive Audio Routing:
+  - Detection and configuration of USB Audio DAC format/frequency (44.1kHz, 96kHz, 192kHz)
+  - Exclusive bypass mode for Android platform audio resampler
+  - Player Hi-Res bit-depth badge indicator (24-bit / 96kHz / 192kHz)
 - [ ] Slice & perf gates passed on physical hardware
-- [ ] Final gate passed & tagged: `git tag v2.4-1`
+- [ ] Final gate passed & tagged: `git tag v2.5-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

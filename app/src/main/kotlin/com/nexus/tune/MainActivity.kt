@@ -73,6 +73,18 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        lifecycleScope.launch {
+            kotlinx.coroutines.flow.combine(
+                app.playerController.playbackState,
+                app.queueRepository.getQueue(),
+                app.queueRepository.getQueueIndex()
+            ) { state, queue, idx ->
+                Triple(state, queue, idx)
+            }.collect { (state, queue, idx) ->
+                app.autoPlayQueueManager.checkAndReplenish(state.currentTrack, queue, idx)
+            }
+        }
+
         setContent {
             val themeConfig by settingsViewModel.themeConfig.collectAsState()
             val playbackState by app.playerController.playbackState.collectAsState()

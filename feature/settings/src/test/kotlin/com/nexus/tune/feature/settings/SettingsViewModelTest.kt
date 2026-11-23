@@ -203,4 +203,14 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.visualizerMode == VisualizerMode.CIRCULAR_WAVE })
         }
     }
+
+    @Test
+    fun `toggleInfiniteAutoPlay updates config`() = runTest {
+        viewModel.toggleInfiniteAutoPlay(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.infiniteAutoPlayEnabled })
+        }
+    }
 }

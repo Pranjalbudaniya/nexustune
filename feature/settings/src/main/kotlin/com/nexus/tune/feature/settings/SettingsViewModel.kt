@@ -76,6 +76,11 @@ class SettingsViewModel(
         updateTheme(current.copy(autoSkipSegments = enabled))
     }
 
+    fun toggleInfiniteAutoPlay(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(infiniteAutoPlayEnabled = enabled))
+    }
+
     fun toggleVolumeNormalization(enabled: Boolean) {
         val current = themeConfig.value
         updateTheme(current.copy(volumeNormalizationEnabled = enabled))

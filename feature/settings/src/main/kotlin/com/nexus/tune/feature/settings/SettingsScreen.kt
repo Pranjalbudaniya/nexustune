@@ -457,6 +457,19 @@ fun SettingsScreen(
                     }
                 )
 
+                Spacer(modifier = Modifier.height(8.dp))
+
+                ListItem(
+                    headlineContent = { Text("Infinite Auto-Play (Endless Mix)") },
+                    supportingContent = { Text("Automatically discover and append similar tracks when queue reaches the end") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.infiniteAutoPlayEnabled,
+                            onCheckedChange = { viewModel.toggleInfiniteAutoPlay(it) }
+                        )
+                    }
+                )
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
             }
 
@@ -539,8 +552,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v2.3.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Sleep Timer Gentle Fade-Out") }
+                    headlineContent = { Text("NexusTune v2.4.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Smart Auto-Play Infinite Mix") }
                 )
             }
         }
