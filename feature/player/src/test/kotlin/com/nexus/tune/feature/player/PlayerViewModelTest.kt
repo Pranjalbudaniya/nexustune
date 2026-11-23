@@ -92,5 +92,17 @@ class PlayerViewModelTest {
         viewModel.setPlaybackSpeed(0.75f)
         assertEquals(0.75f, viewModel.playbackSpeed.value)
     }
+
+    @Test
+    fun `updateAudioOutputDevice updates state flow`() {
+        val device = com.nexus.tune.core.model.AudioOutputDevice(
+            type = com.nexus.tune.core.model.AudioDeviceType.USB_DAC,
+            name = "AudioQuest Dragonfly",
+            isHighRes = true
+        )
+        viewModel.updateAudioOutputDevice(device)
+        assertEquals("AudioQuest Dragonfly", viewModel.audioOutputDevice.value.name)
+        assertEquals(true, viewModel.audioOutputDevice.value.isHighRes)
+    }
 }
 

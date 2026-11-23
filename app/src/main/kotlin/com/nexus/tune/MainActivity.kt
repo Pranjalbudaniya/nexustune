@@ -167,6 +167,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             val lyrics by playerViewModel.lyrics.collectAsState()
                             val lyricsOffsetMs by playerViewModel.lyricsOffsetMs.collectAsState()
+                            val audioOutputDevice by app.audioOutputRouteManager.currentOutputDevice.collectAsState()
                             LaunchedEffect(playbackState.currentTrack) {
                                 playbackState.currentTrack?.let { playerViewModel.loadLyrics(it) }
                             }
@@ -178,6 +179,7 @@ class MainActivity : ComponentActivity() {
                                 layout = themeConfig.playerLayout,
                                 lyrics = lyrics,
                                 lyricsOffsetMs = lyricsOffsetMs,
+                                audioOutputDevice = audioOutputDevice,
                                 onAdjustLyricsOffset = { playerViewModel.adjustLyricsOffset(it) },
                                 onResetLyricsOffset = { playerViewModel.resetLyricsOffset() },
                                 onSetPlaybackSpeed = { app.playerController.setPlaybackSpeed(it) }

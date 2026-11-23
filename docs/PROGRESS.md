@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 9 (v1.9 Release Completed)
-- In Flight: Preparing Improvement Loop 10 (Sound Output Device Selector & Audio Profile Indicator)
+- Active Phase: Post-v1.0 Improvement Loop 10 (v2.0 Major Milestone Completed)
+- In Flight: Preparing Improvement Loop 11 (Per-Track Loudness LUFS & Peak Analysis)
 - Branches: `main`
 
 ## Phase Tracking
@@ -104,12 +104,19 @@
   - [x] Slice & perf gates passed on physical hardware
   - [x] Final gate passed & tagged: `git tag v1.9-1`
 
-## Improvement Loop 10 (v2.0 Features - Planned)
-- [ ] Sound Output Device Selector & Audio Profile Indicator:
-  - Audio output routing detection (`AudioDeviceInfo`)
-  - Real-time output indicator (Speaker, Bluetooth A2DP, USB DAC, Wired Headset)
+- [x] Improvement Loop 10 (v2.0 Features - Tagged `v2.0-1`)
+  - [x] Audio Output Routing & Real-Time Audio Profile Indicator:
+    - [x] Audio output routing detection (`AudioDeviceInfo`) and dynamic callback in `AudioOutputRouteManager`
+    - [x] Real-time output indicator (Speaker, Bluetooth A2DP, USB DAC, Wired Headset) in `PlayerScreen`
+  - [x] Slice & perf gates passed on physical hardware
+  - [x] Final gate passed & tagged: `git tag v2.0-1`
+
+## Improvement Loop 11 (v2.1 Features - Planned)
+- [ ] Per-Track Loudness LUFS & Peak Analysis:
+  - Track loudness LUFS and peak calculation
+  - Dynamic gain attenuation calibration
 - [ ] Re-run full test suite and quality gates
-- [ ] Produce v2.0 release build and tag `v2.0-1`
+- [ ] Produce v2.1 release build and tag `v2.1-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

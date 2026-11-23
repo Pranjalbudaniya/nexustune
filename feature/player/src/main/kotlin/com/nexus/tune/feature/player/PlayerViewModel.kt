@@ -27,6 +27,13 @@ class PlayerViewModel(
     private val _playbackSpeed = MutableStateFlow(1.0f)
     val playbackSpeed: StateFlow<Float> = _playbackSpeed.asStateFlow()
 
+    private val _audioOutputDevice = MutableStateFlow(com.nexus.tune.core.model.AudioOutputDevice())
+    val audioOutputDevice: StateFlow<com.nexus.tune.core.model.AudioOutputDevice> = _audioOutputDevice.asStateFlow()
+
+    fun updateAudioOutputDevice(device: com.nexus.tune.core.model.AudioOutputDevice) {
+        _audioOutputDevice.value = device
+    }
+
     fun setPlaybackSpeed(speed: Float) {
         _playbackSpeed.value = speed
     }

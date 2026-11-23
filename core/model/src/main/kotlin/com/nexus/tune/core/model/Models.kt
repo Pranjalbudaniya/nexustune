@@ -155,3 +155,17 @@ data class SkipSegment(
     val endMs: Long
 )
 
+enum class AudioDeviceType {
+    BUILTIN_SPEAKER,
+    BLUETOOTH_A2DP,
+    WIRED_HEADSET,
+    USB_DAC,
+    OTHER
+}
+
+data class AudioOutputDevice(
+    val type: AudioDeviceType = AudioDeviceType.BUILTIN_SPEAKER,
+    val name: String = "Phone Speaker",
+    val isHighRes: Boolean = false
+)
+

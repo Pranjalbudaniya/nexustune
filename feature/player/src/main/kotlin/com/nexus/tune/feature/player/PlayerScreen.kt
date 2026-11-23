@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -36,6 +37,7 @@ fun PlayerScreen(
     layout: PlayerLayout = PlayerLayout.ART_FORWARD,
     lyrics: TrackLyrics? = null,
     lyricsOffsetMs: Long = 0L,
+    audioOutputDevice: com.nexus.tune.core.model.AudioOutputDevice = com.nexus.tune.core.model.AudioOutputDevice(),
     onAdjustLyricsOffset: (Long) -> Unit = {},
     onResetLyricsOffset: () -> Unit = {},
     onSetPlaybackSpeed: (Float) -> Unit = {}
@@ -62,16 +64,46 @@ fun PlayerScreen(
                 IconButton(onClick = onDismiss) {
                     Icon(Icons.Rounded.KeyboardArrowDown, contentDescription = "Dismiss")
                 }
-                Text(
-                    text = when (layout) {
-                        PlayerLayout.ART_FORWARD -> "ART FORWARD"
-                        PlayerLayout.VINYL_RECORD -> "VINYL RECORD"
-                        PlayerLayout.SYNCED_LYRICS -> "SYNCED LYRICS"
-                        PlayerLayout.MINIMALIST -> "MINIMALIST"
-                    },
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = when (layout) {
+                            PlayerLayout.ART_FORWARD -> "ART FORWARD"
+                            PlayerLayout.VINYL_RECORD -> "VINYL RECORD"
+                            PlayerLayout.SYNCED_LYRICS -> "SYNCED LYRICS"
+                            PlayerLayout.MINIMALIST -> "MINIMALIST"
+                        },
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Surface(
+                        shape = MaterialTheme.shapes.extraSmall,
+                        color = if (audioOutputDevice.isHighRes) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surfaceVariant
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = when (audioOutputDevice.type) {
+                                    com.nexus.tune.core.model.AudioDeviceType.BLUETOOTH_A2DP -> Icons.Rounded.Bluetooth
+                                    com.nexus.tune.core.model.AudioDeviceType.USB_DAC -> Icons.Rounded.Headphones
+                                    com.nexus.tune.core.model.AudioDeviceType.WIRED_HEADSET -> Icons.Rounded.Headphones
+                                    else -> Icons.AutoMirrored.Rounded.VolumeUp
+                                },
+                                contentDescription = null,
+                                modifier = Modifier.size(12.dp),
+                                tint = if (audioOutputDevice.isHighRes) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = if (audioOutputDevice.isHighRes) "${audioOutputDevice.name} (Hi-Res)" else audioOutputDevice.name,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = if (audioOutputDevice.isHighRes) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
                 IconButton(onClick = {}) {
                     Icon(Icons.Rounded.MoreVert, contentDescription = "Options")
                 }

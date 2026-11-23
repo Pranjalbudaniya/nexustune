@@ -5,6 +5,12 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-11-24
+
+### Added
+- **Audio Output Routing Engine**: Implemented `AudioOutputRouteManager` in `core:player` with native Android `AudioManager` and `AudioDeviceCallback` integration, automatically tracking live audio routing changes across Bluetooth A2DP, USB DACs, Wired Headsets, and Phone Speakers.
+- **Real-Time Hi-Res Audio Route Indicator**: Added dynamic audio route pill in `PlayerScreen` with contextual hardware icons (`Bluetooth`, `Headphones`, `VolumeUp`) and automatic Hi-Res container highlighting.
+
 ## [1.9.0] - 2026-11-24
 
 ### Added
