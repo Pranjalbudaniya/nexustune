@@ -42,8 +42,12 @@ class NexusTuneApplication : Application() {
         private set
     lateinit var manageQueueUseCase: ManageQueueUseCase
         private set
+    lateinit var getListeningStatsUseCase: com.nexus.tune.core.domain.usecase.GetListeningStatsUseCase
+        private set
 
     lateinit var playerController: PlayerController
+        private set
+    lateinit var sleepTimerManager: com.nexus.tune.core.player.SleepTimerManager
         private set
 
     override fun onCreate() {
@@ -68,8 +72,10 @@ class NexusTuneApplication : Application() {
         getHomeFeedUseCase = GetHomeFeedUseCase(musicRepository)
         resolveStreamUseCase = ResolveStreamUseCase(musicRepository)
         manageQueueUseCase = ManageQueueUseCase(queueRepository)
+        getListeningStatsUseCase = com.nexus.tune.core.domain.usecase.GetListeningStatsUseCase(musicRepository)
 
         playerController = PlayerController(this)
+        sleepTimerManager = com.nexus.tune.core.player.SleepTimerManager(playerController)
     }
 
     companion object {

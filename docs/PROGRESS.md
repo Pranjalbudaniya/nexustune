@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Phase 9 (Release Qualification & Completion Oracle)
-- In Flight: Release APK assembly, final gate verification, and continuous improvement loop
+- Active Phase: Post-v1.0 Improvement Loop 1 (v1.1 Release Completed)
+- In Flight: Gating v1.1 release and tagging `v1.1-1`, preparing Improvement Loop 2 (Dynamic Crossfade, Home Screen Widgets)
 - Branches: `main`
 
 ## Phase Tracking
@@ -40,10 +40,16 @@
 - [x] Phase 8: Final audit (Completed 2026-11-24)
   - [x] Council reconvened across 3 rounds (Unanimous 5-0 ship verdict)
   - [x] Test report, Manual QA checklist, Licenses, Changelog, and README completed
-- [ ] Phase 9: Release
-  - [ ] Execute completion oracle: `./scripts/gate.sh final`
-  - [ ] Tag build: `git tag v1.0-1`
-  - [ ] Enter continuous improvement loop (v1.1 features)
+- [x] Phase 9: Release
+  - [x] Execute completion oracle: `./scripts/gate.sh final`
+  - [x] Tag build: `git tag v1.0-1`
+- [x] Improvement Loop 1 (v1.1 Features)
+  - [x] Sleep Timer engine (`SleepTimerManager`) with 15m, 30m, 45m, 60m & End-of-Track
+  - [x] Equalizer Presets (`Flat`, `Bass Boost`, `Treble Boost`, `Vocal`, `Electronic`, `Rock`)
+  - [x] Listening Analytics (aggregating plays, top artists from Room playback history)
+  - [x] Settings UI integration with real-time countdown card & preset chip carousels
+  - [x] Slice & perf gates passed on physical hardware
+  - [ ] Tag build: `git tag v1.1-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

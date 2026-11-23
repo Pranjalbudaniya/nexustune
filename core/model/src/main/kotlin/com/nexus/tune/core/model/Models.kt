@@ -114,3 +114,12 @@ data class TrackLyrics(
     val isSynced: Boolean = true
 )
 
+enum class EqualizerPreset {
+    FLAT, BASS_BOOST, TREBLE_BOOST, VOCAL, ELECTRONIC, ROCK
+}
+
+data class ListeningStats(
+    val totalPlays: Int = 0,
+    val topArtists: List<String> = emptyList()
+)
+

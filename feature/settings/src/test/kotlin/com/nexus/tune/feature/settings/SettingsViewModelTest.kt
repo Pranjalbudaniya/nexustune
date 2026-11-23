@@ -2,17 +2,21 @@ package com.nexus.tune.feature.settings
 
 import app.cash.turbine.test
 import com.nexus.tune.core.domain.repository.SettingsRepository
+import com.nexus.tune.core.domain.usecase.GetListeningStatsUseCase
 import com.nexus.tune.core.model.*
+import com.nexus.tune.core.player.SleepTimerManager
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 
@@ -21,6 +25,8 @@ class SettingsViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private val settingsRepository = mockk<SettingsRepository>(relaxed = true)
+    private val getListeningStatsUseCase = mockk<GetListeningStatsUseCase>(relaxed = true)
+    private val sleepTimerManager = mockk<SleepTimerManager>(relaxed = true)
     private val themeFlow = MutableStateFlow(ThemeConfig())
 
     private lateinit var viewModel: SettingsViewModel
@@ -29,7 +35,17 @@ class SettingsViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         every { settingsRepository.getThemeConfig() } returns themeFlow
-        viewModel = SettingsViewModel(settingsRepository)
+        every { getListeningStatsUseCase() } returns flowOf(
+            ListeningStats(
+                totalPlays = 42,
+                topArtists = listOf("Artist A", "Artist B")
+            )
+        )
+        viewModel = SettingsViewModel(
+            settingsRepository = settingsRepository,
+            getListeningStatsUseCase = getListeningStatsUseCase,
+            sleepTimerManager = sleepTimerManager
+        )
     }
 
     @After
@@ -76,5 +92,28 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.playerLayout == PlayerLayout.VINYL_RECORD })
         }
     }
-}
 
+    @Test
+    fun `startSleepTimer delegates to sleepTimerManager`() = runTest {
+        viewModel.startSleepTimer(30)
+        verify { sleepTimerManager.startTimer(30) }
+    }
+
+    @Test
+    fun `cancelSleepTimer delegates to sleepTimerManager`() = runTest {
+        viewModel.cancelSleepTimer()
+        verify { sleepTimerManager.cancelTimer() }
+    }
+
+    @Test
+    fun `setEqualizerPreset updates state`() = runTest {
+        viewModel.setEqualizerPreset(EqualizerPreset.BASS_BOOST)
+        assertEquals(EqualizerPreset.BASS_BOOST, viewModel.equalizerPreset.value)
+    }
+
+    @Test
+    fun `loadListeningStats exposes stats stream`() = runTest {
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertEquals(42, viewModel.listeningStats.value.totalPlays)
+    }
+}

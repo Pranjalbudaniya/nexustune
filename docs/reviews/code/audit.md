@@ -25,3 +25,4 @@
 - **Finding (P3 - Unit Testing)**: `BackupManagerTest` required standalone `org.json` implementation on JVM test harness.
   - *Remediation*: Added `org.json:json:20240303` as `testImplementation` in `core:data`.
 - **Remaining P0-P2 Findings**: 0.
+

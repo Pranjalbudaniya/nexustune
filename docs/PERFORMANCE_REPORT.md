@@ -69,3 +69,4 @@ Captured via `dumpsys meminfo com.nexus.tune` during active foreground UI and ba
 
 ## 4. Verification Verdict
 NexusTune runs at a fluid 120Hz with P99 frame rendering times of 1.0ms on the Vivo V2518 (Android 16), comfortably exceeding the 8.33ms frame deadline.
+

@@ -37,3 +37,4 @@ This document details the manual QA verification steps executed on physical hard
 - [x] Enable 5-band equalizer; audio profile frequency response modulates in real time.
 - [x] Export backup JSON; verify file contains theme preferences and liked tracks.
 - [x] Import backup JSON; verify restoration of saved state.
+

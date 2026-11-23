@@ -18,3 +18,4 @@
 
 ## 3. Findings
 - *Resolved*: None. Fully compliant with NexusDesign tokens.
+

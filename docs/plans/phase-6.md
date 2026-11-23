@@ -25,3 +25,4 @@ Phase 6 subjects NexusTune to rigorous edge-case testing, simulated network fail
 ## 4. Acceptance Checks
 - All hardening and failure injection tests pass.
 - `./scripts/gate.sh slice` passes.
+

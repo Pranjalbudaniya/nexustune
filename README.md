@@ -100,3 +100,4 @@ All stages of the project are validated by deterministic test and build scripts:
 ## License
 
 This project is licensed under the terms of the GNU General Public License v3.0 (GPL-3.0) to maintain compatibility with the NewPipeExtractor library. See `docs/LICENSES.md` for complete attributions.
+

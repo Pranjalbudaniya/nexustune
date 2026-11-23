@@ -34,3 +34,4 @@ NexusTune uses open-source libraries and frameworks. We are grateful to the auth
 
 ### JUnit & MockK
 - **License**: Eclipse Public License 1.0 / Apache License 2.0
+

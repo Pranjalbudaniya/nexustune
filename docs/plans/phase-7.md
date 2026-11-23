@@ -23,3 +23,4 @@ Phase 7 benchmarks NexusTune on physical hardware (Vivo V2518 / MTK, Android 16,
 ## 3. Acceptance Checks
 - `docs/PERFORMANCE_REPORT.md` populated with real on-device data.
 - `./scripts/gate.sh perf` passes.
+

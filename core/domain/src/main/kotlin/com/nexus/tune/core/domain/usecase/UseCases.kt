@@ -64,3 +64,7 @@ class DownloadTrackUseCase(private val downloadRepository: DownloadRepository) {
     suspend fun download(track: Track): Boolean = downloadRepository.downloadTrack(track)
     suspend fun delete(trackId: String) = downloadRepository.deleteDownload(trackId)
 }
+
+class GetListeningStatsUseCase(private val musicRepository: MusicRepository) {
+    operator fun invoke(): Flow<ListeningStats> = musicRepository.getListeningStats()
+}

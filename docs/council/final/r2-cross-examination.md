@@ -20,3 +20,4 @@
 ### Exchange 3: QA & Release Engineer asks System Architect
 - **Question**: "Are there any lingering unbounded memory leaks, orphaned coroutines, or dangling service binders when the user closes the app or navigates between screens?"
 - **Answer**: "Verified zero leaks. `ExoPlayerService` calls `stopSelf()` and releases the MediaSession and player instance cleanly. All ViewModels scope work strictly to `viewModelScope`, and Room database queries use reactive `Flow` channels that automatically cancel upon subscriber disposal."
+

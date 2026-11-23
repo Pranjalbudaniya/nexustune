@@ -31,6 +31,10 @@ class NexusPlaybackService : MediaSessionService() {
             .setHandleAudioBecomingNoisy(true) // Pause on headset disconnect
             .build()
 
+        player?.audioSessionId?.let { sessionId ->
+            com.nexus.tune.core.player.effects.NexusAudioEffects.instance.attachToAudioSession(sessionId)
+        }
+
         val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
         val pendingIntent = PendingIntent.getActivity(
             this,
@@ -51,6 +55,7 @@ class NexusPlaybackService : MediaSessionService() {
     }
 
     override fun onDestroy() {
+        com.nexus.tune.core.player.effects.NexusAudioEffects.instance.release()
         mediaSession?.run {
             player.release()
             release()

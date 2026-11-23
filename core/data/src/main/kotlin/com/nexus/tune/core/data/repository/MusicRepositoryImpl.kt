@@ -83,5 +83,18 @@ class MusicRepositoryImpl(
             )
         )
     }
+
+    override fun getListeningStats(): Flow<ListeningStats> {
+        return database.historyDao().getHistory().map { list ->
+            val totalPlays = list.size
+            val topArtists = list.groupingBy { it.artist }
+                .eachCount()
+                .entries
+                .sortedByDescending { it.value }
+                .take(5)
+                .map { it.key }
+            ListeningStats(totalPlays = totalPlays, topArtists = topArtists)
+        }
+    }
 }
 

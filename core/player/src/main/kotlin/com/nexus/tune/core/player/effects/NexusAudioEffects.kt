@@ -3,6 +3,7 @@ package com.nexus.tune.core.player.effects
 import android.media.audiofx.BassBoost
 import android.media.audiofx.Equalizer
 import android.util.Log
+import com.nexus.tune.core.model.EqualizerPreset
 
 class NexusAudioEffects {
 
@@ -48,6 +49,60 @@ class NexusAudioEffects {
         }
     }
 
+    fun applyPreset(preset: EqualizerPreset) {
+        val eq = equalizer ?: return
+        try {
+            val numBands = eq.numberOfBands.toInt()
+            when (preset) {
+                EqualizerPreset.FLAT -> {
+                    for (i in 0 until numBands) eq.setBandLevel(i.toShort(), 0)
+                    bassBoost?.setStrength(0.toShort())
+                }
+                EqualizerPreset.BASS_BOOST -> {
+                    if (numBands >= 2) {
+                        eq.setBandLevel(0.toShort(), 600.toShort())
+                        eq.setBandLevel(1.toShort(), 400.toShort())
+                    }
+                    bassBoost?.setStrength(800.toShort())
+                }
+                EqualizerPreset.TREBLE_BOOST -> {
+                    if (numBands >= 5) {
+                        eq.setBandLevel((numBands - 1).toShort(), 600.toShort())
+                        eq.setBandLevel((numBands - 2).toShort(), 400.toShort())
+                    }
+                    bassBoost?.setStrength(200.toShort())
+                }
+                EqualizerPreset.VOCAL -> {
+                    if (numBands >= 3) {
+                        eq.setBandLevel(1.toShort(), 500.toShort())
+                        eq.setBandLevel(2.toShort(), 500.toShort())
+                    }
+                    bassBoost?.setStrength(200.toShort())
+                }
+                EqualizerPreset.ELECTRONIC -> {
+                    if (numBands >= 5) {
+                        eq.setBandLevel(0.toShort(), 500.toShort())
+                        eq.setBandLevel(1.toShort(), 300.toShort())
+                        eq.setBandLevel(4.toShort(), 400.toShort())
+                    }
+                    bassBoost?.setStrength(700.toShort())
+                }
+                EqualizerPreset.ROCK -> {
+                    if (numBands >= 5) {
+                        eq.setBandLevel(0.toShort(), 400.toShort())
+                        eq.setBandLevel(1.toShort(), 200.toShort())
+                        eq.setBandLevel(2.toShort(), (-100).toShort())
+                        eq.setBandLevel(3.toShort(), 200.toShort())
+                        eq.setBandLevel(4.toShort(), 400.toShort())
+                    }
+                    bassBoost?.setStrength(500.toShort())
+                }
+            }
+        } catch (e: Exception) {
+            Log.w("NexusAudioEffects", "Failed to apply preset $preset: ${e.message}")
+        }
+    }
+
     fun release() {
         try {
             equalizer?.release()
@@ -59,5 +114,8 @@ class NexusAudioEffects {
         bassBoost = null
         currentSessionId = 0
     }
-}
 
+    companion object {
+        val instance: NexusAudioEffects by lazy { NexusAudioEffects() }
+    }
+}

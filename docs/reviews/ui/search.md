@@ -20,3 +20,4 @@
 
 ## 3. Findings
 - *Resolved*: Verified that query debouncing prevents jank and redundant network dispatches.
+

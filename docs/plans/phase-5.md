@@ -30,3 +30,4 @@ Audits must enforce:
 - `docs/reviews/ui/settings.md` present and scored.
 - `docs/reviews/code/audit.md` present with zero unresolved P0-P2 findings.
 - `./scripts/gate.sh slice` passes without regressions.
+

@@ -39,3 +39,4 @@
 - **Cold Startup**: 1,542ms (Trial 1), 1,612ms (Trial 2).
 - **Warm Startup**: 10ms.
 - **120Hz Vsync Adherence**: P99 frame rendering time <= 1.0ms (Budget: 8.33ms). Zero dropped frames during list fling.
+

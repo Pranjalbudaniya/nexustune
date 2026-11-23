@@ -61,7 +61,11 @@ class MainActivity : ComponentActivity() {
         searchViewModel = SearchViewModel(app.searchMusicUseCase, app.manageQueueUseCase)
         libraryViewModel = LibraryViewModel(app.musicRepository, app.manageQueueUseCase)
         playerViewModel = PlayerViewModel(app.musicRepository, app.manageQueueUseCase)
-        settingsViewModel = SettingsViewModel(app.settingsRepository)
+        settingsViewModel = SettingsViewModel(
+            settingsRepository = app.settingsRepository,
+            getListeningStatsUseCase = app.getListeningStatsUseCase,
+            sleepTimerManager = app.sleepTimerManager
+        )
 
         setContent {
             val themeConfig by settingsViewModel.themeConfig.collectAsState()

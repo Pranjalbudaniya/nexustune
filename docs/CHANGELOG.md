@@ -5,6 +5,14 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-11-24
+
+### Added
+- **Sleep Timer Engine**: Added `SleepTimerManager` with preset durations (15m, 30m, 45m, 60m), countdown state flow, active timer notification banner with cancel action, and seamless End-of-Track auto-pause.
+- **Hardware Equalizer DSP Presets**: 6 hardware DSP tuning presets (`FLAT`, `BASS_BOOST`, `TREBLE_BOOST`, `VOCAL`, `ELECTRONIC`, `ROCK`) applied directly to ExoPlayer's audio session ID with real-time UI switching.
+- **Personalized Listening Analytics**: Real-time listening stats aggregated from Room playback history, displaying total tracks played, total listening duration, and top 5 most listened artists.
+- **Enhanced Settings UI**: Revamped Settings screen with active Sleep Timer countdown card, DSP preset horizontal chip carousel, and Listening Analytics summary dashboard.
+
 ## [1.0.0] - 2026-11-24
 
 ### Added
@@ -22,3 +30,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Offline & Downloads**: Background track downloading via WorkManager and OkHttp with automatic offline stream fallback.
 - **Backup & Restore**: Standalone JSON export and import for user library and theming preferences.
 - **Performance**: Validated 120Hz high refresh rate rendering (P99 <= 1.0ms frame time on Vivo V2518).
+

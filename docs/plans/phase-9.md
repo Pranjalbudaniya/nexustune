@@ -19,3 +19,4 @@ Phase 9 is the culmination of the autonomous build protocol:
 - `./scripts/gate.sh final` passes with 0 failures.
 - Release APK `app-release.apk` is generated and signed.
 - `git tag v1.0-1` created.
+

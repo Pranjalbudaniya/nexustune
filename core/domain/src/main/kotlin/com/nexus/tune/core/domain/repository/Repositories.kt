@@ -15,6 +15,7 @@ interface MusicRepository {
     suspend fun toggleLike(track: Track): Boolean
     fun getHistory(): Flow<List<Track>>
     suspend fun addToHistory(track: Track)
+    fun getListeningStats(): Flow<ListeningStats>
 }
 
 interface QueueRepository {
