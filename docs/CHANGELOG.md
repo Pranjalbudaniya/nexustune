@@ -5,6 +5,12 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-11-24
+
+### Added
+- **Silence & Non-Music Skip Segment Manager**: Added `SkipSegmentManager` in `core:player` with automatic detection and seamless seek-skipping over non-music intros, outros, sponsor blocks, and silence gaps.
+- **Auto-Skip Settings Toggle**: Added an instant toggle under Audio Optimization in Settings to enable/disable automated skip segments.
+
 ## [1.4.0] - 2026-11-24
 
 ### Added

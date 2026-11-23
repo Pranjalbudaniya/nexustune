@@ -341,6 +341,19 @@ fun SettingsScreen(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(8.dp))
+
+                ListItem(
+                    headlineContent = { Text("Auto-Skip Non-Music & Silence") },
+                    supportingContent = { Text("Skip sponsor segments, intros, and silent breaks") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.autoSkipSegments,
+                            onCheckedChange = { viewModel.toggleAutoSkipSegments(it) }
+                        )
+                    }
+                )
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
             }
 
@@ -381,8 +394,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v1.4.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Lyrics Calibration") }
+                    headlineContent = { Text("NexusTune v1.5.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Non-Music Skip") }
                 )
             }
         }

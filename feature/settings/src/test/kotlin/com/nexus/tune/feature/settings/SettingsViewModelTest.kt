@@ -126,4 +126,14 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.crossfadeSeconds == 6 })
         }
     }
+
+    @Test
+    fun `toggleAutoSkipSegments updates config`() = runTest {
+        viewModel.toggleAutoSkipSegments(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.autoSkipSegments })
+        }
+    }
 }

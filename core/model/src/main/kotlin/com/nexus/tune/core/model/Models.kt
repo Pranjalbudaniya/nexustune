@@ -94,7 +94,8 @@ data class ThemeConfig(
     val playerLayout: PlayerLayout = PlayerLayout.ART_FORWARD,
     val miniPlayerStyle: MiniPlayerStyle = MiniPlayerStyle.DOCKED_BAR,
     val refreshRatePreferred: Int = 120, // 60, 90, 120
-    val crossfadeSeconds: Int = 0 // 0 = gapless, 2..12s
+    val crossfadeSeconds: Int = 0, // 0 = gapless, 2..12s
+    val autoSkipSegments: Boolean = true
 )
 
 data class SearchResult(
@@ -126,5 +127,11 @@ data class ListeningStats(
     val afternoonPlays: Int = 0,
     val eveningPlays: Int = 0,
     val nightPlays: Int = 0
+)
+
+data class SkipSegment(
+    val category: String, // "music_offtopic", "sponsor", "intro", "outro"
+    val startMs: Long,
+    val endMs: Long
 )
 

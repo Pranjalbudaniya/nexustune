@@ -66,12 +66,11 @@
   - [x] Slice & perf gates passed on physical hardware
   - [x] Final gate passed & tagged: `git tag v1.4-1`
 
-## Improvement Loop 5 (v1.5 Features - In Flight)
-- [ ] Non-Music & Silence Skip Segment Manager:
-  - Skip non-music intro/outro segments automatically
-  - Configurable skip toggle in Settings
-- [ ] Re-run full test suite and quality gates
-- [ ] Produce v1.5 release build and tag `v1.5-1`
+- [x] Improvement Loop 5 (v1.5 Features)
+  - [x] Non-Music & Silence Skip Segment Manager (`SkipSegmentManager`, `SkipSegment`)
+  - [x] Settings Auto-Skip Toggle & StateFlow integration
+  - [x] Slice & perf gates passed on physical hardware
+  - [ ] Final gate & tag build: `git tag v1.5-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

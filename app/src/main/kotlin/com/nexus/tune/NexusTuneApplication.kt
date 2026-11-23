@@ -49,6 +49,8 @@ class NexusTuneApplication : Application() {
         private set
     lateinit var sleepTimerManager: com.nexus.tune.core.player.SleepTimerManager
         private set
+    lateinit var skipSegmentManager: com.nexus.tune.core.player.SkipSegmentManager
+        private set
 
     override fun onCreate() {
         super.onCreate()
@@ -76,6 +78,7 @@ class NexusTuneApplication : Application() {
 
         playerController = PlayerController(this)
         sleepTimerManager = com.nexus.tune.core.player.SleepTimerManager(playerController)
+        skipSegmentManager = com.nexus.tune.core.player.SkipSegmentManager(playerController)
     }
 
     companion object {

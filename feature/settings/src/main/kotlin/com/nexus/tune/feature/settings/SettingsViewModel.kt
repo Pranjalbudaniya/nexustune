@@ -69,6 +69,11 @@ class SettingsViewModel(
         updateTheme(current.copy(crossfadeSeconds = seconds))
     }
 
+    fun toggleAutoSkipSegments(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(autoSkipSegments = enabled))
+    }
+
     fun startSleepTimer(minutes: Int) {
         sleepTimerManager?.startTimer(minutes)
     }
