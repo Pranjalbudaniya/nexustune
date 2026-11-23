@@ -179,7 +179,8 @@ class MainActivity : ComponentActivity() {
                                 lyrics = lyrics,
                                 lyricsOffsetMs = lyricsOffsetMs,
                                 onAdjustLyricsOffset = { playerViewModel.adjustLyricsOffset(it) },
-                                onResetLyricsOffset = { playerViewModel.resetLyricsOffset() }
+                                onResetLyricsOffset = { playerViewModel.resetLyricsOffset() },
+                                onSetPlaybackSpeed = { app.playerController.setPlaybackSpeed(it) }
                             )
                         }
                     }

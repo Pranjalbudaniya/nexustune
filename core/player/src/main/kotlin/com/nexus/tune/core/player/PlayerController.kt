@@ -58,6 +58,10 @@ class PlayerController(private val context: Context) {
                 updateState()
             }
 
+            override fun onPlaybackParametersChanged(playbackParameters: androidx.media3.common.PlaybackParameters) {
+                updateState()
+            }
+
             override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
                 _playbackState.value = _playbackState.value.copy(
                     status = PlaybackStatus.ERROR,
@@ -148,6 +152,22 @@ class PlayerController(private val context: Context) {
         updateState()
     }
 
+    fun setPlaybackSpeed(speed: Float) {
+        val c = controller ?: return
+        val currentPitch = c.playbackParameters.pitch
+        val clampedSpeed = speed.coerceIn(0.25f, 3.0f)
+        c.playbackParameters = androidx.media3.common.PlaybackParameters(clampedSpeed, currentPitch)
+        updateState()
+    }
+
+    fun setPlaybackPitch(pitch: Float) {
+        val c = controller ?: return
+        val currentSpeed = c.playbackParameters.speed
+        val clampedPitch = pitch.coerceIn(0.5f, 2.0f)
+        c.playbackParameters = androidx.media3.common.PlaybackParameters(currentSpeed, clampedPitch)
+        updateState()
+    }
+
     private fun updateState() {
         val c = controller ?: return
         val currentMediaId = c.currentMediaItem?.mediaId
@@ -159,10 +179,14 @@ class PlayerController(private val context: Context) {
             else -> PlaybackStatus.IDLE
         }
 
+        val params = c.playbackParameters
+
         _playbackState.value = _playbackState.value.copy(
             status = status,
             positionMs = c.currentPosition.coerceAtLeast(0L),
-            durationMs = c.duration.coerceAtLeast(0L)
+            durationMs = c.duration.coerceAtLeast(0L),
+            playbackSpeed = params.speed,
+            playbackPitch = params.pitch
         )
     }
 

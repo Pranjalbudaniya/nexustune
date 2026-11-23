@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 7 (v1.7 Release Completed)
-- In Flight: Preparing Improvement Loop 8 (Adaptive Playback Pitch & Speed Controller)
+- Active Phase: Post-v1.0 Improvement Loop 8 (v1.8 Release Completed)
+- In Flight: Preparing Improvement Loop 9 (Offline Storage & Cache Auto-Pruning Engine)
 - Branches: `main`
 
 ## Phase Tracking
@@ -89,12 +89,19 @@
   - [x] Slice & perf gates passed on physical hardware
   - [x] Final gate passed & tagged: `git tag v1.7-1`
 
-## Improvement Loop 8 (v1.8 Features - Planned)
-- [ ] Adaptive Playback Pitch & Speed Controller:
-  - Configurable playback speed (0.5x - 2.0x) and pitch shifting in `PlayerController`
-  - Audio speed selection modal in full player
+- [x] Improvement Loop 8 (v1.8 Features - Tagged `v1.8-1`)
+  - [x] Adaptive Playback Pitch & Speed Controller:
+    - [x] Configurable playback speed (0.5x - 2.0x) and pitch shifting in `PlayerController`
+    - [x] Real-time speed selection chips in `PlayerScreen`
+  - [x] Slice & perf gates passed on physical hardware
+  - [x] Final gate passed & tagged: `git tag v1.8-1`
+
+## Improvement Loop 9 (v1.9 Features - Planned)
+- [ ] Offline Storage & Cache Auto-Pruning Engine:
+  - Cache size budget setting (500MB, 1GB, 2GB, 5GB, Unlimited)
+  - LRU offline stream cache eviction policy
 - [ ] Re-run full test suite and quality gates
-- [ ] Produce v1.8 release build and tag `v1.8-1`
+- [ ] Produce v1.9 release build and tag `v1.9-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

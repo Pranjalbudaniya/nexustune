@@ -37,7 +37,8 @@ fun PlayerScreen(
     lyrics: TrackLyrics? = null,
     lyricsOffsetMs: Long = 0L,
     onAdjustLyricsOffset: (Long) -> Unit = {},
-    onResetLyricsOffset: () -> Unit = {}
+    onResetLyricsOffset: () -> Unit = {},
+    onSetPlaybackSpeed: (Float) -> Unit = {}
 ) {
     val track = playbackState.currentTrack ?: return
     val isPlaying = playbackState.status == PlaybackStatus.PLAYING
@@ -302,6 +303,25 @@ fun PlayerScreen(
                 }
                 IconButton(onClick = {}) {
                     Icon(Icons.Rounded.Repeat, contentDescription = "Repeat")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Playback Speed Chips
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                listOf(0.75f to "0.75x", 1.0f to "1.0x", 1.25f to "1.25x", 1.5f to "1.5x", 2.0f to "2.0x").forEach { (speed, label) ->
+                    val isSelected = kotlin.math.abs(playbackState.playbackSpeed - speed) < 0.05f
+                    FilterChip(
+                        selected = isSelected,
+                        onClick = { onSetPlaybackSpeed(speed) },
+                        label = { Text(label, style = MaterialTheme.typography.labelSmall) },
+                        modifier = Modifier.padding(horizontal = 3.dp)
+                    )
                 }
             }
 

@@ -24,6 +24,13 @@ class PlayerViewModel(
     private val _lyricsOffsetMs = MutableStateFlow(0L)
     val lyricsOffsetMs: StateFlow<Long> = _lyricsOffsetMs.asStateFlow()
 
+    private val _playbackSpeed = MutableStateFlow(1.0f)
+    val playbackSpeed: StateFlow<Float> = _playbackSpeed.asStateFlow()
+
+    fun setPlaybackSpeed(speed: Float) {
+        _playbackSpeed.value = speed
+    }
+
     fun adjustLyricsOffset(deltaMs: Long) {
         _lyricsOffsetMs.value += deltaMs
     }

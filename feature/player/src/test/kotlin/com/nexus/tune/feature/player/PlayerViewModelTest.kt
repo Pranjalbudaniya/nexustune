@@ -83,5 +83,14 @@ class PlayerViewModelTest {
         viewModel.resetLyricsOffset()
         assertEquals(0L, viewModel.lyricsOffsetMs.value)
     }
+
+    @Test
+    fun `setPlaybackSpeed updates speed state flow`() {
+        assertEquals(1.0f, viewModel.playbackSpeed.value)
+        viewModel.setPlaybackSpeed(1.5f)
+        assertEquals(1.5f, viewModel.playbackSpeed.value)
+        viewModel.setPlaybackSpeed(0.75f)
+        assertEquals(0.75f, viewModel.playbackSpeed.value)
+    }
 }
 

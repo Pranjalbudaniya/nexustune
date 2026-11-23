@@ -66,7 +66,9 @@ data class PlaybackState(
     val isRepeatAll: Boolean = false,
     val queueIndex: Int = 0,
     val queue: List<Track> = emptyList(),
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val playbackSpeed: Float = 1.0f,
+    val playbackPitch: Float = 1.0f
 )
 
 enum class ThemeSeedMode {

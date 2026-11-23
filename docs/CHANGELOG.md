@@ -5,6 +5,12 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2026-11-24
+
+### Added
+- **Adaptive Playback Pitch & Speed Controller**: Implemented native playback speed (0.5x to 2.0x) and pitch control via Media3's `PlaybackParameters` in `PlayerController`.
+- **Player Screen Speed Selection Chips**: Integrated interactive playback speed selection chips directly into `PlayerScreen`, allowing one-tap speed shifts during active playback.
+
 ## [1.7.0] - 2026-11-24
 
 ### Added
