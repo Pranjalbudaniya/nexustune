@@ -19,3 +19,4 @@ Convene the Council (Product Strategist, UX Lead, Android Architect, Power-User 
 - `docs/RANKED_FEATURES.md` classifies v1 (ship), v1.1 (planned), and cut features.
 - `docs/DESIGN_LANGUAGE.md` defines concrete tokens (spring stiffness/damping, shape corner scales, typography).
 - `scripts/gate.sh council` passes.
+

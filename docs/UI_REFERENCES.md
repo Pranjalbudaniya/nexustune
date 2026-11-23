@@ -198,3 +198,4 @@ What NexusTune does that no existing music application achieves:
 2. **Deep Live Theming Engine**: 4 full-player visual architectures (Art-Forward, Vinyl Record, Synced Lyrics, Minimalist), 3 mini-player styles, 5 shape schemes (Sharp to Full-Expressive Morphing), bundled open-source typefaces, and dynamic album-art harmonization with AMOLED true black.
 3. **Power-User Audio Architecture**: Gapless playback, software crossfading, parametric equalization with bass boost, queue persistence across process death, and local MediaStore audio merged with YouTube Music streams under a unified clean interface.
 4. **Transparent, Resilient Stream Extraction**: Typed error diagnostics, automatic re-resolution of expired media URLs (403/410 recovery), jittered backoff, and direct user visibility into extractor health without hidden failures.
+

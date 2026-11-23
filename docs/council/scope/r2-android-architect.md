@@ -10,3 +10,4 @@
 
 ## Flawed Assumptions Challenged
 - Assumption that Room queue persistence is trivial. Storing a 500-item queue naively on every track change can cause SQLite disk thrashing. We must debounce queue persistence and write async on `Dispatchers.IO`.
+

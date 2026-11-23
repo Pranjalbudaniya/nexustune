@@ -23,3 +23,4 @@ Decide what is in the app and what is out. Argue for the smallest feature set th
 
 ## Risks & Reasoning
 Commercial apps suffer from algorithmic clutter, promotional podcasts, and heavy web-view containers. By focusing purely on rapid search, rock-solid background audio, queue control, and deep visual customization, NexusTune immediately wins.
+

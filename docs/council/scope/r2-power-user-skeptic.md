@@ -10,3 +10,4 @@
 
 ## Flawed Assumptions Challenged
 - Assumption that streaming users don't care about offline files. Network outages happen on flights and subways; offline caching must be rock solid.
+

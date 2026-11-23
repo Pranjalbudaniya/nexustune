@@ -14,3 +14,4 @@ Own the 8.33 ms frame budget (120 Hz) and typed failure models. Enforce zero mai
 - Offline/Airplane mode must degrade gracefully to downloaded tracks with clear offline UI indicator.
 - Stream expiration: 403 / 410 HTTP errors must automatically trigger a single transparent re-extraction and retry before exposing an error to the user.
 - Thermal monitoring: Benchmark runs must monitor battery temperature and stop if thermal throttling occurs.
+

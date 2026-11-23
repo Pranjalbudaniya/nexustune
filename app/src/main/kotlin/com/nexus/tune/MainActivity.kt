@@ -1,0 +1,203 @@
+package com.nexus.tune
+
+import android.content.Context
+import android.hardware.display.DisplayManager
+import android.os.Build
+import android.os.Bundle
+import android.view.Display
+import android.view.WindowManager
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.LibraryMusic
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.lifecycleScope
+import com.nexus.tune.core.common.MusicResult
+import com.nexus.tune.core.designsystem.theme.NexusTuneTheme
+import com.nexus.tune.core.model.ThemeConfig
+import com.nexus.tune.core.model.Track
+import com.nexus.tune.core.ui.MiniPlayerBar
+import com.nexus.tune.feature.home.HomeScreen
+import com.nexus.tune.feature.home.HomeViewModel
+import com.nexus.tune.feature.library.LibraryScreen
+import com.nexus.tune.feature.library.LibraryViewModel
+import com.nexus.tune.feature.player.PlayerScreen
+import com.nexus.tune.feature.player.PlayerViewModel
+import com.nexus.tune.feature.search.SearchScreen
+import com.nexus.tune.feature.search.SearchViewModel
+import com.nexus.tune.feature.settings.SettingsScreen
+import com.nexus.tune.feature.settings.SettingsViewModel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+
+class MainActivity : ComponentActivity() {
+
+    private lateinit var app: NexusTuneApplication
+    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var searchViewModel: SearchViewModel
+    private lateinit var libraryViewModel: LibraryViewModel
+    private lateinit var playerViewModel: PlayerViewModel
+    private lateinit var settingsViewModel: SettingsViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+
+        app = application as NexusTuneApplication
+        negotiate120HzDisplayMode()
+
+        homeViewModel = HomeViewModel(app.getHomeFeedUseCase, app.manageQueueUseCase)
+        searchViewModel = SearchViewModel(app.searchMusicUseCase, app.manageQueueUseCase)
+        libraryViewModel = LibraryViewModel(app.musicRepository, app.manageQueueUseCase)
+        playerViewModel = PlayerViewModel(app.musicRepository, app.manageQueueUseCase)
+        settingsViewModel = SettingsViewModel(app.settingsRepository)
+
+        setContent {
+            val themeConfig by settingsViewModel.themeConfig.collectAsState()
+            val playbackState by app.playerController.playbackState.collectAsState()
+            var selectedTab by remember { mutableIntStateOf(0) }
+            var isPlayerExpanded by remember { mutableStateOf(false) }
+
+            NexusTuneTheme(themeConfig = themeConfig) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Scaffold(
+                            bottomBar = {
+                                Column {
+                                    // Docked Mini-Player above navigation
+                                    if (playbackState.currentTrack != null && !isPlayerExpanded) {
+                                        MiniPlayerBar(
+                                            playbackState = playbackState,
+                                            onExpandClick = { isPlayerExpanded = true },
+                                            onPlayPauseClick = { app.playerController.togglePlayPause() }
+                                        )
+                                    }
+
+                                    NavigationBar {
+                                        NavigationBarItem(
+                                            selected = selectedTab == 0,
+                                            onClick = { selectedTab = 0 },
+                                            icon = { Icon(Icons.Rounded.Home, contentDescription = "Home") },
+                                            label = { Text("Home") }
+                                        )
+                                        NavigationBarItem(
+                                            selected = selectedTab == 1,
+                                            onClick = { selectedTab = 1 },
+                                            icon = { Icon(Icons.Rounded.Search, contentDescription = "Search") },
+                                            label = { Text("Search") }
+                                        )
+                                        NavigationBarItem(
+                                            selected = selectedTab == 2,
+                                            onClick = { selectedTab = 2 },
+                                            icon = { Icon(Icons.Rounded.LibraryMusic, contentDescription = "Library") },
+                                            label = { Text("Library") }
+                                        )
+                                        NavigationBarItem(
+                                            selected = selectedTab == 3,
+                                            onClick = { selectedTab = 3 },
+                                            icon = { Icon(Icons.Rounded.Settings, contentDescription = "Settings") },
+                                            label = { Text("Settings") }
+                                        )
+                                    }
+                                }
+                            }
+                        ) { paddingValues ->
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(paddingValues)
+                            ) {
+                                when (selectedTab) {
+                                    0 -> HomeScreen(
+                                        viewModel = homeViewModel,
+                                        onTrackClick = { track, playlist ->
+                                            playTrack(track)
+                                        }
+                                    )
+                                    1 -> SearchScreen(
+                                        viewModel = searchViewModel,
+                                        onTrackClick = { track ->
+                                            playTrack(track)
+                                        }
+                                    )
+                                    2 -> LibraryScreen(
+                                        viewModel = libraryViewModel,
+                                        onTrackClick = { track, list ->
+                                            playTrack(track)
+                                        }
+                                    )
+                                    3 -> SettingsScreen(
+                                        viewModel = settingsViewModel
+                                    )
+                                }
+                            }
+                        }
+
+                        // Full Screen Player Sheet
+                        AnimatedVisibility(
+                            visible = isPlayerExpanded,
+                            enter = slideInVertically(initialOffsetY = { it }),
+                            exit = slideOutVertically(targetOffsetY = { it }),
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            PlayerScreen(
+                                playbackState = playbackState,
+                                onPlayPauseClick = { app.playerController.togglePlayPause() },
+                                onSeek = { pos -> app.playerController.seekTo(pos) },
+                                onDismiss = { isPlayerExpanded = false }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun playTrack(track: Track) {
+        lifecycleScope.launch {
+            when (val streamResult = app.resolveStreamUseCase(track.id)) {
+                is MusicResult.Success -> {
+                    app.playerController.playTrack(track, streamResult.data.url)
+                    app.musicRepository.addToHistory(track)
+                }
+                is MusicResult.Failure -> {
+                    // Fallback to fake or direct URL if available
+                    if (track.streamUrl != null) {
+                        app.playerController.playTrack(track)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun negotiate120HzDisplayMode() {
+        val display = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            display
+        } else {
+            val displayManager = getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
+            displayManager.getDisplay(Display.DEFAULT_DISPLAY)
+        } ?: return
+
+        val highestRefreshMode = display.supportedModes.maxByOrNull { it.refreshRate }
+        if (highestRefreshMode != null) {
+            val params = window.attributes
+            params.preferredDisplayModeId = highestRefreshMode.modeId
+            window.attributes = params
+        }
+    }
+}
+

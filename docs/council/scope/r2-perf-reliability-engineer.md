@@ -10,3 +10,4 @@
 
 ## Flawed Assumptions Challenged
 - Assumption that 120Hz can be guaranteed without explicitly setting `preferredDisplayModeId` on the window. Many OEM skins default apps to 60Hz or 90Hz unless requested.
+

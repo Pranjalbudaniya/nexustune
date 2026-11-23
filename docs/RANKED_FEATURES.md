@@ -49,3 +49,4 @@
    - Cut to conserve bandwidth, eliminate unnecessary video decoder memory footprint, and optimize strictly for 120Hz audio fluidity.
 3. **Cloud Account Synchronization**:
    - Cut because NexusTune is a private, sideloaded personal music client that requires no Google or proprietary account logins.
+

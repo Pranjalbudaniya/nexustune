@@ -10,3 +10,4 @@
 
 ## Flawed Assumptions Challenged
 - Assumption that 4 player layouts means 4 completely disconnected codebases. They must share a single `PlayerUiState` and control contract, merely altering the composable layout topology.
+

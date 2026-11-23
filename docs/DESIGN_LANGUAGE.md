@@ -79,3 +79,4 @@ We discard "16dp everywhere". Spacing reflects relationship:
    - *Vinyl Record*: Photorealistic grooved vinyl disc sliding out from the sleeve with rotational physics.
    - *Synced Lyrics*: Full-screen fluid typography with line-by-line active focus.
    - *Minimalist*: Stark typography, compact artwork badge, large tactile scrub bar.
+

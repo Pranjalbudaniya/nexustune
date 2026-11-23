@@ -10,3 +10,4 @@
 
 ## Flawed Assumptions Challenged
 - Assumption that users want local and streamed music strictly partitioned. Users want a single unified Search and Library experience where local and online tracks coexist seamlessly.
+

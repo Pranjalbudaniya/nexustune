@@ -98,3 +98,4 @@
   - Backed by Jetpack DataStore; automatically restored on cold boot and configuration change.
 - **Votes**: 5-0 Unanimous.
 - **Status**: Accepted.
+

@@ -14,3 +14,4 @@ Perform systematic research on UI references and NewPipeExtractor capabilities t
 - `docs/UI_REFERENCES.md` exists with cited sources, layout models, mini-player behaviors, motion, and anti-slop principles.
 - `docs/EXTRACTOR_CAPABILITIES.md` exists with concrete OkHttp Downloader structure, stream URL expiry rules, and typed errors.
 - `scripts/gate.sh research` exits 0.
+

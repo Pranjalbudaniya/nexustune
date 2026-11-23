@@ -15,3 +15,4 @@ Verify the build environment: JDK, Android SDK, Gradle wrapper, git repository, 
 
 ## Acceptance Criteria
 - `scripts/gate.sh env` exits 0 with all checks printing PASS or SKIPPED(no device).
+

@@ -21,3 +21,4 @@ Own information architecture and user flows. Ensure any track can be found and p
 - Zero linear transitions: Everything uses damped springs.
 - Wavy progress indicator on seekbar during active playback.
 - Previews for Light, Dark, AMOLED, and dynamic wallpaper color schemes.
+

@@ -15,3 +15,4 @@ Assume every proposal is flawed until proven otherwise. Eliminate frivolous fluf
 ### Scope Attack
 - Reject complex social feeds, algorithmic AI radio nonsense, and bloated podcast catalogs.
 - Reject heavy animated background shaders that drain battery and cause thermal throttling.
+

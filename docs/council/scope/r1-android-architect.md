@@ -27,3 +27,4 @@ Define clean module boundaries, lifecycle management, audio service architecture
 
 ### 3. Android 14/15 Foreground Service Rules
 - Downloads must not run as unbounded foreground services. Use `WorkManager` with `Constraints(NetworkType.CONNECTED)` and `OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST` with notification progress updates.
+

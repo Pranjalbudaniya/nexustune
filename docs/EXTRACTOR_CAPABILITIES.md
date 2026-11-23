@@ -141,3 +141,4 @@ NewPipeExtractor uses Rhino/Nashorn JavaScript execution, jsoup HTML parsing, an
 - **FakeMusicSource**: Full deterministic in-memory mock supplying pre-populated artist, album, track, search, and audio stream data for all unit tests (T1) and Robolectric Compose tests (T2).
 - **NewPipeMusicSource**: Real network implementation executing against YouTube Music.
 - **Contract Tests**: Shared test suite `MusicSourceContractTest` runs against `FakeMusicSource` in standard JVM test suites, and against `NewPipeMusicSource` on live network via opt-in gradle flag `./gradlew test -PliveTests`.
+
