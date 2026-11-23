@@ -30,6 +30,9 @@ interface QueueDao {
     @Query("SELECT * FROM queue ORDER BY queueOrder ASC")
     fun getQueue(): Flow<List<QueueEntity>>
 
+    @Query("SELECT * FROM queue ORDER BY queueOrder ASC")
+    suspend fun getQueueSnapshot(): List<QueueEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(queue: List<QueueEntity>)
 
@@ -56,5 +59,8 @@ interface PlaylistDao {
 
     @Query("DELETE FROM playlists WHERE id = :id")
     suspend fun delete(id: String)
+
+    @Query("UPDATE playlists SET artworkUrl = :artworkUrl WHERE id = :id")
+    suspend fun updateArtwork(id: String, artworkUrl: String?)
 }
 

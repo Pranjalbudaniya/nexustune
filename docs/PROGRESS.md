@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 6 (v1.6 Release Completed)
-- In Flight: Preparing Improvement Loop 7 (Custom Playlist Cover Art & Batch Queue Actions)
+- Active Phase: Post-v1.0 Improvement Loop 7 (v1.7 Release Completed)
+- In Flight: Preparing Improvement Loop 8 (Adaptive Playback Pitch & Speed Controller)
 - Branches: `main`
 
 ## Phase Tracking
@@ -79,14 +79,22 @@
   - [x] Slice & perf gates passed on physical hardware
   - [x] Final gate passed & tagged: `git tag v1.6-1`
 
-## Improvement Loop 7 (v1.7 Features - Planned)
-- [ ] Custom Playlist Cover Art & Visual Personalization:
-  - Custom image URI attachment to local playlists
-  - Dynamic gradient fallback generation from playlist title/tracks
-- [ ] Batch Queue Actions:
-  - Multi-select track deletion and "Play Next" batch insertion
+- [x] Improvement Loop 7 (v1.7 Features - Tagged `v1.7-1`)
+  - [x] Custom Playlist Cover Art & Visual Personalization:
+    - [x] Custom image URI attachment to local playlists with Room persistence
+    - [x] Dynamic gradient fallback generation from Material 3 Expressive color scheme
+  - [x] Batch Queue Actions:
+    - [x] Multi-track "Play Next" batch insertion into active queue
+    - [x] Multi-track deletion and upcoming queue clearing
+  - [x] Slice & perf gates passed on physical hardware
+  - [x] Final gate passed & tagged: `git tag v1.7-1`
+
+## Improvement Loop 8 (v1.8 Features - Planned)
+- [ ] Adaptive Playback Pitch & Speed Controller:
+  - Configurable playback speed (0.5x - 2.0x) and pitch shifting in `PlayerController`
+  - Audio speed selection modal in full player
 - [ ] Re-run full test suite and quality gates
-- [ ] Produce v1.7 release build and tag `v1.7-1`
+- [ ] Produce v1.8 release build and tag `v1.8-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

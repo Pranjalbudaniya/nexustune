@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nexus.tune.core.domain.repository.MusicRepository
 import com.nexus.tune.core.domain.usecase.ManageQueueUseCase
+import com.nexus.tune.core.model.Playlist
 import com.nexus.tune.core.model.Track
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,9 +22,31 @@ class LibraryViewModel(
     val historyTracks: StateFlow<List<Track>> = musicRepository.getHistory()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
+    val playlists: StateFlow<List<Playlist>> = musicRepository.getPlaylists()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
     fun playTrack(track: Track, queue: List<Track>) {
         viewModelScope.launch {
             manageQueueUseCase.playTrackNow(track, queue)
+        }
+    }
+
+    fun createPlaylist(title: String, artworkUrl: String? = null) {
+        if (title.isBlank()) return
+        viewModelScope.launch {
+            musicRepository.createPlaylist(title.trim(), artworkUrl?.trim()?.ifBlank { null })
+        }
+    }
+
+    fun updatePlaylistArtwork(playlistId: String, artworkUrl: String?) {
+        viewModelScope.launch {
+            musicRepository.updatePlaylistArtwork(playlistId, artworkUrl?.trim()?.ifBlank { null })
+        }
+    }
+
+    fun deletePlaylist(playlistId: String) {
+        viewModelScope.launch {
+            musicRepository.deletePlaylist(playlistId)
         }
     }
 }

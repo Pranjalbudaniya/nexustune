@@ -20,7 +20,7 @@ import org.junit.Test
 class LibraryViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
-    private val musicRepository = mockk<MusicRepository>()
+    private val musicRepository = mockk<MusicRepository>(relaxed = true)
     private val manageQueueUseCase = mockk<ManageQueueUseCase>(relaxed = true)
 
     private val sampleLiked = listOf(
@@ -28,6 +28,9 @@ class LibraryViewModelTest {
     )
     private val sampleHistory = listOf(
         Track(id = "h1", title = "History Track", artist = "Artist 2")
+    )
+    private val samplePlaylists = listOf(
+        com.nexus.tune.core.model.Playlist(id = "p1", title = "Synthwave", artworkUrl = "file:///art.jpg")
     )
 
     private lateinit var viewModel: LibraryViewModel
@@ -37,6 +40,7 @@ class LibraryViewModelTest {
         Dispatchers.setMain(testDispatcher)
         every { musicRepository.getLikedTracks() } returns flowOf(sampleLiked)
         every { musicRepository.getHistory() } returns flowOf(sampleHistory)
+        every { musicRepository.getPlaylists() } returns flowOf(samplePlaylists)
 
         viewModel = LibraryViewModel(musicRepository, manageQueueUseCase)
     }
@@ -73,5 +77,40 @@ class LibraryViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         coVerify { manageQueueUseCase.playTrackNow(track, sampleLiked) }
+    }
+
+    @Test
+    fun `playlists emits repository list`() = runTest {
+        viewModel.playlists.test {
+            val item = awaitItem()
+            val list = if (item.isEmpty()) awaitItem() else item
+            assertEquals(1, list.size)
+            assertEquals("Synthwave", list.first().title)
+            assertEquals("file:///art.jpg", list.first().artworkUrl)
+        }
+    }
+
+    @Test
+    fun `createPlaylist delegates to repository`() = runTest {
+        viewModel.createPlaylist("Favorites", "file:///fav.jpg")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { musicRepository.createPlaylist("Favorites", "file:///fav.jpg") }
+    }
+
+    @Test
+    fun `updatePlaylistArtwork delegates to repository`() = runTest {
+        viewModel.updatePlaylistArtwork("p1", "file:///new_art.png")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { musicRepository.updatePlaylistArtwork("p1", "file:///new_art.png") }
+    }
+
+    @Test
+    fun `deletePlaylist delegates to repository`() = runTest {
+        viewModel.deletePlaylist("p1")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { musicRepository.deletePlaylist("p1") }
     }
 }

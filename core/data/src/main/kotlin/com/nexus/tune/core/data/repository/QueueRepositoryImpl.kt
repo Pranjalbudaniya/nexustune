@@ -67,7 +67,18 @@ class QueueRepositoryImpl(
     }
 
     override suspend fun addNext(track: Track) {
-        addTrack(track)
+        addTracksNext(listOf(track))
+    }
+
+    override suspend fun addTracksNext(tracks: List<Track>) {
+        if (tracks.isEmpty()) return
+        val currentEntities = database.queueDao().getQueueSnapshot()
+        val currIdx = _currentIndex.value
+        val currentTracks = currentEntities.map { it.toTrack() }
+        val newTracks = currentTracks.toMutableList()
+        val insertIndex = (currIdx + 1).coerceIn(0, newTracks.size)
+        newTracks.addAll(insertIndex, tracks)
+        setQueue(newTracks, currIdx)
     }
 
     override suspend fun moveTrack(fromIndex: Int, toIndex: Int) {
@@ -75,13 +86,45 @@ class QueueRepositoryImpl(
     }
 
     override suspend fun removeTrack(index: Int) {
-        // Removal
+        val currentEntities = database.queueDao().getQueueSnapshot()
+        val target = currentEntities.getOrNull(index) ?: return
+        removeTracks(setOf(target.trackId))
+    }
+
+    override suspend fun removeTracks(trackIds: Set<String>) {
+        if (trackIds.isEmpty()) return
+        val currentEntities = database.queueDao().getQueueSnapshot()
+        val currIdx = _currentIndex.value
+        val currentPlayingId = currentEntities.getOrNull(currIdx)?.trackId
+        val remainingEntities = currentEntities.filterNot { it.trackId in trackIds }
+        val newTracks = remainingEntities.map { it.toTrack() }
+        val newIndex = if (currentPlayingId != null) {
+            newTracks.indexOfFirst { it.id == currentPlayingId }.coerceAtLeast(0)
+        } else 0
+        setQueue(newTracks, newIndex)
     }
 
     override suspend fun clearQueue() {
         database.queueDao().clearQueue()
         _currentIndex.value = 0
     }
+
+    override suspend fun clearUpcoming() {
+        val currentEntities = database.queueDao().getQueueSnapshot()
+        val currIdx = _currentIndex.value
+        val remaining = currentEntities.take(currIdx + 1).map { it.toTrack() }
+        setQueue(remaining, currIdx)
+    }
+
+    private fun QueueEntity.toTrack() = Track(
+        id = trackId,
+        title = title,
+        artist = artist,
+        album = album,
+        durationSeconds = durationSeconds,
+        artworkUrl = artworkUrl,
+        streamUrl = streamUrl
+    )
 
     override suspend fun savePosition(trackId: String, positionMs: Long) {
         savedPositions[trackId] = positionMs

@@ -55,6 +55,30 @@ class ManageQueueUseCase(private val queueRepository: QueueRepository) {
     suspend fun remove(index: Int) {
         queueRepository.removeTrack(index)
     }
+
+    suspend fun addTracksNext(tracks: List<Track>) {
+        if (tracks.isEmpty()) return
+        queueRepository.addTracksNext(tracks)
+    }
+
+    suspend fun removeTracks(trackIds: Set<String>) {
+        if (trackIds.isEmpty()) return
+        queueRepository.removeTracks(trackIds)
+    }
+
+    suspend fun clearUpcoming() {
+        queueRepository.clearUpcoming()
+    }
+}
+
+class ManagePlaylistsUseCase(private val musicRepository: MusicRepository) {
+    fun getPlaylists(): Flow<List<Playlist>> = musicRepository.getPlaylists()
+    suspend fun createPlaylist(title: String, artworkUrl: String? = null): String =
+        musicRepository.createPlaylist(title, artworkUrl)
+    suspend fun updateArtwork(playlistId: String, artworkUrl: String?) =
+        musicRepository.updatePlaylistArtwork(playlistId, artworkUrl)
+    suspend fun deletePlaylist(playlistId: String) =
+        musicRepository.deletePlaylist(playlistId)
 }
 
 

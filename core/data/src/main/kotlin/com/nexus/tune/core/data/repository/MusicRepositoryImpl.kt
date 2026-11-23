@@ -120,5 +120,42 @@ class MusicRepositoryImpl(
             )
         }
     }
+
+    override fun getPlaylists(): Flow<List<Playlist>> {
+        return database.playlistDao().getPlaylists().map { list ->
+            list.map {
+                Playlist(
+                    id = it.id,
+                    title = it.title,
+                    author = it.author,
+                    artworkUrl = it.artworkUrl,
+                    trackCount = it.trackCount,
+                    isUserCreated = it.isUserCreated
+                )
+            }
+        }
+    }
+
+    override suspend fun createPlaylist(title: String, artworkUrl: String?): String {
+        val id = java.util.UUID.randomUUID().toString()
+        val entity = com.nexus.tune.core.database.entity.PlaylistEntity(
+            id = id,
+            title = title,
+            author = "You",
+            artworkUrl = artworkUrl,
+            trackCount = 0,
+            isUserCreated = true
+        )
+        database.playlistDao().insert(entity)
+        return id
+    }
+
+    override suspend fun updatePlaylistArtwork(playlistId: String, artworkUrl: String?) {
+        database.playlistDao().updateArtwork(playlistId, artworkUrl)
+    }
+
+    override suspend fun deletePlaylist(playlistId: String) {
+        database.playlistDao().delete(playlistId)
+    }
 }
 

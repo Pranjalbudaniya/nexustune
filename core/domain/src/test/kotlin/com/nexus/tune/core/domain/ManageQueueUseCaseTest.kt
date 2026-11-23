@@ -60,5 +60,25 @@ class ManageQueueUseCaseTest {
         useCase.remove(1)
         coVerify { queueRepository.removeTrack(1) }
     }
+
+    @Test
+    fun `addTracksNext delegates to queueRepository when tracks non empty`() = runTest {
+        val tracks = listOf(Track(id = "x", title = "X", artist = "A"))
+        useCase.addTracksNext(tracks)
+        coVerify { queueRepository.addTracksNext(tracks) }
+    }
+
+    @Test
+    fun `removeTracks delegates to queueRepository when set non empty`() = runTest {
+        val ids = setOf("x", "y")
+        useCase.removeTracks(ids)
+        coVerify { queueRepository.removeTracks(ids) }
+    }
+
+    @Test
+    fun `clearUpcoming delegates to queueRepository`() = runTest {
+        useCase.clearUpcoming()
+        coVerify { queueRepository.clearUpcoming() }
+    }
 }
 

@@ -16,6 +16,10 @@ interface MusicRepository {
     fun getHistory(): Flow<List<Track>>
     suspend fun addToHistory(track: Track)
     fun getListeningStats(): Flow<ListeningStats>
+    fun getPlaylists(): Flow<List<Playlist>>
+    suspend fun createPlaylist(title: String, artworkUrl: String? = null): String
+    suspend fun updatePlaylistArtwork(playlistId: String, artworkUrl: String?)
+    suspend fun deletePlaylist(playlistId: String)
 }
 
 interface QueueRepository {
@@ -24,9 +28,12 @@ interface QueueRepository {
     suspend fun setQueue(tracks: List<Track>, startIndex: Int)
     suspend fun addTrack(track: Track)
     suspend fun addNext(track: Track)
+    suspend fun addTracksNext(tracks: List<Track>)
     suspend fun moveTrack(fromIndex: Int, toIndex: Int)
     suspend fun removeTrack(index: Int)
+    suspend fun removeTracks(trackIds: Set<String>)
     suspend fun clearQueue()
+    suspend fun clearUpcoming()
     suspend fun savePosition(trackId: String, positionMs: Long)
     suspend fun getSavedPosition(trackId: String): Long
 }

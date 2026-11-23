@@ -5,6 +5,13 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2026-11-24
+
+### Added
+- **Custom Playlist Cover Art & Visual Personalization**: Added support for setting custom artwork URIs on personal playlists, with automated Material 3 Expressive dynamic gradient container fallbacks when no artwork is configured.
+- **Library Playlist Management**: Revamped `LibraryScreen` into a 3-tab layout (`Liked`, `Playlists`, `History`) with interactive playlist creation and artwork editing dialogs.
+- **Batch Queue Operations**: Implemented `addTracksNext(tracks)`, `removeTracks(trackIds)`, and `clearUpcoming()` in `QueueRepository` and `ManageQueueUseCase` for powerful batch queue manipulation.
+
 ## [1.6.0] - 2026-11-24
 
 ### Added
