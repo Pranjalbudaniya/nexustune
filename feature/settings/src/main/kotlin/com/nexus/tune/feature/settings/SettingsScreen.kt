@@ -152,6 +152,40 @@ fun SettingsScreen(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(12.dp))
+
+                ListItem(
+                    headlineContent = { Text("Volume Normalization (ReplayGain)") },
+                    supportingContent = { Text("Normalize loudness across songs using DSP enhancement") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.volumeNormalizationEnabled,
+                            onCheckedChange = { viewModel.toggleVolumeNormalization(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.volumeNormalizationEnabled) {
+                    Text(
+                        text = "Target Boost",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf(200 to "Gentle (+2dB)", 400 to "Standard (+4dB)", 600 to "Max (+6dB)").forEach { (gain, label) ->
+                            FilterChip(
+                                selected = themeConfig.targetGainmB == gain,
+                                onClick = { viewModel.setTargetGain(gain) },
+                                label = { Text(label) }
+                            )
+                        }
+                    }
+                }
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
             }
 
@@ -394,8 +428,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v1.5.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Non-Music Skip") }
+                    headlineContent = { Text("NexusTune v1.6.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | ReplayGain Normalizer") }
                 )
             }
         }

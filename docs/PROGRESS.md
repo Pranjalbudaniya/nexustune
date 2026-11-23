@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 5 (v1.5 Release Completed)
-- In Flight: Gating v1.5 release, tagging `v1.5-1`, preparing Improvement Loop 6 (Smart Volume Normalization ReplayGain)
+- Active Phase: Post-v1.0 Improvement Loop 6 (v1.6 Release Completed)
+- In Flight: Preparing Improvement Loop 7 (Custom Playlist Cover Art & Batch Queue Actions)
 - Branches: `main`
 
 ## Phase Tracking
@@ -72,12 +72,21 @@
   - [x] Slice & perf gates passed on physical hardware
   - [x] Final gate passed & tagged: `git tag v1.5-1`
 
-## Improvement Loop 6 (v1.6 Features - In Flight)
-- [ ] Smart Volume Normalization (ReplayGain / Loudness Normalizer):
-  - Loudness normalization DSP filter in `NexusAudioEffects`
-  - Settings toggle: Volume Normalization (EBU R128)
+- [x] Improvement Loop 6 (v1.6 Features - Tagged `v1.6-1`)
+  - [x] Smart Volume Normalization (ReplayGain / Loudness Normalizer):
+    - [x] Loudness normalization DSP filter in `NexusAudioEffects`
+    - [x] Settings toggle: Volume Normalization & Target Gain boost chips (+2dB, +4dB, +6dB)
+  - [x] Slice & perf gates passed on physical hardware
+  - [x] Final gate passed & tagged: `git tag v1.6-1`
+
+## Improvement Loop 7 (v1.7 Features - Planned)
+- [ ] Custom Playlist Cover Art & Visual Personalization:
+  - Custom image URI attachment to local playlists
+  - Dynamic gradient fallback generation from playlist title/tracks
+- [ ] Batch Queue Actions:
+  - Multi-select track deletion and "Play Next" batch insertion
 - [ ] Re-run full test suite and quality gates
-- [ ] Produce v1.6 release build and tag `v1.6-1`
+- [ ] Produce v1.7 release build and tag `v1.7-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

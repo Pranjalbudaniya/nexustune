@@ -2,6 +2,7 @@ package com.nexus.tune.core.player.effects
 
 import android.media.audiofx.BassBoost
 import android.media.audiofx.Equalizer
+import android.media.audiofx.LoudnessEnhancer
 import android.util.Log
 import com.nexus.tune.core.model.EqualizerPreset
 
@@ -9,6 +10,7 @@ class NexusAudioEffects {
 
     private var equalizer: Equalizer? = null
     private var bassBoost: BassBoost? = null
+    private var loudnessEnhancer: LoudnessEnhancer? = null
     private var currentSessionId: Int = 0
 
     fun attachToAudioSession(sessionId: Int) {
@@ -23,6 +25,10 @@ class NexusAudioEffects {
                 enabled = true
                 setStrength(500.toShort()) // 50% default boost
             }
+            loudnessEnhancer = LoudnessEnhancer(sessionId).apply {
+                enabled = false
+                setTargetGain(0)
+            }
         } catch (e: Exception) {
             Log.w("NexusAudioEffects", "AudioEffect initialization not supported on session $sessionId: ${e.message}")
         }
@@ -34,6 +40,22 @@ class NexusAudioEffects {
             bassBoost?.enabled = enabled
         } catch (e: Exception) {
             Log.w("NexusAudioEffects", "Failed to toggle equalizer: ${e.message}")
+        }
+    }
+
+    fun setLoudnessEnhancerEnabled(enabled: Boolean) {
+        try {
+            loudnessEnhancer?.enabled = enabled
+        } catch (e: Exception) {
+            Log.w("NexusAudioEffects", "Failed to toggle loudness enhancer: ${e.message}")
+        }
+    }
+
+    fun setTargetGain(gainmB: Int) {
+        try {
+            loudnessEnhancer?.setTargetGain(gainmB)
+        } catch (e: Exception) {
+            Log.w("NexusAudioEffects", "Failed to set target gain: ${e.message}")
         }
     }
 
@@ -107,11 +129,13 @@ class NexusAudioEffects {
         try {
             equalizer?.release()
             bassBoost?.release()
+            loudnessEnhancer?.release()
         } catch (e: Exception) {
             // Ignore
         }
         equalizer = null
         bassBoost = null
+        loudnessEnhancer = null
         currentSessionId = 0
     }
 

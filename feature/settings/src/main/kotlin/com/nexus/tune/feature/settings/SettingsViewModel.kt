@@ -74,6 +74,18 @@ class SettingsViewModel(
         updateTheme(current.copy(autoSkipSegments = enabled))
     }
 
+    fun toggleVolumeNormalization(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(volumeNormalizationEnabled = enabled))
+        NexusAudioEffects.instance.setLoudnessEnhancerEnabled(enabled)
+    }
+
+    fun setTargetGain(gainmB: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(targetGainmB = gainmB))
+        NexusAudioEffects.instance.setTargetGain(gainmB)
+    }
+
     fun startSleepTimer(minutes: Int) {
         sleepTimerManager?.startTimer(minutes)
     }

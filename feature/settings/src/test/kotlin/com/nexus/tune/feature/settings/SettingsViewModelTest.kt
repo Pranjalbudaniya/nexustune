@@ -136,4 +136,24 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { !it.autoSkipSegments })
         }
     }
+
+    @Test
+    fun `toggleVolumeNormalization updates config`() = runTest {
+        viewModel.toggleVolumeNormalization(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.volumeNormalizationEnabled })
+        }
+    }
+
+    @Test
+    fun `setTargetGain updates config`() = runTest {
+        viewModel.setTargetGain(300)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.targetGainmB == 300 })
+        }
+    }
 }

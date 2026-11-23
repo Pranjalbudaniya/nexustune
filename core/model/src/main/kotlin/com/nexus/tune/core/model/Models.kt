@@ -95,7 +95,9 @@ data class ThemeConfig(
     val miniPlayerStyle: MiniPlayerStyle = MiniPlayerStyle.DOCKED_BAR,
     val refreshRatePreferred: Int = 120, // 60, 90, 120
     val crossfadeSeconds: Int = 0, // 0 = gapless, 2..12s
-    val autoSkipSegments: Boolean = true
+    val autoSkipSegments: Boolean = true,
+    val volumeNormalizationEnabled: Boolean = false,
+    val targetGainmB: Int = 0
 )
 
 data class SearchResult(

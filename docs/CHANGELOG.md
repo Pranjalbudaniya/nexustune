@@ -5,6 +5,12 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-11-24
+
+### Added
+- **Smart Volume Normalization (ReplayGain)**: Integrated `LoudnessEnhancer` DSP into `NexusAudioEffects` and ExoPlayer audio session to normalize audio output loudness across dynamic web streams without digital clipping.
+- **Configurable Target Boost**: Added target gain boost presets (+2dB, +4dB, +6dB) and live toggle in Settings screen under Audio Optimization.
+
 ## [1.5.0] - 2026-11-24
 
 ### Added
