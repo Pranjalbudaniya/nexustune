@@ -16,10 +16,10 @@ class LibraryViewModel(
 ) : ViewModel() {
 
     val likedTracks: StateFlow<List<Track>> = musicRepository.getLikedTracks()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     val historyTracks: StateFlow<List<Track>> = musicRepository.getHistory()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     fun playTrack(track: Track, queue: List<Track>) {
         viewModelScope.launch {

@@ -19,3 +19,4 @@ Implement seven focused vertical slices (data -> domain -> UI -> tests), advanci
 - Each slice passes `./scripts/gate.sh slice`.
 - Tests added for every slice (use case, view model, repository).
 - All changes committed per slice.
+
