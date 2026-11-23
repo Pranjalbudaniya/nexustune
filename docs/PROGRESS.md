@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 3 (v1.3 Release Completed)
-- In Flight: Gating v1.3 release, tagging `v1.3-1`, preparing Improvement Loop 4 (Lyrics Offset Synchronization & Time-of-Day Analytics)
+- Active Phase: Post-v1.0 Improvement Loop 4 (v1.4 Release Completed)
+- In Flight: Gating v1.4 release, tagging `v1.4-1`, preparing Improvement Loop 5 (SponsorBlock / Audio Silence Trimming & Skip Segments)
 - Branches: `main`
 
 ## Phase Tracking
@@ -60,11 +60,18 @@
     - Automotive head-unit descriptor (`automotive_app_desc.xml`)
   - [x] Slice & perf gates passed on physical hardware
   - [x] Final gate passed & tagged: `git tag v1.3-1`
-- [x] Improvement Loop 4 (v1.4 Features)
+- [x] Improvement Loop 4 (v1.4 Features - Tagged `v1.4-1`)
   - [x] Synced Lyrics Manual Offset Calibration (+/- 100ms, reset)
   - [x] Time-of-Day Listening Analytics (Morning, Afternoon, Evening, Night breakdown)
   - [x] Slice & perf gates passed on physical hardware
-  - [ ] Final gate & tag build: `git tag v1.4-1`
+  - [x] Final gate passed & tagged: `git tag v1.4-1`
+
+## Improvement Loop 5 (v1.5 Features - In Flight)
+- [ ] Non-Music & Silence Skip Segment Manager:
+  - Skip non-music intro/outro segments automatically
+  - Configurable skip toggle in Settings
+- [ ] Re-run full test suite and quality gates
+- [ ] Produce v1.5 release build and tag `v1.5-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.
