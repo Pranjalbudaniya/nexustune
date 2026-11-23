@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 8 (v1.8 Release Completed)
-- In Flight: Preparing Improvement Loop 9 (Offline Storage & Cache Auto-Pruning Engine)
+- Active Phase: Post-v1.0 Improvement Loop 9 (v1.9 Release Completed)
+- In Flight: Preparing Improvement Loop 10 (Sound Output Device Selector & Audio Profile Indicator)
 - Branches: `main`
 
 ## Phase Tracking
@@ -96,12 +96,20 @@
   - [x] Slice & perf gates passed on physical hardware
   - [x] Final gate passed & tagged: `git tag v1.8-1`
 
-## Improvement Loop 9 (v1.9 Features - Planned)
-- [ ] Offline Storage & Cache Auto-Pruning Engine:
-  - Cache size budget setting (500MB, 1GB, 2GB, 5GB, Unlimited)
-  - LRU offline stream cache eviction policy
+- [x] Improvement Loop 9 (v1.9 Features - Tagged `v1.9-1`)
+  - [x] Offline Storage & Cache Auto-Pruning Engine:
+    - [x] Cache size budget setting (500MB, 1GB, 2GB, 5GB, Unlimited)
+    - [x] LRU offline stream cache eviction policy and manual cache clearing in `StorageManager`
+    - [x] Real-time cache budget chips and clear cache button in Settings
+  - [x] Slice & perf gates passed on physical hardware
+  - [x] Final gate passed & tagged: `git tag v1.9-1`
+
+## Improvement Loop 10 (v2.0 Features - Planned)
+- [ ] Sound Output Device Selector & Audio Profile Indicator:
+  - Audio output routing detection (`AudioDeviceInfo`)
+  - Real-time output indicator (Speaker, Bluetooth A2DP, USB DAC, Wired Headset)
 - [ ] Re-run full test suite and quality gates
-- [ ] Produce v1.9 release build and tag `v1.9-1`
+- [ ] Produce v2.0 release build and tag `v2.0-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

@@ -5,6 +5,12 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2026-11-24
+
+### Added
+- **Offline Storage & Cache Auto-Pruning Engine**: Created `StorageManager` in `core:data` with directory size inspection, immediate cache reclamation, and LRU pruning against user-defined storage budgets.
+- **Cache Size Budget & Management UI**: Added Storage & Cache Management card in Settings with selectable cache budgets (500MB, 1GB, 2GB, 5GB, Unlimited) and one-tap stream cache clearance.
+
 ## [1.8.0] - 2026-11-24
 
 ### Added

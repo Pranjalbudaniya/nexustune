@@ -156,4 +156,20 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.targetGainmB == 300 })
         }
     }
+
+    @Test
+    fun `setCacheBudget updates config`() = runTest {
+        viewModel.setCacheBudget(2000)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.cacheBudgetMb == 2000 })
+        }
+    }
+
+    @Test
+    fun `clearCache returns freed bytes`() {
+        val freed = viewModel.clearCache()
+        org.junit.Assert.assertEquals(0L, freed)
+    }
 }

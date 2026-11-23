@@ -99,8 +99,24 @@ data class ThemeConfig(
     val crossfadeSeconds: Int = 0, // 0 = gapless, 2..12s
     val autoSkipSegments: Boolean = true,
     val volumeNormalizationEnabled: Boolean = false,
-    val targetGainmB: Int = 0
+    val targetGainmB: Int = 0,
+    val cacheBudgetMb: Int = 1000
 )
+
+data class StorageUsage(
+    val cacheBytes: Long = 0L,
+    val downloadBytes: Long = 0L
+) {
+    val totalBytes: Long get() = cacheBytes + downloadBytes
+    val formattedTotal: String get() {
+        val mb = totalBytes / (1024 * 1024.0)
+        return if (mb >= 1024) {
+            String.format(java.util.Locale.US, "%.1f GB", mb / 1024.0)
+        } else {
+            String.format(java.util.Locale.US, "%.1f MB", mb)
+        }
+    }
+}
 
 data class SearchResult(
     val tracks: List<Track> = emptyList(),

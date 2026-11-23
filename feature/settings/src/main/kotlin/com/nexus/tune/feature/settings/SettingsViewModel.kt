@@ -2,6 +2,7 @@ package com.nexus.tune.feature.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nexus.tune.core.data.storage.StorageManager
 import com.nexus.tune.core.domain.repository.SettingsRepository
 import com.nexus.tune.core.domain.usecase.GetListeningStatsUseCase
 import com.nexus.tune.core.model.*
@@ -14,7 +15,8 @@ import kotlinx.coroutines.launch
 class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
     private val getListeningStatsUseCase: GetListeningStatsUseCase? = null,
-    private val sleepTimerManager: SleepTimerManager? = null
+    private val sleepTimerManager: SleepTimerManager? = null,
+    private val storageManager: StorageManager? = null
 ) : ViewModel() {
 
     val themeConfig: StateFlow<ThemeConfig> = settingsRepository.getThemeConfig()
@@ -106,5 +108,15 @@ class SettingsViewModel(
     fun toggleEqualizer(enabled: Boolean) {
         _equalizerEnabled.value = enabled
         NexusAudioEffects.instance.setEqualizerEnabled(enabled)
+    }
+
+    fun setCacheBudget(budgetMb: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(cacheBudgetMb = budgetMb))
+        storageManager?.pruneCache(budgetMb)
+    }
+
+    fun clearCache(): Long {
+        return storageManager?.clearCache() ?: 0L
     }
 }

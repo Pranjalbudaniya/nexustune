@@ -391,6 +391,48 @@ fun SettingsScreen(
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
             }
 
+            // --- Storage & Cache Management ---
+            item {
+                Text(
+                    text = "Storage & Cache Management",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                ListItem(
+                    headlineContent = { Text("Cache Size Budget") },
+                    supportingContent = { Text("Automatically prune oldest stream cache when exceeding budget") }
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listOf(500 to "500MB", 1000 to "1GB", 2000 to "2GB", 5000 to "5GB", 0 to "Unlimited").forEach { (budget, label) ->
+                        FilterChip(
+                            selected = themeConfig.cacheBudgetMb == budget,
+                            onClick = { viewModel.setCacheBudget(budget) },
+                            label = { Text(label) }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                ListItem(
+                    headlineContent = { Text("Clear Stream Cache") },
+                    supportingContent = { Text("Reclaim local storage without removing downloaded tracks") },
+                    trailingContent = {
+                        OutlinedButton(onClick = { viewModel.clearCache() }) {
+                            Text("Clear")
+                        }
+                    }
+                )
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            }
+
             // --- Data & Backup ---
             item {
                 Text(
@@ -428,8 +470,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v1.8.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Adaptive Speed Engine") }
+                    headlineContent = { Text("NexusTune v1.9.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Storage & Cache Engine") }
                 )
             }
         }
