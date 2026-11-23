@@ -29,7 +29,7 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
         debug {
-            applicationIdSuffix = ".debug"
+            // keep applicationId com.nexus.tune
         }
     }
 

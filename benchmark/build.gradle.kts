@@ -22,8 +22,11 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.benchmark.macro)
     implementation(libs.androidx.junit)
     implementation(libs.androidx.espresso.core)
-}
 
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
+    androidTestImplementation("androidx.test:core:1.6.1")
+}
