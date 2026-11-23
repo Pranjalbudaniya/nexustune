@@ -1,8 +1,7 @@
 package com.nexus.tune.core.domain.usecase
 
 import com.nexus.tune.core.common.MusicResult
-import com.nexus.tune.core.domain.repository.MusicRepository
-import com.nexus.tune.core.domain.repository.QueueRepository
+import com.nexus.tune.core.domain.repository.*
 import com.nexus.tune.core.model.*
 import kotlinx.coroutines.flow.Flow
 
@@ -58,3 +57,10 @@ class ManageQueueUseCase(private val queueRepository: QueueRepository) {
     }
 }
 
+
+
+class DownloadTrackUseCase(private val downloadRepository: DownloadRepository) {
+    fun getDownloadedTracks(): Flow<List<Track>> = downloadRepository.getDownloadedTracks()
+    suspend fun download(track: Track): Boolean = downloadRepository.downloadTrack(track)
+    suspend fun delete(trackId: String) = downloadRepository.deleteDownload(trackId)
+}

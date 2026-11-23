@@ -43,3 +43,10 @@ interface SettingsRepository {
     suspend fun setEqualizerPreset(preset: Int)
 }
 
+
+
+interface DownloadRepository {
+    fun getDownloadedTracks(): Flow<List<Track>>
+    suspend fun downloadTrack(track: Track): Boolean
+    suspend fun deleteDownload(trackId: String)
+}

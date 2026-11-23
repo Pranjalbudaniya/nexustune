@@ -28,6 +28,8 @@ dependencies {
     implementation(project(":core:datastore"))
     implementation(project(":core:extractor"))
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.okhttp)
     implementation(libs.kotlinx.coroutines.android)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
