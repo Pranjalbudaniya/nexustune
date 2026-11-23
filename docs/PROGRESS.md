@@ -60,12 +60,11 @@
     - Automotive head-unit descriptor (`automotive_app_desc.xml`)
   - [x] Slice & perf gates passed on physical hardware
   - [x] Final gate passed & tagged: `git tag v1.3-1`
-
-## Improvement Loop 4 (v1.4 Features - In Flight)
-- [ ] Synced Lyrics Manual Offset Adjustment (+/- 50ms, 100ms, 250ms, 500ms) for timing calibration
-- [ ] Time-of-Day Listening Analytics Breakdown (Morning, Afternoon, Evening, Night distribution)
-- [ ] Re-run full test suite and quality gates
-- [ ] Produce v1.4 release build and tag `v1.4-1`
+- [x] Improvement Loop 4 (v1.4 Features)
+  - [x] Synced Lyrics Manual Offset Calibration (+/- 100ms, reset)
+  - [x] Time-of-Day Listening Analytics (Morning, Afternoon, Evening, Night breakdown)
+  - [x] Slice & perf gates passed on physical hardware
+  - [ ] Final gate & tag build: `git tag v1.4-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

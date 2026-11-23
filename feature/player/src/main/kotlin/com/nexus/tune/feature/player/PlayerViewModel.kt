@@ -21,6 +21,17 @@ class PlayerViewModel(
     private val _lyrics = MutableStateFlow<TrackLyrics?>(null)
     val lyrics: StateFlow<TrackLyrics?> = _lyrics.asStateFlow()
 
+    private val _lyricsOffsetMs = MutableStateFlow(0L)
+    val lyricsOffsetMs: StateFlow<Long> = _lyricsOffsetMs.asStateFlow()
+
+    fun adjustLyricsOffset(deltaMs: Long) {
+        _lyricsOffsetMs.value += deltaMs
+    }
+
+    fun resetLyricsOffset() {
+        _lyricsOffsetMs.value = 0L
+    }
+
     fun loadLyrics(track: Track) {
         viewModelScope.launch {
             when (val result = musicRepository.getLyrics(track.id, track.title, track.artist, track.durationSeconds)) {

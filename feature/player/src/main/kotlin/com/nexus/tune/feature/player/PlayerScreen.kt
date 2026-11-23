@@ -34,7 +34,10 @@ fun PlayerScreen(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     layout: PlayerLayout = PlayerLayout.ART_FORWARD,
-    lyrics: TrackLyrics? = null
+    lyrics: TrackLyrics? = null,
+    lyricsOffsetMs: Long = 0L,
+    onAdjustLyricsOffset: (Long) -> Unit = {},
+    onResetLyricsOffset: () -> Unit = {}
 ) {
     val track = playbackState.currentTrack ?: return
     val isPlaying = playbackState.status == PlaybackStatus.PLAYING
@@ -123,7 +126,7 @@ fun PlayerScreen(
                         }
                     }
                     PlayerLayout.SYNCED_LYRICS -> {
-                        val currentMs = playbackState.positionMs
+                        val currentMs = (playbackState.positionMs + lyricsOffsetMs).coerceAtLeast(0L)
                         val lines = lyrics?.lines ?: emptyList()
                         if (lines.isEmpty()) {
                             Text(
@@ -132,31 +135,64 @@ fun PlayerScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         } else {
-                            LazyColumn(
-                                modifier = Modifier.fillMaxSize(),
-                                contentPadding = PaddingValues(vertical = 32.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                itemsIndexed(lines) { index, line ->
-                                    val isCurrent = currentMs >= line.startTimeMs &&
-                                        (index == lines.lastIndex || currentMs < lines[index + 1].startTimeMs)
-                                    Text(
-                                        text = line.text,
-                                        style = if (isCurrent) {
-                                            MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
-                                        } else {
-                                            MaterialTheme.typography.bodyLarge
-                                        },
-                                        color = if (isCurrent) {
-                                            MaterialTheme.colorScheme.primary
-                                        } else {
-                                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                                        },
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 8.dp)
+                            Column(modifier = Modifier.fillMaxSize()) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    AssistChip(
+                                        onClick = { onAdjustLyricsOffset(-100L) },
+                                        label = { Text("-100ms") }
                                     )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = if (lyricsOffsetMs >= 0) "+${lyricsOffsetMs}ms" else "${lyricsOffsetMs}ms",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    AssistChip(
+                                        onClick = { onAdjustLyricsOffset(100L) },
+                                        label = { Text("+100ms") }
+                                    )
+                                    if (lyricsOffsetMs != 0L) {
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        AssistChip(
+                                            onClick = { onResetLyricsOffset() },
+                                            label = { Text("Reset") }
+                                        )
+                                    }
+                                }
+
+                                LazyColumn(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentPadding = PaddingValues(vertical = 16.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    itemsIndexed(lines) { index, line ->
+                                        val isCurrent = currentMs >= line.startTimeMs &&
+                                            (index == lines.lastIndex || currentMs < lines[index + 1].startTimeMs)
+                                        Text(
+                                            text = line.text,
+                                            style = if (isCurrent) {
+                                                MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
+                                            } else {
+                                                MaterialTheme.typography.bodyLarge
+                                            },
+                                            color = if (isCurrent) {
+                                                MaterialTheme.colorScheme.primary
+                                            } else {
+                                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                                            },
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 8.dp)
+                                        )
+                                    }
                                 }
                             }
                         }

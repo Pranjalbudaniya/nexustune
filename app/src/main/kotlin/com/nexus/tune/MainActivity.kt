@@ -166,6 +166,7 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.fillMaxSize()
                         ) {
                             val lyrics by playerViewModel.lyrics.collectAsState()
+                            val lyricsOffsetMs by playerViewModel.lyricsOffsetMs.collectAsState()
                             LaunchedEffect(playbackState.currentTrack) {
                                 playbackState.currentTrack?.let { playerViewModel.loadLyrics(it) }
                             }
@@ -175,7 +176,10 @@ class MainActivity : ComponentActivity() {
                                 onSeek = { pos -> app.playerController.seekTo(pos) },
                                 onDismiss = { isPlayerExpanded = false },
                                 layout = themeConfig.playerLayout,
-                                lyrics = lyrics
+                                lyrics = lyrics,
+                                lyricsOffsetMs = lyricsOffsetMs,
+                                onAdjustLyricsOffset = { playerViewModel.adjustLyricsOffset(it) },
+                                onResetLyricsOffset = { playerViewModel.resetLyricsOffset() }
                             )
                         }
                     }

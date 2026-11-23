@@ -72,5 +72,16 @@ class PlayerViewModelTest {
 
         coVerify { musicRepository.toggleLike(sampleTrack) }
     }
+
+    @Test
+    fun `adjustLyricsOffset increments and resetLyricsOffset clears offset`() {
+        assertEquals(0L, viewModel.lyricsOffsetMs.value)
+        viewModel.adjustLyricsOffset(150L)
+        assertEquals(150L, viewModel.lyricsOffsetMs.value)
+        viewModel.adjustLyricsOffset(-50L)
+        assertEquals(100L, viewModel.lyricsOffsetMs.value)
+        viewModel.resetLyricsOffset()
+        assertEquals(0L, viewModel.lyricsOffsetMs.value)
+    }
 }
 

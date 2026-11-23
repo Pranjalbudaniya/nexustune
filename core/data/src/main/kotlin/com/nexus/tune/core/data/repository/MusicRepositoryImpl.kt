@@ -93,7 +93,31 @@ class MusicRepositoryImpl(
                 .sortedByDescending { it.value }
                 .take(5)
                 .map { it.key }
-            ListeningStats(totalPlays = totalPlays, topArtists = topArtists)
+
+            var morning = 0
+            var afternoon = 0
+            var evening = 0
+            var night = 0
+
+            val calendar = java.util.Calendar.getInstance()
+            list.forEach { item ->
+                calendar.timeInMillis = item.playedAtTimestamp
+                when (calendar.get(java.util.Calendar.HOUR_OF_DAY)) {
+                    in 6..11 -> morning++
+                    in 12..17 -> afternoon++
+                    in 18..23 -> evening++
+                    else -> night++
+                }
+            }
+
+            ListeningStats(
+                totalPlays = totalPlays,
+                topArtists = topArtists,
+                morningPlays = morning,
+                afternoonPlays = afternoon,
+                eveningPlays = evening,
+                nightPlays = night
+            )
         }
     }
 }

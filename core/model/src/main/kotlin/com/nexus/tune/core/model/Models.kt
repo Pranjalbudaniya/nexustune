@@ -121,6 +121,10 @@ enum class EqualizerPreset {
 
 data class ListeningStats(
     val totalPlays: Int = 0,
-    val topArtists: List<String> = emptyList()
+    val topArtists: List<String> = emptyList(),
+    val morningPlays: Int = 0,
+    val afternoonPlays: Int = 0,
+    val eveningPlays: Int = 0,
+    val nightPlays: Int = 0
 )
 
