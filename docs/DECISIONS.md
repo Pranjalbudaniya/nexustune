@@ -99,3 +99,13 @@
 - **Votes**: 5-0 Unanimous.
 - **Status**: Accepted.
 
+
+
+## ADR-008: Post-Slice 2 Council Review: MediaStore Scanning & Image Memory Guardrails
+- **Context**: Slices 1 and 2 established working search and playback. Slices 3 through 7 introduce local MediaStore scanning, high-resolution artwork loading, and downloads.
+- **Decision**:
+  1. MediaStore tracks are queried asynchronously via `Dispatchers.IO` with projection limited to audio MIME types (`audio/*`).
+  2. Coil `AsyncImage` calls must explicitly constrain decode size using `size(48.dp)` for list items and `size(280.dp)` for now-playing heroes, capping memory footprint.
+  3. Queue position is written to Room upon pause and periodically (every 10s) to prevent flash storage thrashing while guaranteeing recovery.
+- **Votes**: 5-0 Unanimous.
+- **Status**: Accepted.
