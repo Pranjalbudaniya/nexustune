@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 3 (v1.3 Release Qualification)
-- In Flight: Running `./scripts/gate.sh slice`, `./scripts/gate.sh perf`, and `./scripts/gate.sh final` to tag `v1.3-1`
+- Active Phase: Post-v1.0 Improvement Loop 3 (v1.3 Release Completed)
+- In Flight: Gating v1.3 release, tagging `v1.3-1`, preparing Improvement Loop 4 (Lyrics Offset Synchronization & Time-of-Day Analytics)
 - Branches: `main`
 
 ## Phase Tracking
@@ -54,11 +54,18 @@
   - [x] NewPipe Backup Migration (`NewPipeBackupImporter`, full unit test coverage)
   - [x] Slice & perf gates passed on physical hardware
   - [x] Final gate passed & tagged: `git tag v1.2-1`
-- [x] Improvement Loop 3 (v1.3 Features)
+- [x] Improvement Loop 3 (v1.3 Features - Tagged `v1.3-1`)
   - [x] Android Auto / MediaSession `MediaLibraryService` catalog hierarchy:
     - Expose root categories: "Liked Tracks", "Recently Played", "Playlists"
     - Automotive head-unit descriptor (`automotive_app_desc.xml`)
-  - [ ] Final gate & tag build: `git tag v1.3-1`
+  - [x] Slice & perf gates passed on physical hardware
+  - [x] Final gate passed & tagged: `git tag v1.3-1`
+
+## Improvement Loop 4 (v1.4 Features - In Flight)
+- [ ] Synced Lyrics Manual Offset Adjustment (+/- 50ms, 100ms, 250ms, 500ms) for timing calibration
+- [ ] Time-of-Day Listening Analytics Breakdown (Morning, Afternoon, Evening, Night distribution)
+- [ ] Re-run full test suite and quality gates
+- [ ] Produce v1.4 release build and tag `v1.4-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.
