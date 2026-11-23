@@ -109,3 +109,4 @@ class AutoPlayQueueManagerTest {
         coVerify(exactly = 0) { queueRepository.addTracksNext(any()) }
     }
 }
+

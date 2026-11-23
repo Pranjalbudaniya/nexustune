@@ -34,3 +34,4 @@ Implement **Custom Playlist Cover Art & Visual Personalization** and **Batch Que
 - [ ] `./scripts/gate.sh slice` passes.
 - [ ] `./scripts/gate.sh perf` passes on physical device.
 - [ ] `./scripts/gate.sh final` passes and release APK is generated.
+

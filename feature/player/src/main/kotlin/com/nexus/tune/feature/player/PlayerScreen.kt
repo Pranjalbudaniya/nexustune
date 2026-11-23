@@ -100,7 +100,13 @@ fun PlayerScreen(
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = if (audioOutputDevice.isHighRes) "${audioOutputDevice.name} (Hi-Res)" else audioOutputDevice.name,
+                                text = if (audioOutputDevice.isHighRes && audioOutputDevice.type == com.nexus.tune.core.model.AudioDeviceType.USB_DAC) {
+                                    "${audioOutputDevice.name} • ${audioOutputDevice.fidelityDescription}"
+                                } else if (audioOutputDevice.isHighRes) {
+                                    "${audioOutputDevice.name} (Hi-Res)"
+                                } else {
+                                    audioOutputDevice.name
+                                },
                                 style = MaterialTheme.typography.labelSmall,
                                 color = if (audioOutputDevice.isHighRes) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
                             )

@@ -28,3 +28,4 @@
 - [ ] Cancelling an active sleep timer during fade-out restores the user's previous volume immediately.
 - [ ] End-of-track timer mode cleanly pauses upon track completion.
 - [ ] 100% test pass rate across all modules.
+

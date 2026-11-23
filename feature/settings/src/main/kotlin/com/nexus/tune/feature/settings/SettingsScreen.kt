@@ -231,6 +231,51 @@ fun SettingsScreen(
                 }
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+                // --- Hi-Res Audio & Bit-Perfect Mode ---
+                Text(
+                    text = "Hi-Res Audio & Bit-Perfect Mode",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                ListItem(
+                    headlineContent = { Text("Bit-Perfect USB Output") },
+                    supportingContent = { Text("Bypass Android system mixer for connected USB DACs") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.bitPerfectUsbAudioEnabled,
+                            onCheckedChange = { viewModel.toggleBitPerfectUsbAudio(it) }
+                        )
+                    }
+                )
+
+                Text(
+                    text = "Force Hi-Res Resampling",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listOf(
+                        0 to "Auto",
+                        48000 to "48 kHz",
+                        96000 to "96 kHz",
+                        192000 to "192 kHz"
+                    ).forEach { (rate, label) ->
+                        FilterChip(
+                            selected = themeConfig.forceHiResSamplingRate == rate,
+                            onClick = { viewModel.setForceHiResSamplingRate(rate) },
+                            label = { Text(label) }
+                        )
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
             }
 
             // --- Sleep Timer ---
@@ -552,8 +597,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v2.4.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Smart Auto-Play Infinite Mix") }
+                    headlineContent = { Text("NexusTune v2.5.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Bit-Perfect USB Audio Direct Output") }
                 )
             }
         }

@@ -31,3 +31,4 @@ Implement **Per-Track Loudness Analysis & Dynamic Gain Level Normalization** in 
 - [ ] `./scripts/gate.sh slice` passes.
 - [ ] `./scripts/gate.sh perf` passes on device.
 - [ ] `./scripts/gate.sh final` passes.
+

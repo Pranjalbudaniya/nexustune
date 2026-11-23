@@ -5,6 +5,13 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] - 2026-11-24
+
+### Added
+- **Bit-Perfect USB DAC Mode & Exclusive Audio Routing**: Enhanced `AudioOutputRouteManager` in `core:player` with native USB DAC audio format introspection (24-bit/32-bit PCM, 48kHz, 96kHz, 192kHz) and bit-perfect platform resampler bypass toggle.
+- **Fidelity Badge in Player Screen**: Dynamic fidelity pill displaying exact sample rate and bit-depth metadata (e.g. `24-bit / 96kHz`) for connected external DACs and audiophile headphones.
+- **Resampling & Exclusive Mode Settings**: Added switches and sample rate override chips (`Auto`, `48 kHz`, `96 kHz`, `192 kHz`) in `SettingsScreen` under Hi-Res Audio & Bit-Perfect Mode.
+
 ## [2.4.0] - 2026-11-24
 
 ### Added

@@ -66,4 +66,41 @@ class AudioOutputRouteManagerTest {
         assertEquals("FiiO KA3", device.name)
         assertEquals(true, device.isHighRes)
     }
+
+    @Test
+    fun `resolveCurrentDevice detects USB DAC bit depth and sample rates`() {
+        val usbDevice = mockk<AudioDeviceInfo> {
+            every { type } returns AudioDeviceInfo.TYPE_USB_DEVICE
+            every { productName } returns "AudioQuest Dragonfly"
+            every { sampleRates } returns intArrayOf(44100, 48000, 96000)
+            every { encodings } returns intArrayOf(android.media.AudioFormat.ENCODING_PCM_24BIT_PACKED)
+        }
+        every { audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS) } returns arrayOf(usbDevice)
+
+        val manager = AudioOutputRouteManager(context)
+        val device = manager.resolveCurrentDevice()
+
+        assertEquals(AudioDeviceType.USB_DAC, device.type)
+        assertEquals(24, device.bitDepth)
+        assertEquals(listOf(44100, 48000, 96000), device.sampleRates)
+        assertEquals("24-bit / 96kHz", device.fidelityDescription)
+    }
+
+    @Test
+    fun `setBitPerfectEnabled updates current device output name`() {
+        val usbDevice = mockk<AudioDeviceInfo> {
+            every { type } returns AudioDeviceInfo.TYPE_USB_DEVICE
+            every { productName } returns "iFi Zen DAC"
+            every { sampleRates } returns intArrayOf(192000)
+            every { encodings } returns intArrayOf(android.media.AudioFormat.ENCODING_PCM_32BIT)
+        }
+        every { audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS) } returns arrayOf(usbDevice)
+
+        val manager = AudioOutputRouteManager(context)
+        manager.setBitPerfectEnabled(true)
+        val device = manager.currentOutputDevice.value
+
+        assertEquals("iFi Zen DAC (Bit-Perfect)", device.name)
+        assertEquals(true, device.isBitPerfectSupported)
+    }
 }

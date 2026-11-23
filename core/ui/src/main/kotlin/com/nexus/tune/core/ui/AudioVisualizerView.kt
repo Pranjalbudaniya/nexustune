@@ -190,3 +190,4 @@ private fun GlowPulseVisualizer(
 
 private val Int.dp: androidx.compose.ui.unit.Dp
     get() = androidx.compose.ui.unit.Dp(this.toFloat())
+

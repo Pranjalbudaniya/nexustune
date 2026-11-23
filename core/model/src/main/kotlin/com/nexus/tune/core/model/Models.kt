@@ -127,7 +127,9 @@ data class ThemeConfig(
     val perTrackGainEnabled: Boolean = true,
     val visualizerMode: VisualizerMode = VisualizerMode.SPECTRUM_BARS,
     val sleepTimerFadeSeconds: Int = 30,
-    val infiniteAutoPlayEnabled: Boolean = true
+    val infiniteAutoPlayEnabled: Boolean = true,
+    val bitPerfectUsbAudioEnabled: Boolean = false,
+    val forceHiResSamplingRate: Int = 0
 )
 
 data class StorageUsage(
@@ -193,6 +195,20 @@ enum class AudioDeviceType {
 data class AudioOutputDevice(
     val type: AudioDeviceType = AudioDeviceType.BUILTIN_SPEAKER,
     val name: String = "Phone Speaker",
-    val isHighRes: Boolean = false
-)
+    val isHighRes: Boolean = false,
+    val sampleRates: List<Int> = emptyList(),
+    val bitDepth: Int = 16,
+    val isBitPerfectSupported: Boolean = false
+) {
+    val fidelityDescription: String get() {
+        return if (isHighRes && sampleRates.isNotEmpty()) {
+            val maxRateKHz = sampleRates.maxOrNull()?.let { it / 1000 } ?: 48
+            "${bitDepth}-bit / ${maxRateKHz}kHz"
+        } else if (isHighRes) {
+            "${bitDepth}-bit Hi-Res"
+        } else {
+            "Standard Audio"
+        }
+    }
+}
 

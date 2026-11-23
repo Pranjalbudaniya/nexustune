@@ -64,7 +64,8 @@ class MainActivity : ComponentActivity() {
         settingsViewModel = SettingsViewModel(
             settingsRepository = app.settingsRepository,
             getListeningStatsUseCase = app.getListeningStatsUseCase,
-            sleepTimerManager = app.sleepTimerManager
+            sleepTimerManager = app.sleepTimerManager,
+            audioOutputRouteManager = app.audioOutputRouteManager
         )
 
         lifecycleScope.launch {

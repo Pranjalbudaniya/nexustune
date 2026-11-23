@@ -213,4 +213,24 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { !it.infiniteAutoPlayEnabled })
         }
     }
+
+    @Test
+    fun `toggleBitPerfectUsbAudio updates theme config`() = runTest {
+        viewModel.toggleBitPerfectUsbAudio(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.bitPerfectUsbAudioEnabled })
+        }
+    }
+
+    @Test
+    fun `setForceHiResSamplingRate updates theme config`() = runTest {
+        viewModel.setForceHiResSamplingRate(96000)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.forceHiResSamplingRate == 96000 })
+        }
+    }
 }

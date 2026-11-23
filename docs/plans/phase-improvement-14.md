@@ -28,3 +28,4 @@
 - [ ] Duplicate tracks already in history or current queue are pruned from recommendations.
 - [ ] Disabling Infinite Auto-Play respects strict queue end-of-playback.
 - [ ] 100% test pass rate across all modules.
+

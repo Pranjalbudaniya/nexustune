@@ -16,8 +16,18 @@ class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
     private val getListeningStatsUseCase: GetListeningStatsUseCase? = null,
     private val sleepTimerManager: SleepTimerManager? = null,
-    private val storageManager: StorageManager? = null
+    private val storageManager: StorageManager? = null,
+    private val audioOutputRouteManager: com.nexus.tune.core.player.routing.AudioOutputRouteManager? = null
 ) : ViewModel() {
+
+    init {
+        viewModelScope.launch {
+            themeConfig.collect { config ->
+                audioOutputRouteManager?.setBitPerfectEnabled(config.bitPerfectUsbAudioEnabled)
+                audioOutputRouteManager?.setForcedSampleRate(config.forceHiResSamplingRate)
+            }
+        }
+    }
 
     val themeConfig: StateFlow<ThemeConfig> = settingsRepository.getThemeConfig()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ThemeConfig())
@@ -96,6 +106,18 @@ class SettingsViewModel(
     fun togglePerTrackGain(enabled: Boolean) {
         val current = themeConfig.value
         updateTheme(current.copy(perTrackGainEnabled = enabled))
+    }
+
+    fun toggleBitPerfectUsbAudio(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(bitPerfectUsbAudioEnabled = enabled))
+        audioOutputRouteManager?.setBitPerfectEnabled(enabled)
+    }
+
+    fun setForceHiResSamplingRate(rate: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(forceHiResSamplingRate = rate))
+        audioOutputRouteManager?.setForcedSampleRate(rate)
     }
 
     fun setVisualizerMode(mode: VisualizerMode) {

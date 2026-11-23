@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 14 (v2.4.0 Released)
-- In Flight: Preparing Improvement Loop 15 (Audio Output Bit-Perfect USB Mode & Exclusive Routing)
+- Active Phase: Post-v1.0 Improvement Loop 15 (v2.5.0 Released)
+- In Flight: Preparing Improvement Loop 16 (Gapless Playback Buffer Pre-Loading & Audio Pipeline Warm-up)
 - Branches: `main`
 
 ## Phase Tracking
@@ -143,13 +143,20 @@
   - [x] Slice & perf gates passed on physical hardware
   - [x] Final gate passed & tagged: `git tag v2.4-1`
 
-## Improvement Loop 15 (v2.5 Features - Planned)
-- [ ] Bit-Perfect USB DAC Mode & Exclusive Audio Routing:
-  - Detection and configuration of USB Audio DAC format/frequency (44.1kHz, 96kHz, 192kHz)
-  - Exclusive bypass mode for Android platform audio resampler
-  - Player Hi-Res bit-depth badge indicator (24-bit / 96kHz / 192kHz)
+- [x] Improvement Loop 15 (v2.5 Features - Tagged `v2.5-1`)
+  - [x] Bit-Perfect USB DAC Mode & Exclusive Audio Routing:
+    - [x] Detection and configuration of USB Audio DAC format/frequency (44.1kHz, 96kHz, 192kHz)
+    - [x] Exclusive bypass mode for Android platform audio resampler
+    - [x] Player Hi-Res bit-depth badge indicator (24-bit / 96kHz / 192kHz)
+  - [x] Slice & perf gates passed on physical hardware
+  - [x] Final gate passed & tagged: `git tag v2.5-1`
+
+## Improvement Loop 16 (v2.6 Features - Planned)
+- [ ] Gapless Playback Buffer Pre-Loading & Audio Pipeline Warm-up:
+  - Pre-allocate Next track decoder buffer 5 seconds before end-of-track to eliminate transition latency
+  - Seamless zero-millisecond gapless playback transitions across track boundaries
 - [ ] Slice & perf gates passed on physical hardware
-- [ ] Final gate passed & tagged: `git tag v2.5-1`
+- [ ] Final gate passed & tagged: `git tag v2.6-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

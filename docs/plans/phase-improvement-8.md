@@ -29,3 +29,4 @@ Implement **Adaptive Playback Pitch & Speed Controller** in NexusTune, enabling 
 - [ ] `./scripts/gate.sh slice` passes.
 - [ ] `./scripts/gate.sh perf` passes on device V2518.
 - [ ] `./scripts/gate.sh final` passes.
+

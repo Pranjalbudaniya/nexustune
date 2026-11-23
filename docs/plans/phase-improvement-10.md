@@ -32,3 +32,4 @@ Implement **Audio Output Routing & Real-Time Audio Profile Indicator** in NexusT
 - [ ] `./scripts/gate.sh slice` passes.
 - [ ] `./scripts/gate.sh perf` passes on device.
 - [ ] `./scripts/gate.sh final` passes.
+

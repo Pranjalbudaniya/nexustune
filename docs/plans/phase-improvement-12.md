@@ -32,3 +32,4 @@
 - [ ] All 3 visualizer modes (`SPECTRUM_BARS`, `CIRCULAR_WAVE`, `GLOW_PULSE`) render at 120Hz without dropped frames.
 - [ ] Safe fallback handling ensures zero crashes if native `Visualizer` is unsupported on target audio hardware.
 - [ ] 100% test pass rate across all modules.
+

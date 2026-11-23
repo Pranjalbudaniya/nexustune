@@ -49,3 +49,4 @@ class ManagePlaylistsUseCaseTest {
         coVerify { musicRepository.deletePlaylist("p123") }
     }
 }
+

@@ -47,3 +47,4 @@ class VisualizerManagerTest {
         assertEquals(0f, data.amplitude, 0.001f)
     }
 }
+
