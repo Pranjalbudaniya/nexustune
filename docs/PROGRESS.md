@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 2 (v1.2 Release Qualification)
-- In Flight: Running `./scripts/gate.sh final`, tagging `v1.2-1`, and preparing Improvement Loop 3 (Android Auto MediaLibraryService)
+- Active Phase: Post-v1.0 Improvement Loop 3 (v1.3 Release Qualification)
+- In Flight: Running `./scripts/gate.sh slice`, `./scripts/gate.sh perf`, and `./scripts/gate.sh final` to tag `v1.3-1`
 - Branches: `main`
 
 ## Phase Tracking
@@ -54,13 +54,11 @@
   - [x] NewPipe Backup Migration (`NewPipeBackupImporter`, full unit test coverage)
   - [x] Slice & perf gates passed on physical hardware
   - [x] Final gate passed & tagged: `git tag v1.2-1`
-
-## Improvement Loop 3 (v1.3 Features - In Flight)
-- [ ] Android Auto / MediaSession `MediaLibraryService` catalog hierarchy:
-  - Expose root categories: "Liked Tracks", "Playlists", "Recent History"
-  - Support automotive head-unit browsing and direct selection
-- [ ] Re-run full test suite and quality gates
-- [ ] Produce v1.3 release build and tag `v1.3-1`
+- [x] Improvement Loop 3 (v1.3 Features)
+  - [x] Android Auto / MediaSession `MediaLibraryService` catalog hierarchy:
+    - Expose root categories: "Liked Tracks", "Recently Played", "Playlists"
+    - Automotive head-unit descriptor (`automotive_app_desc.xml`)
+  - [ ] Final gate & tag build: `git tag v1.3-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.
