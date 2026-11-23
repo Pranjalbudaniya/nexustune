@@ -83,7 +83,8 @@ class MainActivity : ComponentActivity() {
                                         MiniPlayerBar(
                                             playbackState = playbackState,
                                             onExpandClick = { isPlayerExpanded = true },
-                                            onPlayPauseClick = { app.playerController.togglePlayPause() }
+                                            onPlayPauseClick = { app.playerController.togglePlayPause() },
+                                            style = themeConfig.miniPlayerStyle
                                         )
                                     }
 
@@ -154,11 +155,17 @@ class MainActivity : ComponentActivity() {
                             exit = slideOutVertically(targetOffsetY = { it }),
                             modifier = Modifier.fillMaxSize()
                         ) {
+                            val lyrics by playerViewModel.lyrics.collectAsState()
+                            LaunchedEffect(playbackState.currentTrack) {
+                                playbackState.currentTrack?.let { playerViewModel.loadLyrics(it) }
+                            }
                             PlayerScreen(
                                 playbackState = playbackState,
                                 onPlayPauseClick = { app.playerController.togglePlayPause() },
                                 onSeek = { pos -> app.playerController.seekTo(pos) },
-                                onDismiss = { isPlayerExpanded = false }
+                                onDismiss = { isPlayerExpanded = false },
+                                layout = themeConfig.playerLayout,
+                                lyrics = lyrics
                             )
                         }
                     }

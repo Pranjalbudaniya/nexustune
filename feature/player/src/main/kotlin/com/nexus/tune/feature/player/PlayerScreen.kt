@@ -1,21 +1,30 @@
 package com.nexus.tune.feature.player
 
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.nexus.tune.core.model.PlaybackState
 import com.nexus.tune.core.model.PlaybackStatus
+import com.nexus.tune.core.model.PlayerLayout
+import com.nexus.tune.core.model.TrackLyrics
 
 @Composable
 fun PlayerScreen(
@@ -23,7 +32,9 @@ fun PlayerScreen(
     onPlayPauseClick: () -> Unit,
     onSeek: (Long) -> Unit,
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    layout: PlayerLayout = PlayerLayout.ART_FORWARD,
+    lyrics: TrackLyrics? = null
 ) {
     val track = playbackState.currentTrack ?: return
     val isPlaying = playbackState.status == PlaybackStatus.PLAYING
@@ -48,7 +59,12 @@ fun PlayerScreen(
                     Icon(Icons.Rounded.KeyboardArrowDown, contentDescription = "Dismiss")
                 }
                 Text(
-                    text = "NOW PLAYING",
+                    text = when (layout) {
+                        PlayerLayout.ART_FORWARD -> "ART FORWARD"
+                        PlayerLayout.VINYL_RECORD -> "VINYL RECORD"
+                        PlayerLayout.SYNCED_LYRICS -> "SYNCED LYRICS"
+                        PlayerLayout.MINIMALIST -> "MINIMALIST"
+                    },
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -57,39 +73,146 @@ fun PlayerScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(0.5f))
 
-            // Massive Album Artwork (Art-Forward layout)
-            AsyncImage(
-                model = track.artworkUrl,
-                contentDescription = track.title,
-                contentScale = ContentScale.Crop,
+            // Central Area based on selected layout
+            Box(
                 modifier = Modifier
-                    .size(280.dp)
-                    .clip(MaterialTheme.shapes.extraLarge)
-            )
+                    .weight(3f)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                when (layout) {
+                    PlayerLayout.ART_FORWARD -> {
+                        AsyncImage(
+                            model = track.artworkUrl,
+                            contentDescription = track.title,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(280.dp)
+                                .clip(MaterialTheme.shapes.extraLarge)
+                        )
+                    }
+                    PlayerLayout.VINYL_RECORD -> {
+                        val infiniteTransition = rememberInfiniteTransition(label = "vinyl")
+                        val rotation by infiniteTransition.animateFloat(
+                            initialValue = 0f,
+                            targetValue = if (isPlaying) 360f else 0f,
+                            animationSpec = infiniteRepeatable(
+                                animation = tween(12000, easing = LinearEasing),
+                                repeatMode = RepeatMode.Restart
+                            ),
+                            label = "rotation"
+                        )
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .size(280.dp)
+                                .graphicsLayer { rotationZ = rotation }
+                                .clip(CircleShape)
+                                .background(Color(0xFF1B1B1B))
+                        ) {
+                            AsyncImage(
+                                model = track.artworkUrl,
+                                contentDescription = track.title,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(110.dp)
+                                    .clip(CircleShape)
+                            )
+                        }
+                    }
+                    PlayerLayout.SYNCED_LYRICS -> {
+                        val currentMs = playbackState.positionMs
+                        val lines = lyrics?.lines ?: emptyList()
+                        if (lines.isEmpty()) {
+                            Text(
+                                text = "Lyrics unavailable for this track.",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(vertical = 32.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                itemsIndexed(lines) { index, line ->
+                                    val isCurrent = currentMs >= line.startTimeMs &&
+                                        (index == lines.lastIndex || currentMs < lines[index + 1].startTimeMs)
+                                    Text(
+                                        text = line.text,
+                                        style = if (isCurrent) {
+                                            MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
+                                        } else {
+                                            MaterialTheme.typography.bodyLarge
+                                        },
+                                        color = if (isCurrent) {
+                                            MaterialTheme.colorScheme.primary
+                                        } else {
+                                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                                        },
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 8.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    PlayerLayout.MINIMALIST -> {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            AsyncImage(
+                                model = track.artworkUrl,
+                                contentDescription = track.title,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(96.dp)
+                                    .clip(MaterialTheme.shapes.medium)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = track.title,
+                                style = MaterialTheme.typography.headlineMedium,
+                                textAlign = TextAlign.Center
+                            )
+                            Text(
+                                text = track.artist,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.primary,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+            }
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(0.5f))
 
-            // Metadata
-            Text(
-                text = track.title,
-                style = MaterialTheme.typography.headlineMedium,
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = track.artist,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.fillMaxWidth()
-            )
+            if (layout != PlayerLayout.MINIMALIST) {
+                Text(
+                    text = track.title,
+                    style = MaterialTheme.typography.headlineMedium,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = track.artist,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -106,24 +229,17 @@ fun PlayerScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Times
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = formatTime(playbackState.positionMs),
-                    style = MaterialTheme.typography.labelSmall
-                )
-                Text(
-                    text = formatTime(playbackState.durationMs),
-                    style = MaterialTheme.typography.labelSmall
-                )
+                Text(text = formatTime(playbackState.positionMs), style = MaterialTheme.typography.labelSmall)
+                Text(text = formatTime(playbackState.durationMs), style = MaterialTheme.typography.labelSmall)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Controls (Lower 45% ergonomic touch target)
+            // Ergonomic Controls
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -164,4 +280,3 @@ private fun formatTime(ms: Long): String {
     val sec = totalSec % 60
     return "%d:%02d".format(min, sec)
 }
-

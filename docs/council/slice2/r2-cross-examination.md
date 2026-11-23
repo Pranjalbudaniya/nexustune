@@ -6,3 +6,4 @@
 - **Performance Engineer**: Objected to loading unconstrained bitmaps. Demanded Coil downsampling to `size(280.dp)` in Player and `size(48.dp)` in List.
 - **UX Lead**: Adopted Performance Engineer's Coil size constraints to ensure 120Hz scroll physics.
 - **Product Strategist**: Adopted Skeptic's demand for instant queue position recovery on cold start.
+

@@ -13,3 +13,4 @@
    - Asynchronous MediaStore scanning on `Dispatchers.IO`.
    - Strict Coil image downsampling targets.
    - Debounced queue position persistence on track change and pause.
+

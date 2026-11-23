@@ -8,3 +8,4 @@ Slices 1 and 2 delivered the core engine: YouTube Music extraction via NewPipe, 
 2. **Slice 4 (Theming & Player Layouts)**: Ensure the 4 player layouts are immediately switchable in Settings with live preview.
 3. **Slice 5 (Downloads)**: Implement `DownloadWorker` using WorkManager to store Opus tracks with ID3/Vorbis tag metadata.
 4. **Slice 6 & 7**: Equalizer and JSON Backup/Restore remain high priority.
+
