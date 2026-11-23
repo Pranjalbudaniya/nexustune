@@ -55,8 +55,20 @@ class PlayerController(private val context: Context) {
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 updateState()
             }
+
+            override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
+                _playbackState.value = _playbackState.value.copy(
+                    status = PlaybackStatus.ERROR,
+                    errorMessage = error.localizedMessage ?: "Playback error: ${error.errorCodeName}"
+                )
+            }
         })
         updateState()
+    }
+
+    fun retryWithStream(newStreamUrl: String) {
+        val current = _playbackState.value.currentTrack ?: return
+        playTrack(current, newStreamUrl)
     }
 
     fun playTrack(track: Track, resolvedStreamUrl: String? = null) {
