@@ -48,12 +48,19 @@
   - [x] Equalizer Presets (`Flat`, `Bass Boost`, `Treble Boost`, `Vocal`, `Electronic`, `Rock`)
   - [x] Listening Analytics (aggregating plays, top artists from Room playback history)
   - [x] Settings UI integration with real-time countdown card & preset chip carousels
-- [x] Improvement Loop 2 (v1.2 Features)
+- [x] Improvement Loop 2 (v1.2 Features - Tagged `v1.2-1`)
   - [x] Dynamic Crossfade engine (`crossfadeSeconds` in `ThemeConfig`, volume ramping in `PlayerController`)
   - [x] Home Screen Playback Widget (`NexusTuneWidgetProvider`, `widget_nexus_playback.xml`)
   - [x] NewPipe Backup Migration (`NewPipeBackupImporter`, full unit test coverage)
   - [x] Slice & perf gates passed on physical hardware
-  - [ ] Final gate & tag build: `git tag v1.2-1`
+  - [x] Final gate passed & tagged: `git tag v1.2-1`
+
+## Improvement Loop 3 (v1.3 Features - In Flight)
+- [ ] Android Auto / MediaSession `MediaLibraryService` catalog hierarchy:
+  - Expose root categories: "Liked Tracks", "Playlists", "Recent History"
+  - Support automotive head-unit browsing and direct selection
+- [ ] Re-run full test suite and quality gates
+- [ ] Produce v1.3 release build and tag `v1.3-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.
