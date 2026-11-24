@@ -316,3 +316,16 @@ data class TrackBookmark(
     }
 }
 
+enum class MoodCategory(
+    val displayName: String,
+    val description: String
+) {
+    ALL("All", "Everything in your collection"),
+    ENERGIZE("Energize", "High-energy beats & motivational anthems"),
+    FOCUS("Focus", "Instrumental & ambient concentration"),
+    CHILL("Chill", "Relaxed acoustic, lofi & soulful melodies"),
+    WORKOUT("Workout", "Bass-driven, high-tempo workout tracks"),
+    COMMUTE("Commute", "Upbeat popular favorites & sing-alongs"),
+    SLEEP("Sleep", "Gentle lullabies, ambient tones & slow decay")
+}
+

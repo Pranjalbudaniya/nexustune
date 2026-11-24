@@ -5,6 +5,14 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.0] - 2026-11-24
+
+### Added
+- **Smart Listening Mood & Energy Radio Matrix Engine**: Implemented `MoodCategory` (`ALL`, `ENERGIZE`, `FOCUS`, `CHILL`, `WORKOUT`, `COMMUTE`, `SLEEP`) in `:core:model` and `MoodRadioEngine` in `:core:domain:mood` for intelligent mood classification and continuous smart radio generation.
+- **Home Screen Mood Matrix Filter Carousel**: Added an interactive, tactile mood selector carousel at the top of `HomeScreen` for real-time feed filtering and curated listening.
+- **Instant Mood Radio Priming**: Added "Start [Mood] Radio" action cards generating 20+ continuous energy-matched tracks from user libraries and feeds, initiating automated seamless queue playback.
+- **Full Unit Test Coverage**: Added `MoodRadioEngineTest` in `:core:domain` and `HomeViewModelTest` in `:feature:home`.
+
 ## [4.9.0] - 2026-11-24
 
 ### Added

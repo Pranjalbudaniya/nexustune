@@ -68,3 +68,4 @@ class TrackBookmarkRepositoryTest {
         coVerify { bookmarkDao.delete(42L) }
     }
 }
+

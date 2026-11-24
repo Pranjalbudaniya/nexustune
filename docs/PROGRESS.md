@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 39 (v4.9.0 Interactive Track Audio Bookmark & Chapter Annotation Engine)
+- Active Phase: Post-v1.0 Improvement Loop 40 (v5.0.0 Smart Listening Mood & Energy Radio Matrix Engine)
 - In Flight: Running test suites and ./scripts/gate.sh slice
 - Branches: `main`
 
@@ -341,6 +341,16 @@
     - [x] Unit test suites in `TrackBookmarkRepositoryTest` and `PlayerViewModelTest`
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v4.9-1`
+
+- [x] Improvement Loop 40 (v5.0 Milestone - Tagged `v5.0-1`)
+  - [x] Smart Listening Mood & Energy Radio Matrix Engine:
+    - [x] `MoodCategory` domain enum in `:core:model`
+    - [x] `MoodRadioEngine` in `:core:domain:mood` for intelligent mood keyword classification and smart radio queue generation
+    - [x] Reactive `selectedMood`, dynamic playlist filtering, and `startMoodRadio()` in `HomeViewModel`
+    - [x] Tactile mood carousel and smart radio hero banner in `HomeScreen`
+    - [x] Unit test suites in `MoodRadioEngineTest` (`:core:domain`) and `HomeViewModelTest` (`:feature:home`)
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v5.0-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.
