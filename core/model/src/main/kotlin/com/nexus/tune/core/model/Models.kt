@@ -246,7 +246,8 @@ data class ThemeConfig(
     val dynamicStereoImagerConfig: DynamicStereoImagerConfig = DynamicStereoImagerConfig(),
     val tapeHysteresisConfig: TapeHysteresisConfig = TapeHysteresisConfig(),
     val mainsHumIsolatorConfig: MainsHumIsolatorConfig = MainsHumIsolatorConfig(),
-    val acousticFeedbackConfig: AcousticFeedbackConfig = AcousticFeedbackConfig()
+    val acousticFeedbackConfig: AcousticFeedbackConfig = AcousticFeedbackConfig(),
+    val soundstageElevationConfig: SoundstageElevationConfig = SoundstageElevationConfig()
 )
 
 data class SoundDoseInfo(
@@ -1531,6 +1532,47 @@ data class AcousticFeedbackMetrics(
     val peakFeedbackEnergyDb: Float,
     val totalSuppressionDb: Float,
     val safetyStatus: String
+)
+
+enum class ElevationAngle(val degrees: Float, val displayName: String, val pinnaNotchHz: Float, val description: String) {
+    EYE_LEVEL_0(0.0f, "0° Eye-Level (Direct)", 0.0f, "Neutral lateral headphone soundstage with zero vertical pinna filtering"),
+    STAGE_LIFT_15(15.0f, "15° Natural Stage Lift", 7800.0f, "Lifts front center vocalists from chin/throat level up to eye-level"),
+    BALCONY_30(30.0f, "30° Concert Balcony", 8500.0f, "Simulates sitting in an elevated auditorium balcony looking down at the orchestra"),
+    CATHEDRAL_DOME_45(45.0f, "45° Cathedral Dome", 9200.0f, "Expansive overhead vertical height with immersive 3D spatial envelopment")
+}
+
+enum class SoundstageElevationPreset(
+    val displayName: String,
+    val angle: ElevationAngle,
+    val intensity: Float,
+    val ceilingReflectionMs: Float,
+    val pinnaDepthDb: Float,
+    val diffuseSpread: Boolean,
+    val description: String
+) {
+    OFF("Off (Bypassed)", ElevationAngle.EYE_LEVEL_0, 0.0f, 0.0f, 0.0f, false, "Bit-perfect direct stereo without pinna elevation"),
+    VOCAL_FOREHEAD_LIFT("Vocal Forehead Lift (Natural)", ElevationAngle.STAGE_LIFT_15, 0.50f, 3.5f, -4.0f, true, "Gently shifts vocals above the eyebrows for natural standing singer intimacy"),
+    CONCERT_HALL_BALCONY("Concert Hall Balcony View", ElevationAngle.BALCONY_30, 0.70f, 5.2f, -6.0f, true, "Elevated acoustic perspective with spacious vertical reverberant cues"),
+    ATMOS_HEIGHT_GLOW("3D Atmos Height Glow", ElevationAngle.CATHEDRAL_DOME_45, 0.85f, 6.8f, -7.5f, true, "Maximum vertical expansion simulating ceiling height speakers in an Atmos setup"),
+    ACOUSTIC_STAGE_LIFT("Intimate Acoustic Stage", ElevationAngle.STAGE_LIFT_15, 0.40f, 2.8f, -3.5f, false, "Lifts acoustic guitars, strings, and piano without diffuse reflection coloration")
+}
+
+data class SoundstageElevationConfig(
+    val isEnabled: Boolean = false,
+    val preset: SoundstageElevationPreset = SoundstageElevationPreset.OFF,
+    val elevationAngle: ElevationAngle = ElevationAngle.STAGE_LIFT_15,
+    val elevationIntensity: Float = 0.50f,
+    val ceilingReflectionMs: Float = 4.2f,
+    val pinnaNotchDepthDb: Float = -4.5f,
+    val diffuseCeilingSpread: Boolean = true
+)
+
+data class SoundstageElevationMetrics(
+    val virtualElevationDegrees: Float,
+    val pinnaNotchFrequencyHz: Float,
+    val ceilingDelaySamples: Int,
+    val spatialHeightScore: Int,
+    val elevationRating: String
 )
 
 

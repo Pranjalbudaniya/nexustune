@@ -1485,4 +1485,49 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { !it.acousticFeedbackConfig.fastPanicClamp })
         }
     }
+
+    @Test
+    fun `soundstage elevation settings update theme config`() = runTest {
+        viewModel.setSoundstageElevationEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.soundstageElevationConfig.isEnabled })
+        }
+
+        viewModel.setSoundstageElevationPreset(SoundstageElevationPreset.CONCERT_HALL_BALCONY)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.soundstageElevationConfig.preset == SoundstageElevationPreset.CONCERT_HALL_BALCONY })
+        }
+
+        viewModel.setSoundstageElevationAngle(ElevationAngle.CATHEDRAL_DOME_45)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.soundstageElevationConfig.elevationAngle == ElevationAngle.CATHEDRAL_DOME_45 })
+        }
+
+        viewModel.setSoundstageElevationIntensity(0.85f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.soundstageElevationConfig.elevationIntensity == 0.85f })
+        }
+
+        viewModel.setSoundstageElevationCeilingMs(5.5f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.soundstageElevationConfig.ceilingReflectionMs == 5.5f })
+        }
+
+        viewModel.setSoundstageElevationPinnaDepth(-6.5f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.soundstageElevationConfig.pinnaNotchDepthDb == -6.5f })
+        }
+
+        viewModel.setSoundstageElevationDiffuseSpread(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.soundstageElevationConfig.diffuseCeilingSpread })
+        }
+    }
 }

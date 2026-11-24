@@ -180,6 +180,13 @@ class SettingsDataStore(private val context: Context) {
         val ACOUSTIC_FEEDBACK_NOTCH_Q = floatPreferencesKey("acoustic_feedback_notch_q")
         val ACOUSTIC_FEEDBACK_DEPTH = floatPreferencesKey("acoustic_feedback_depth")
         val ACOUSTIC_FEEDBACK_PANIC_CLAMP = booleanPreferencesKey("acoustic_feedback_panic_clamp")
+        val SOUNDSTAGE_ELEVATION_ENABLED = booleanPreferencesKey("soundstage_elevation_enabled")
+        val SOUNDSTAGE_ELEVATION_PRESET = stringPreferencesKey("soundstage_elevation_preset")
+        val SOUNDSTAGE_ELEVATION_ANGLE = stringPreferencesKey("soundstage_elevation_angle")
+        val SOUNDSTAGE_ELEVATION_INTENSITY = floatPreferencesKey("soundstage_elevation_intensity")
+        val SOUNDSTAGE_ELEVATION_CEILING_MS = floatPreferencesKey("soundstage_elevation_ceiling_ms")
+        val SOUNDSTAGE_ELEVATION_PINNA_DEPTH = floatPreferencesKey("soundstage_elevation_pinna_depth")
+        val SOUNDSTAGE_ELEVATION_DIFFUSE_SPREAD = booleanPreferencesKey("soundstage_elevation_diffuse_spread")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -484,6 +491,19 @@ class SettingsDataStore(private val context: Context) {
                 notchSharpnessQ = prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_NOTCH_Q] ?: 35.0f,
                 suppressionDepthDb = prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_DEPTH] ?: -24.0f,
                 fastPanicClamp = prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_PANIC_CLAMP] ?: true
+            ),
+            soundstageElevationConfig = SoundstageElevationConfig(
+                isEnabled = prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_ENABLED] ?: false,
+                preset = runCatching {
+                    SoundstageElevationPreset.valueOf(prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_PRESET] ?: SoundstageElevationPreset.OFF.name)
+                }.getOrDefault(SoundstageElevationPreset.OFF),
+                elevationAngle = runCatching {
+                    ElevationAngle.valueOf(prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_ANGLE] ?: ElevationAngle.STAGE_LIFT_15.name)
+                }.getOrDefault(ElevationAngle.STAGE_LIFT_15),
+                elevationIntensity = prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_INTENSITY] ?: 0.50f,
+                ceilingReflectionMs = prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_CEILING_MS] ?: 4.2f,
+                pinnaNotchDepthDb = prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_PINNA_DEPTH] ?: -4.5f,
+                diffuseCeilingSpread = prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_DIFFUSE_SPREAD] ?: true
             )
         )
     }
@@ -647,6 +667,13 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_NOTCH_Q] = config.acousticFeedbackConfig.notchSharpnessQ
             prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_DEPTH] = config.acousticFeedbackConfig.suppressionDepthDb
             prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_PANIC_CLAMP] = config.acousticFeedbackConfig.fastPanicClamp
+            prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_ENABLED] = config.soundstageElevationConfig.isEnabled
+            prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_PRESET] = config.soundstageElevationConfig.preset.name
+            prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_ANGLE] = config.soundstageElevationConfig.elevationAngle.name
+            prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_INTENSITY] = config.soundstageElevationConfig.elevationIntensity
+            prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_CEILING_MS] = config.soundstageElevationConfig.ceilingReflectionMs
+            prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_PINNA_DEPTH] = config.soundstageElevationConfig.pinnaNotchDepthDb
+            prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_DIFFUSE_SPREAD] = config.soundstageElevationConfig.diffuseCeilingSpread
         }
     }
 
@@ -857,6 +884,18 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_NOTCH_Q] = config.notchSharpnessQ
             prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_DEPTH] = config.suppressionDepthDb
             prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_PANIC_CLAMP] = config.fastPanicClamp
+        }
+    }
+
+    suspend fun updateSoundstageElevationConfig(config: SoundstageElevationConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_PRESET] = config.preset.name
+            prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_ANGLE] = config.elevationAngle.name
+            prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_INTENSITY] = config.elevationIntensity
+            prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_CEILING_MS] = config.ceilingReflectionMs
+            prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_PINNA_DEPTH] = config.pinnaNotchDepthDb
+            prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_DIFFUSE_SPREAD] = config.diffuseCeilingSpread
         }
     }
 

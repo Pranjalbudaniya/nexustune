@@ -1335,4 +1335,52 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(acousticFeedbackConfig = current.acousticFeedbackConfig.copy(fastPanicClamp = enabled)))
     }
+
+    fun setSoundstageElevationEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(soundstageElevationConfig = current.soundstageElevationConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setSoundstageElevationPreset(preset: SoundstageElevationPreset) {
+        val current = themeConfig.value
+        val isEnabled = preset != SoundstageElevationPreset.OFF
+        updateTheme(
+            current.copy(
+                soundstageElevationConfig = current.soundstageElevationConfig.copy(
+                    isEnabled = isEnabled,
+                    preset = preset,
+                    elevationAngle = if (preset != SoundstageElevationPreset.OFF) preset.angle else current.soundstageElevationConfig.elevationAngle,
+                    elevationIntensity = if (preset != SoundstageElevationPreset.OFF) preset.intensity else current.soundstageElevationConfig.elevationIntensity,
+                    ceilingReflectionMs = if (preset != SoundstageElevationPreset.OFF) preset.ceilingReflectionMs else current.soundstageElevationConfig.ceilingReflectionMs,
+                    pinnaNotchDepthDb = if (preset != SoundstageElevationPreset.OFF) preset.pinnaDepthDb else current.soundstageElevationConfig.pinnaNotchDepthDb,
+                    diffuseCeilingSpread = if (preset != SoundstageElevationPreset.OFF) preset.diffuseSpread else current.soundstageElevationConfig.diffuseCeilingSpread
+                )
+            )
+        )
+    }
+
+    fun setSoundstageElevationAngle(angle: ElevationAngle) {
+        val current = themeConfig.value
+        updateTheme(current.copy(soundstageElevationConfig = current.soundstageElevationConfig.copy(elevationAngle = angle)))
+    }
+
+    fun setSoundstageElevationIntensity(intensity: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(soundstageElevationConfig = current.soundstageElevationConfig.copy(elevationIntensity = intensity.coerceIn(0.0f, 1.0f))))
+    }
+
+    fun setSoundstageElevationCeilingMs(ms: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(soundstageElevationConfig = current.soundstageElevationConfig.copy(ceilingReflectionMs = ms.coerceIn(1.0f, 10.0f))))
+    }
+
+    fun setSoundstageElevationPinnaDepth(depthDb: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(soundstageElevationConfig = current.soundstageElevationConfig.copy(pinnaNotchDepthDb = depthDb.coerceIn(-10.0f, -1.0f))))
+    }
+
+    fun setSoundstageElevationDiffuseSpread(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(soundstageElevationConfig = current.soundstageElevationConfig.copy(diffuseCeilingSpread = enabled)))
+    }
 }

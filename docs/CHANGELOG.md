@@ -5,6 +5,17 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.31.0] - 2026-11-24
+
+### Added
+- **Audiophile Psychoacoustic Soundstage Elevation & Height Virtualizer Studio (`SoundstageElevationEngine`)**: Added `ElevationAngle` (`EYE_LEVEL_0`, `STAGE_LIFT_15`, `BALCONY_30`, `CATHEDRAL_DOME_45`), `SoundstageElevationPreset` (`OFF`, `VOCAL_FOREHEAD_LIFT`, `CONCERT_HALL_BALCONY`, `ATMOS_HEIGHT_GLOW`, `ACOUSTIC_STAGE_LIFT`), `SoundstageElevationConfig`, and `SoundstageElevationMetrics` in `:core:model`.
+- **Pinna HRTF Spectral Modeling & Ceiling Reflection Micro-Delay DSP**: Implemented `SoundstageElevationEngine` in `:core:domain:audio`. Reconstructs median-plane pinna elevation cues using anatomical concha spectral notch biquads ($7.8\dots 9.2\text{ kHz}$), overhead airy high-shelf boost ($>11.5\text{ kHz}$), and a micro-reflection delay ring buffer ($1.5\dots 8.0\text{ ms}$) with cross-channel high-frequency acoustic ceiling damping, raising perceived vocal and instrument soundstage from flat lateral eye-level up to natural forehead and concert balcony perspectives.
+- **Hardware Equalizer Integration**: Added `applySoundstageElevationOffset`, `clearSoundstageElevationOffset`, and `getSoundstageElevationOffset` targeting Band 4 (air) in `NexusAudioEffects` in `:core:player` for physical hardware treble air elevation.
+- **DataStore Persistence**: Added `SOUNDSTAGE_ELEVATION_ENABLED`, `SOUNDSTAGE_ELEVATION_PRESET`, `SOUNDSTAGE_ELEVATION_ANGLE`, `SOUNDSTAGE_ELEVATION_INTENSITY`, `SOUNDSTAGE_ELEVATION_CEILING_MS`, `SOUNDSTAGE_ELEVATION_PINNA_DEPTH`, and `SOUNDSTAGE_ELEVATION_DIFFUSE_SPREAD` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Soundstage Elevation Studio**: Added interactive "Psychoacoustic Soundstage Elevation & Height Studio" card in `SettingsScreen` with elevation angle chips, preset chips, elevation intensity slider, ceiling reflection delay slider, pinna notch depth slider, diffuse ceiling spread switch, and live 3D elevation HUD.
+- **Unit Test Coverage**: Comprehensive test suites in `SoundstageElevationEngineTest` in `:core:domain`, `NexusAudioEffectsTest` in `:core:player`, and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.30.0] - 2026-11-24
 
 ### Added

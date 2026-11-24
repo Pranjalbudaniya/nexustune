@@ -211,5 +211,14 @@ class NexusAudioEffectsTest {
         audioEffects.clearFeedbackGuardOffset()
         assertEquals(0, audioEffects.getFeedbackGuardOffset())
     }
+
+    @Test
+    fun `soundstage elevation offset can be applied and cleared`() {
+        audioEffects.applySoundstageElevationOffset(80)
+        assertEquals(80, audioEffects.getSoundstageElevationOffset())
+
+        audioEffects.clearSoundstageElevationOffset()
+        assertEquals(0, audioEffects.getSoundstageElevationOffset())
+    }
 }
 

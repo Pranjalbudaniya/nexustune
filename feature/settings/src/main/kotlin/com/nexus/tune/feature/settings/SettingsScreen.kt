@@ -27,6 +27,7 @@ import com.nexus.tune.core.domain.audio.DynamicStereoImagerEngine
 import com.nexus.tune.core.domain.audio.TapeHysteresisEngine
 import com.nexus.tune.core.domain.audio.MainsHumIsolatorEngine
 import com.nexus.tune.core.domain.audio.AcousticFeedbackEngine
+import com.nexus.tune.core.domain.audio.SoundstageElevationEngine
 import com.nexus.tune.core.ui.EqCurveVisualizer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -3539,6 +3540,203 @@ fun SettingsScreen(
                                 )
                                 Text(
                                     text = "Lock: ${feedbackMetrics.detectedRingingFrequencyHz.toInt()} Hz",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            }
+
+            item {
+                // --- Psychoacoustic Soundstage Elevation & Height Virtualizer Studio ---
+                ListItem(
+                    headlineContent = { Text("Psychoacoustic Soundstage Elevation & Height Studio") },
+                    supportingContent = { Text("Median plane pinna HRTF modeling (7.8-9.2 kHz) and micro-reflection ceiling lines elevating perceived soundstage to forehead height") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.soundstageElevationConfig.isEnabled,
+                            onCheckedChange = { viewModel.setSoundstageElevationEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.soundstageElevationConfig.isEnabled) {
+                    val elevationMetrics = remember(themeConfig.soundstageElevationConfig) {
+                        SoundstageElevationEngine.calculateMetrics(themeConfig.soundstageElevationConfig)
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Elevation Preset",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(bottom = 6.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        SoundstageElevationPreset.entries.forEach { preset ->
+                            FilterChip(
+                                selected = themeConfig.soundstageElevationConfig.preset == preset,
+                                onClick = { viewModel.setSoundstageElevationPreset(preset) },
+                                label = { Text(preset.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "Vertical Elevation Angle",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(bottom = 6.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        ElevationAngle.entries.forEach { angle ->
+                            FilterChip(
+                                selected = themeConfig.soundstageElevationConfig.elevationAngle == angle,
+                                onClick = { viewModel.setSoundstageElevationAngle(angle) },
+                                label = { Text(angle.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Elevation Intensity: ${(themeConfig.soundstageElevationConfig.elevationIntensity * 100).toInt()}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Apparent Angle: ${String.format(java.util.Locale.US, "%.1f°", elevationMetrics.virtualElevationDegrees)}",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.soundstageElevationConfig.elevationIntensity,
+                        onValueChange = { viewModel.setSoundstageElevationIntensity(it) },
+                        valueRange = 0.0f..1.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Ceiling Reflection Delay: ${String.format(java.util.Locale.US, "%.1f ms", themeConfig.soundstageElevationConfig.ceilingReflectionMs)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "${elevationMetrics.ceilingDelaySamples} Samples",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.soundstageElevationConfig.ceilingReflectionMs,
+                        onValueChange = { viewModel.setSoundstageElevationCeilingMs(it) },
+                        valueRange = 1.5f..8.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Pinna Concha Notch Depth: ${String.format(java.util.Locale.US, "%.1f dB", themeConfig.soundstageElevationConfig.pinnaNotchDepthDb)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Notch: ${elevationMetrics.pinnaNotchFrequencyHz.toInt()} Hz",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.soundstageElevationConfig.pinnaNotchDepthDb,
+                        onValueChange = { viewModel.setSoundstageElevationPinnaDepth(it) },
+                        valueRange = -9.0f..-1.5f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Cross-Channel Diffuse Ceiling Spread",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Switch(
+                            checked = themeConfig.soundstageElevationConfig.diffuseCeilingSpread,
+                            onCheckedChange = { viewModel.setSoundstageElevationDiffuseSpread(it) }
+                        )
+                    }
+
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = "3D SOUNDSTAGE ELEVATION & VERTICAL HUD",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Perspective: ${elevationMetrics.elevationRating}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Height Score: ${elevationMetrics.spatialHeightScore}/100",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                                Text(
+                                    text = "Angle: ${String.format(java.util.Locale.US, "%.1f°", elevationMetrics.virtualElevationDegrees)}",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.tertiary
                                 )
