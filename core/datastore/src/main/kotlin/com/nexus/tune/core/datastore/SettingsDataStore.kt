@@ -121,6 +121,11 @@ class SettingsDataStore(private val context: Context) {
         val AIR_BAND_FREQ = stringPreferencesKey("air_band_freq")
         val AIR_BAND_BOOST_DB = floatPreferencesKey("air_band_boost_db")
         val AIR_BAND_HARMONICS = intPreferencesKey("air_band_harmonics")
+        val SUB_BASS_SYNTH_ENABLED = booleanPreferencesKey("sub_bass_synth_enabled")
+        val SUB_BASS_SYNTH_MODE = stringPreferencesKey("sub_bass_synth_mode")
+        val SUB_BASS_SYNTH_TARGET = stringPreferencesKey("sub_bass_synth_target")
+        val SUB_BASS_SYNTH_INTENSITY = intPreferencesKey("sub_bass_synth_intensity")
+        val SUB_BASS_SYNTH_BLEND = intPreferencesKey("sub_bass_synth_blend")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -308,6 +313,17 @@ class SettingsDataStore(private val context: Context) {
                 }.getOrDefault(AirBandFrequency.HZ_16000),
                 boostDb = prefs[PreferencesKeys.AIR_BAND_BOOST_DB] ?: 3.0f,
                 harmonicExcitationPercent = prefs[PreferencesKeys.AIR_BAND_HARMONICS] ?: 30
+            ),
+            subHarmonicSynthConfig = SubHarmonicSynthConfig(
+                isEnabled = prefs[PreferencesKeys.SUB_BASS_SYNTH_ENABLED] ?: false,
+                mode = runCatching {
+                    SubHarmonicMode.valueOf(prefs[PreferencesKeys.SUB_BASS_SYNTH_MODE] ?: SubHarmonicMode.OFF.name)
+                }.getOrDefault(SubHarmonicMode.OFF),
+                target = runCatching {
+                    SubHarmonicTarget.valueOf(prefs[PreferencesKeys.SUB_BASS_SYNTH_TARGET] ?: SubHarmonicTarget.HYBRID_BALANCED.name)
+                }.getOrDefault(SubHarmonicTarget.HYBRID_BALANCED),
+                intensityPercent = prefs[PreferencesKeys.SUB_BASS_SYNTH_INTENSITY] ?: 50,
+                subOctaveBlendPercent = prefs[PreferencesKeys.SUB_BASS_SYNTH_BLEND] ?: 40
             )
         )
     }
@@ -412,6 +428,11 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.AIR_BAND_FREQ] = config.airBandExciterConfig.frequency.name
             prefs[PreferencesKeys.AIR_BAND_BOOST_DB] = config.airBandExciterConfig.boostDb
             prefs[PreferencesKeys.AIR_BAND_HARMONICS] = config.airBandExciterConfig.harmonicExcitationPercent
+            prefs[PreferencesKeys.SUB_BASS_SYNTH_ENABLED] = config.subHarmonicSynthConfig.isEnabled
+            prefs[PreferencesKeys.SUB_BASS_SYNTH_MODE] = config.subHarmonicSynthConfig.mode.name
+            prefs[PreferencesKeys.SUB_BASS_SYNTH_TARGET] = config.subHarmonicSynthConfig.target.name
+            prefs[PreferencesKeys.SUB_BASS_SYNTH_INTENSITY] = config.subHarmonicSynthConfig.intensityPercent
+            prefs[PreferencesKeys.SUB_BASS_SYNTH_BLEND] = config.subHarmonicSynthConfig.subOctaveBlendPercent
         }
     }
 
@@ -513,6 +534,16 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.AIR_BAND_FREQ] = config.frequency.name
             prefs[PreferencesKeys.AIR_BAND_BOOST_DB] = config.boostDb
             prefs[PreferencesKeys.AIR_BAND_HARMONICS] = config.harmonicExcitationPercent
+        }
+    }
+
+    suspend fun updateSubHarmonicSynthConfig(config: SubHarmonicSynthConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.SUB_BASS_SYNTH_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.SUB_BASS_SYNTH_MODE] = config.mode.name
+            prefs[PreferencesKeys.SUB_BASS_SYNTH_TARGET] = config.target.name
+            prefs[PreferencesKeys.SUB_BASS_SYNTH_INTENSITY] = config.intensityPercent
+            prefs[PreferencesKeys.SUB_BASS_SYNTH_BLEND] = config.subOctaveBlendPercent
         }
     }
 

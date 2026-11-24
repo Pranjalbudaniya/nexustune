@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.nexus.tune.core.model.*
 import com.nexus.tune.core.domain.audio.InfrasonicFilterEngine
 import com.nexus.tune.core.domain.audio.AirBandExciterEngine
+import com.nexus.tune.core.domain.audio.SubHarmonicSynthEngine
 import com.nexus.tune.core.ui.EqCurveVisualizer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -1945,6 +1946,141 @@ fun SettingsScreen(
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.tertiary
                                 )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+                ListItem(
+                    headlineContent = { Text("Psychoacoustic Sub-Harmonic Bass Studio") },
+                    supportingContent = { Text("Synthesizes missing fundamental harmonics (MaxxBass) for compact drivers or sub-octave rumble (30-60 Hz) for subwoofers") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.subHarmonicSynthConfig.isEnabled,
+                            onCheckedChange = { viewModel.setSubHarmonicSynthEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.subHarmonicSynthConfig.isEnabled) {
+                    val subBassMetrics = remember(themeConfig.subHarmonicSynthConfig) {
+                        SubHarmonicSynthEngine.calculateMetrics(themeConfig.subHarmonicSynthConfig)
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Sub-Bass Profile",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        SubHarmonicMode.entries.forEach { mode ->
+                            FilterChip(
+                                selected = themeConfig.subHarmonicSynthConfig.mode == mode,
+                                onClick = { viewModel.setSubHarmonicSynthMode(mode) },
+                                label = { Text(mode.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "Transducer Acoustic Target",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        SubHarmonicTarget.entries.forEach { target ->
+                            FilterChip(
+                                selected = themeConfig.subHarmonicSynthConfig.target == target,
+                                onClick = { viewModel.setSubHarmonicSynthTarget(target) },
+                                label = { Text(target.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Synthesis Intensity: ${themeConfig.subHarmonicSynthConfig.intensityPercent}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Perceived Gain: +${String.format(java.util.Locale.US, "%.1f", subBassMetrics.perceivedBassGainDb)} dB",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    Slider(
+                        value = themeConfig.subHarmonicSynthConfig.intensityPercent.toFloat(),
+                        onValueChange = { viewModel.setSubHarmonicSynthIntensity(it.toInt()) },
+                        valueRange = 0.0f..100.0f,
+                        steps = 19,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Text(
+                        text = "Sub-Octave Frequency Divider Mix: ${themeConfig.subHarmonicSynthConfig.subOctaveBlendPercent}%",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Slider(
+                        value = themeConfig.subHarmonicSynthConfig.subOctaveBlendPercent.toFloat(),
+                        onValueChange = { viewModel.setSubHarmonicSynthBlend(it.toInt()) },
+                        valueRange = 0.0f..100.0f,
+                        steps = 19,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Text(
+                                text = subBassMetrics.syntheticBandwidthHz,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = subBassMetrics.phantomFundamentalRating,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                                if (subBassMetrics.excursionSafeguardActive) {
+                                    Text(
+                                        text = "Driver Excursion Safeguard",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.tertiary
+                                    )
+                                }
                             }
                         }
                     }

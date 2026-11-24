@@ -5,6 +5,17 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.21.0] - 2026-11-24
+
+### Added
+- **Psychoacoustic Sub-Harmonic Bass & Missing Fundamental Studio (`SubHarmonicSynthEngine`)**: Added `SubHarmonicTarget` (`SMALL_SPEAKERS_EARBUDS`, `FULL_RANGE_SUBWOOFER`, `HYBRID_BALANCED`), `SubHarmonicMode` (`OFF`, `EARBUD_MAX_PUNCH`, `DESKTOP_BODY`, `SUBWOOFER_SHAKE`, `CLUB_EARTHQUAKE`), `SubHarmonicSynthConfig`, and `SubHarmonicMetrics` in `:core:model`.
+- **MaxxBass Missing Fundamental Chebyshev Harmonics & Sub-Octave Divider DSP**: Implemented `SubHarmonicSynthEngine` in `:core:domain:audio`. Reconstructs inaudible sub-bass fundamentals on compact smartphone speakers and earbuds using 2nd ($2f_0$) and 3rd ($3f_0$) order Chebyshev polynomial harmonics ($T_2(x), T_3(x)$), allowing the human auditory cortex to perceive deep 30-50 Hz sub-bass without physical driver overload. For full-range subwoofers and planar headphones, true octave-lower ($f_0 / 2$) fundamentals are synthesized via zero-crossing state inversion with envelope tracking.
+- **Hardware Equalizer Integration**: Added `applySubHarmonicOffset`, `clearSubHarmonicOffset`, and `getSubHarmonicOffset` targeting Band 0 (~60 Hz sub-bass band) in `NexusAudioEffects` in `:core:player`.
+- **DataStore Persistence**: Added `SUB_BASS_SYNTH_ENABLED`, `SUB_BASS_SYNTH_MODE`, `SUB_BASS_SYNTH_TARGET`, `SUB_BASS_SYNTH_INTENSITY`, and `SUB_BASS_SYNTH_BLEND` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Sub-Harmonic Studio**: Added interactive "Psychoacoustic Sub-Harmonic Bass Studio" card in `SettingsScreen` with mode chips, transducer target chips, intensity slider, sub-octave divider slider, and live diagnostic badge with driver excursion safeguard indicator.
+- **Unit Test Coverage**: Comprehensive test suites in `SubHarmonicSynthEngineTest` in `:core:domain`, `NexusAudioEffectsTest` in `:core:player`, and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.20.0] - 2026-11-24
 
 ### Added

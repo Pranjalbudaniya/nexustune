@@ -236,7 +236,8 @@ data class ThemeConfig(
     val midBassClarityConfig: MidBassClarityConfig = MidBassClarityConfig(),
     val crosstalkCancellationConfig: CrosstalkCancellationConfig = CrosstalkCancellationConfig(),
     val infrasonicFilterConfig: InfrasonicFilterConfig = InfrasonicFilterConfig(),
-    val airBandExciterConfig: AirBandExciterConfig = AirBandExciterConfig()
+    val airBandExciterConfig: AirBandExciterConfig = AirBandExciterConfig(),
+    val subHarmonicSynthConfig: SubHarmonicSynthConfig = SubHarmonicSynthConfig()
 )
 
 data class SoundDoseInfo(
@@ -1128,6 +1129,42 @@ data class AirBandBiquadCoefficients(
     val a1: Float,
     val a2: Float
 )
+
+enum class SubHarmonicTarget(val displayName: String, val description: String) {
+    SMALL_SPEAKERS_EARBUDS("Earbuds & Phone Speakers", "Synthesizes 2nd/3rd harmonics (80-200 Hz) to create phantom deep bass without cone blowout"),
+    FULL_RANGE_SUBWOOFER("Subwoofers & Planar Drivers", "Generates true octave-lower sub-bass (30-60 Hz) for visceral chest-thumping depth"),
+    HYBRID_BALANCED("Hybrid Audiophile Balanced", "Blends missing fundamental upper harmonics with gentle sub-octave reinforcement")
+}
+
+enum class SubHarmonicMode(
+    val displayName: String,
+    val target: SubHarmonicTarget,
+    val intensityPercent: Int,
+    val subOctaveBlendPercent: Int,
+    val description: String
+) {
+    OFF("Off (Bypassed)", SubHarmonicTarget.HYBRID_BALANCED, 0, 0, "Unaltered passband bass response"),
+    EARBUD_MAX_PUNCH("Earbud Max Punch", SubHarmonicTarget.SMALL_SPEAKERS_EARBUDS, 70, 15, "MaxxBass-style missing fundamental for compact drivers"),
+    DESKTOP_BODY("Desktop Warmth & Body", SubHarmonicTarget.HYBRID_BALANCED, 55, 35, "Rich acoustic body and warm lower mids for bookshelf monitors"),
+    SUBWOOFER_SHAKE("Subwoofer Floor Shake", SubHarmonicTarget.FULL_RANGE_SUBWOOFER, 80, 75, "Octave divider synthesis delivering tactile 30-50 Hz sub-rumble"),
+    CLUB_EARTHQUAKE("Club Earthquake", SubHarmonicTarget.FULL_RANGE_SUBWOOFER, 95, 90, "Massive dual-tier sub-harmonic excitation for dance & electronic music")
+}
+
+data class SubHarmonicSynthConfig(
+    val isEnabled: Boolean = false,
+    val mode: SubHarmonicMode = SubHarmonicMode.OFF,
+    val target: SubHarmonicTarget = SubHarmonicTarget.HYBRID_BALANCED,
+    val intensityPercent: Int = 50,
+    val subOctaveBlendPercent: Int = 40
+)
+
+data class SubHarmonicMetrics(
+    val perceivedBassGainDb: Float,
+    val syntheticBandwidthHz: String,
+    val phantomFundamentalRating: String,
+    val excursionSafeguardActive: Boolean
+)
+
 
 
 

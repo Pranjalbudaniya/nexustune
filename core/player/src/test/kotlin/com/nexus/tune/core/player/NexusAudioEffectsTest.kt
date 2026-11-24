@@ -139,5 +139,14 @@ class NexusAudioEffectsTest {
         audioEffects.clearAirBandOffset()
         assertEquals(0, audioEffects.getAirBandOffset())
     }
+
+    @Test
+    fun `sub-harmonic bass offset can be applied and cleared`() {
+        audioEffects.applySubHarmonicOffset(320)
+        assertEquals(320, audioEffects.getSubHarmonicOffset())
+
+        audioEffects.clearSubHarmonicOffset()
+        assertEquals(0, audioEffects.getSubHarmonicOffset())
+    }
 }
 

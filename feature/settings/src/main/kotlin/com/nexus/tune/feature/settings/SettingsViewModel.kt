@@ -881,4 +881,67 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(airBandExciterConfig = current.airBandExciterConfig.copy(harmonicExcitationPercent = harmonicPercent.coerceIn(0, 100))))
     }
+
+    fun setSubHarmonicSynthEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        val updated = current.copy(subHarmonicSynthConfig = current.subHarmonicSynthConfig.copy(isEnabled = enabled))
+        updateTheme(updated)
+        val offset = com.nexus.tune.core.domain.audio.SubHarmonicSynthEngine.calculateHardwareOffsetMb(
+            updated.subHarmonicSynthConfig.intensityPercent,
+            enabled,
+            updated.subHarmonicSynthConfig.target
+        )
+        NexusAudioEffects.instance.applySubHarmonicOffset(offset)
+    }
+
+    fun setSubHarmonicSynthMode(mode: SubHarmonicMode) {
+        val current = themeConfig.value
+        val isEnabled = mode != SubHarmonicMode.OFF
+        val updated = current.copy(
+            subHarmonicSynthConfig = current.subHarmonicSynthConfig.copy(
+                isEnabled = isEnabled,
+                mode = mode,
+                target = mode.target,
+                intensityPercent = mode.intensityPercent,
+                subOctaveBlendPercent = mode.subOctaveBlendPercent
+            )
+        )
+        updateTheme(updated)
+        val offset = com.nexus.tune.core.domain.audio.SubHarmonicSynthEngine.calculateHardwareOffsetMb(
+            updated.subHarmonicSynthConfig.intensityPercent,
+            isEnabled,
+            updated.subHarmonicSynthConfig.target
+        )
+        NexusAudioEffects.instance.applySubHarmonicOffset(offset)
+    }
+
+    fun setSubHarmonicSynthTarget(target: SubHarmonicTarget) {
+        val current = themeConfig.value
+        val updated = current.copy(subHarmonicSynthConfig = current.subHarmonicSynthConfig.copy(target = target))
+        updateTheme(updated)
+        val offset = com.nexus.tune.core.domain.audio.SubHarmonicSynthEngine.calculateHardwareOffsetMb(
+            updated.subHarmonicSynthConfig.intensityPercent,
+            updated.subHarmonicSynthConfig.isEnabled,
+            target
+        )
+        NexusAudioEffects.instance.applySubHarmonicOffset(offset)
+    }
+
+    fun setSubHarmonicSynthIntensity(intensityPercent: Int) {
+        val current = themeConfig.value
+        val clamped = intensityPercent.coerceIn(0, 100)
+        val updated = current.copy(subHarmonicSynthConfig = current.subHarmonicSynthConfig.copy(intensityPercent = clamped))
+        updateTheme(updated)
+        val offset = com.nexus.tune.core.domain.audio.SubHarmonicSynthEngine.calculateHardwareOffsetMb(
+            clamped,
+            updated.subHarmonicSynthConfig.isEnabled,
+            updated.subHarmonicSynthConfig.target
+        )
+        NexusAudioEffects.instance.applySubHarmonicOffset(offset)
+    }
+
+    fun setSubHarmonicSynthBlend(blendPercent: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(subHarmonicSynthConfig = current.subHarmonicSynthConfig.copy(subOctaveBlendPercent = blendPercent.coerceIn(0, 100))))
+    }
 }

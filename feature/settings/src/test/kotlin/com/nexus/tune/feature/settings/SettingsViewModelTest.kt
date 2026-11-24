@@ -1101,4 +1101,37 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.airBandExciterConfig.harmonicExcitationPercent == 60 })
         }
     }
+
+    @Test
+    fun `sub-harmonic synth settings update theme config and audio effects`() = runTest {
+        viewModel.setSubHarmonicSynthEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.subHarmonicSynthConfig.isEnabled })
+        }
+
+        viewModel.setSubHarmonicSynthMode(SubHarmonicMode.CLUB_EARTHQUAKE)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.subHarmonicSynthConfig.mode == SubHarmonicMode.CLUB_EARTHQUAKE })
+        }
+
+        viewModel.setSubHarmonicSynthTarget(SubHarmonicTarget.FULL_RANGE_SUBWOOFER)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.subHarmonicSynthConfig.target == SubHarmonicTarget.FULL_RANGE_SUBWOOFER })
+        }
+
+        viewModel.setSubHarmonicSynthIntensity(85)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.subHarmonicSynthConfig.intensityPercent == 85 })
+        }
+
+        viewModel.setSubHarmonicSynthBlend(75)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.subHarmonicSynthConfig.subOctaveBlendPercent == 75 })
+        }
+    }
 }

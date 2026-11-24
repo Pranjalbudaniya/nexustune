@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 70 (v6.20.0 Audiophile High-Frequency "Air Band" & Silk Sheen Exciter Studio)
+- Active Phase: Post-v1.0 Improvement Loop 71 (v6.21.0 Psychoacoustic Sub-Harmonic Bass & Missing Fundamental Studio)
 - In Flight: Quality gate execution and release qualification
 - Branches: `main`
 
@@ -680,6 +680,18 @@
     - [x] Comprehensive test suites in `AirBandExciterEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.20-1`
+
+- [x] Improvement Loop 71 (v6.21 Milestone - Tagged `v6.21-1`)
+  - [x] Psychoacoustic Sub-Harmonic Bass & Missing Fundamental Studio (`SubHarmonicSynthEngine`):
+    - [x] `SubHarmonicTarget`, `SubHarmonicMode`, `SubHarmonicSynthConfig`, and `SubHarmonicMetrics` in `:core:model`
+    - [x] `SubHarmonicSynthEngine` in `:core:domain:audio` with Chebyshev 2nd/3rd missing fundamental harmonics, sub-octave ($f_0 / 2$) frequency divider, hardware Band 0 offset calculation, and live diagnostic ratings
+    - [x] Hardware equalizer integration in `NexusAudioEffects` targeting Band 0 (~60 Hz sub-bass) with `applySubHarmonicOffset`
+    - [x] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
+    - [x] `SettingsViewModel` sub-harmonic synth control methods
+    - [x] Interactive "Psychoacoustic Sub-Harmonic Bass Studio" card in `SettingsScreen`
+    - [x] Comprehensive test suites in `SubHarmonicSynthEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v6.21-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.
