@@ -5,6 +5,17 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.37.0] - 2026-11-24
+
+### Added
+- **Audiophile Dynamic Mid-Side Spatial Phase Decorrelator & Ambience Diffuser Studio (`SpatialDecorrelatorEngine`)**: Added `DecorrelatorStage` (`SUBTLE_HAAS_MICRO`, `DIFFUSE_CONCERT_DEPTH`, `WIDE_HOLOGRAPHIC_STAGE`, `BINAURAL_HEADPHONE_EXPANDER`), `DecorrelatorMode` (`MID_SIDE_PHASE_SPLIT`, `ALLPASS_CASCADE_DIFFUSE`, `DYNAMIC_AMBIENCE_SPREAD`, `SOLO_DECORRELATED_SIDE`), `DecorrelatorPreset` (`OFF`, `HEADPHONE_SOUNDSTAGE_EXPAND`, `STUDIO_NEARFIELD_UNCLUTTER`, `ORCHESTRAL_HALL_AIR`, `VINYL_STEREO_RECENTER`), `SpatialDecorrelatorConfig`, and `SpatialDecorrelatorMetrics` in `:core:model`.
+- **All-Pass Phase Decorrelation & Mono Compatibility Safeguarding DSP**: Implemented `SpatialDecorrelatorEngine` in `:core:domain:audio`. Separates audio into Mid/Side components, applies a two-stage Schroeder all-pass phase decorrelator network to the Side channel using incommensurate prime delay taps ($1.2\dots 9.5\text{ ms}$) to disperse spatial wavefronts without coloration or comb filtering, incorporates dynamic mono-compatibility crossfeed safeguarding to prevent phase cancellation when summed to mono, and features solo side audition mode.
+- **Hardware Equalizer Integration**: Added `applyDecorrelatorOffset`, `clearDecorrelatorOffset`, and `getDecorrelatorOffset` targeting Bands 1 & 3 in `NexusAudioEffects` in `:core:player` for physical hardware soundstage presence.
+- **DataStore Persistence**: Added `SPATIAL_DECORRELATOR_ENABLED`, `SPATIAL_DECORRELATOR_PRESET`, `SPATIAL_DECORRELATOR_STAGE`, `SPATIAL_DECORRELATOR_MODE`, `SPATIAL_DECORRELATOR_INTENSITY`, `SPATIAL_DECORRELATOR_WIDTH`, `SPATIAL_DECORRELATOR_MONO_GUARD`, and `SPATIAL_DECORRELATOR_SOLO` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Spatial Decorrelator Studio**: Added interactive "Spatial Phase Decorrelator & Ambience Diffuser" card in its own dedicated `item { ... }` block in `SettingsScreen` with preset chips, delay stage chips, diffusion mode chips, diffusion intensity slider, stereo soundstage width slider, mono compatibility guard toggle, solo side audition toggle, and real-time spatial correlation & ambience HUD.
+- **Unit Test Coverage**: Comprehensive test suites in `SpatialDecorrelatorEngineTest` in `:core:domain`, `NexusAudioEffectsTest` in `:core:player`, and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.36.0] - 2026-11-24
 
 ### Added

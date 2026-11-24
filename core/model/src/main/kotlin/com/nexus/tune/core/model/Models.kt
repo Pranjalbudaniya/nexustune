@@ -252,7 +252,8 @@ data class ThemeConfig(
     val preampNoiseFlattenerConfig: PreampNoiseFlattenerConfig = PreampNoiseFlattenerConfig(),
     val slewRateLimiterConfig: SlewRateLimiterConfig = SlewRateLimiterConfig(),
     val hornDiffuserConfig: HornDiffuserConfig = HornDiffuserConfig(),
-    val bassAttackReshaperConfig: BassAttackReshaperConfig = BassAttackReshaperConfig()
+    val bassAttackReshaperConfig: BassAttackReshaperConfig = BassAttackReshaperConfig(),
+    val spatialDecorrelatorConfig: SpatialDecorrelatorConfig = SpatialDecorrelatorConfig()
 )
 
 data class SoundDoseInfo(
@@ -1957,6 +1958,47 @@ data class BassAttackReshaperMetrics(
     val transientPunchRating: String,
     val isTransientActive: Boolean
 )
+
+enum class DecorrelatorStage(val label: String, val delayMs: Float) {
+    SUBTLE_HAAS_MICRO("Subtle Haas Micro (1.2 ms)", 1.2f),
+    DIFFUSE_CONCERT_DEPTH("Diffuse Concert Depth (3.5 ms)", 3.5f),
+    WIDE_HOLOGRAPHIC_STAGE("Wide Holographic Stage (6.0 ms)", 6.0f),
+    BINAURAL_HEADPHONE_EXPANDER("Binaural Headphone Expander (9.5 ms)", 9.5f)
+}
+
+enum class DecorrelatorMode(val label: String) {
+    MID_SIDE_PHASE_SPLIT("Mid-Side Phase Split"),
+    ALLPASS_CASCADE_DIFFUSE("All-Pass Cascade Diffusion"),
+    DYNAMIC_AMBIENCE_SPREAD("Dynamic Ambience Spread"),
+    SOLO_DECORRELATED_SIDE("Solo Decorrelated Side Audition")
+}
+
+enum class DecorrelatorPreset(val label: String) {
+    OFF("Bypass / Off"),
+    HEADPHONE_SOUNDSTAGE_EXPAND("Headphone Soundstage Expand"),
+    STUDIO_NEARFIELD_UNCLUTTER("Studio Nearfield Unclutter"),
+    ORCHESTRAL_HALL_AIR("Orchestral Hall Air"),
+    VINYL_STEREO_RECENTER("Vinyl Stereo Recenter")
+}
+
+data class SpatialDecorrelatorConfig(
+    val isEnabled: Boolean = false,
+    val preset: DecorrelatorPreset = DecorrelatorPreset.OFF,
+    val stage: DecorrelatorStage = DecorrelatorStage.SUBTLE_HAAS_MICRO,
+    val mode: DecorrelatorMode = DecorrelatorMode.ALLPASS_CASCADE_DIFFUSE,
+    val diffusionIntensityPercent: Int = 50,
+    val stereoWidthMultiplier: Float = 1.25f,
+    val monoCompatibilityGuard: Boolean = true,
+    val soloDecorrelatedSide: Boolean = false
+)
+
+data class SpatialDecorrelatorMetrics(
+    val correlationCoefficient: Float,
+    val phaseSpreadAngleDegrees: Float,
+    val soundstageWidthRating: String,
+    val isMonoSafe: Boolean
+)
+
 
 
 

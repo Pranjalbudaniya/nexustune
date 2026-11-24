@@ -1643,4 +1643,60 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(bassAttackReshaperConfig = current.bassAttackReshaperConfig.copy(soloAttackTransient = solo)))
     }
+
+    fun setSpatialDecorrelatorEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(spatialDecorrelatorConfig = current.spatialDecorrelatorConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setSpatialDecorrelatorPreset(preset: DecorrelatorPreset) {
+        val current = themeConfig.value
+        val isEnabled = preset != DecorrelatorPreset.OFF
+        val engine = com.nexus.tune.core.domain.audio.SpatialDecorrelatorEngine()
+        val mapped = engine.presetToConfig(preset)
+        updateTheme(
+            current.copy(
+                spatialDecorrelatorConfig = current.spatialDecorrelatorConfig.copy(
+                    isEnabled = isEnabled,
+                    preset = preset,
+                    stage = mapped.stage,
+                    mode = mapped.mode,
+                    diffusionIntensityPercent = mapped.diffusionIntensityPercent,
+                    stereoWidthMultiplier = mapped.stereoWidthMultiplier,
+                    monoCompatibilityGuard = mapped.monoCompatibilityGuard,
+                    soloDecorrelatedSide = mapped.soloDecorrelatedSide
+                )
+            )
+        )
+    }
+
+    fun setSpatialDecorrelatorStage(stage: DecorrelatorStage) {
+        val current = themeConfig.value
+        updateTheme(current.copy(spatialDecorrelatorConfig = current.spatialDecorrelatorConfig.copy(stage = stage)))
+    }
+
+    fun setSpatialDecorrelatorMode(mode: DecorrelatorMode) {
+        val current = themeConfig.value
+        updateTheme(current.copy(spatialDecorrelatorConfig = current.spatialDecorrelatorConfig.copy(mode = mode)))
+    }
+
+    fun setSpatialDecorrelatorIntensity(intensity: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(spatialDecorrelatorConfig = current.spatialDecorrelatorConfig.copy(diffusionIntensityPercent = intensity.coerceIn(0, 100))))
+    }
+
+    fun setSpatialDecorrelatorWidth(width: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(spatialDecorrelatorConfig = current.spatialDecorrelatorConfig.copy(stereoWidthMultiplier = width.coerceIn(0.5f, 2.5f))))
+    }
+
+    fun setSpatialDecorrelatorMonoGuard(guard: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(spatialDecorrelatorConfig = current.spatialDecorrelatorConfig.copy(monoCompatibilityGuard = guard)))
+    }
+
+    fun setSpatialDecorrelatorSoloSide(solo: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(spatialDecorrelatorConfig = current.spatialDecorrelatorConfig.copy(soloDecorrelatedSide = solo)))
+    }
 }

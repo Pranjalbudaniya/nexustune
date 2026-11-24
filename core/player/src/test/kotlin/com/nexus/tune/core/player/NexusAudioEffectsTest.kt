@@ -265,5 +265,14 @@ class NexusAudioEffectsTest {
         audioEffects.clearBassAttackOffset()
         assertEquals(0, audioEffects.getBassAttackOffset())
     }
+
+    @Test
+    fun `decorrelator offset can be applied and cleared`() {
+        audioEffects.applyDecorrelatorOffset(95)
+        assertEquals(95, audioEffects.getDecorrelatorOffset())
+
+        audioEffects.clearDecorrelatorOffset()
+        assertEquals(0, audioEffects.getDecorrelatorOffset())
+    }
 }
 

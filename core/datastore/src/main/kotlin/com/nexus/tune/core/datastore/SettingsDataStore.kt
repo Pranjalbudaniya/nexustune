@@ -224,6 +224,14 @@ class SettingsDataStore(private val context: Context) {
         val BASS_ATTACK_SUSTAIN_DAMPING = intPreferencesKey("bass_attack_sustain_damping")
         val BASS_ATTACK_CROSSOVER_HZ = floatPreferencesKey("bass_attack_crossover_hz")
         val BASS_ATTACK_SOLO = booleanPreferencesKey("bass_attack_solo")
+        val SPATIAL_DECORRELATOR_ENABLED = booleanPreferencesKey("spatial_decorrelator_enabled")
+        val SPATIAL_DECORRELATOR_PRESET = stringPreferencesKey("spatial_decorrelator_preset")
+        val SPATIAL_DECORRELATOR_STAGE = stringPreferencesKey("spatial_decorrelator_stage")
+        val SPATIAL_DECORRELATOR_MODE = stringPreferencesKey("spatial_decorrelator_mode")
+        val SPATIAL_DECORRELATOR_INTENSITY = intPreferencesKey("spatial_decorrelator_intensity")
+        val SPATIAL_DECORRELATOR_WIDTH = floatPreferencesKey("spatial_decorrelator_width")
+        val SPATIAL_DECORRELATOR_MONO_GUARD = booleanPreferencesKey("spatial_decorrelator_mono_guard")
+        val SPATIAL_DECORRELATOR_SOLO = booleanPreferencesKey("spatial_decorrelator_solo")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -626,6 +634,22 @@ class SettingsDataStore(private val context: Context) {
                 sustainDampingPercent = prefs[PreferencesKeys.BASS_ATTACK_SUSTAIN_DAMPING] ?: 45,
                 crossoverFrequencyHz = prefs[PreferencesKeys.BASS_ATTACK_CROSSOVER_HZ] ?: 90.0f,
                 soloAttackTransient = prefs[PreferencesKeys.BASS_ATTACK_SOLO] ?: false
+            ),
+            spatialDecorrelatorConfig = SpatialDecorrelatorConfig(
+                isEnabled = prefs[PreferencesKeys.SPATIAL_DECORRELATOR_ENABLED] ?: false,
+                preset = runCatching {
+                    DecorrelatorPreset.valueOf(prefs[PreferencesKeys.SPATIAL_DECORRELATOR_PRESET] ?: DecorrelatorPreset.OFF.name)
+                }.getOrDefault(DecorrelatorPreset.OFF),
+                stage = runCatching {
+                    DecorrelatorStage.valueOf(prefs[PreferencesKeys.SPATIAL_DECORRELATOR_STAGE] ?: DecorrelatorStage.SUBTLE_HAAS_MICRO.name)
+                }.getOrDefault(DecorrelatorStage.SUBTLE_HAAS_MICRO),
+                mode = runCatching {
+                    DecorrelatorMode.valueOf(prefs[PreferencesKeys.SPATIAL_DECORRELATOR_MODE] ?: DecorrelatorMode.ALLPASS_CASCADE_DIFFUSE.name)
+                }.getOrDefault(DecorrelatorMode.ALLPASS_CASCADE_DIFFUSE),
+                diffusionIntensityPercent = prefs[PreferencesKeys.SPATIAL_DECORRELATOR_INTENSITY] ?: 50,
+                stereoWidthMultiplier = prefs[PreferencesKeys.SPATIAL_DECORRELATOR_WIDTH] ?: 1.25f,
+                monoCompatibilityGuard = prefs[PreferencesKeys.SPATIAL_DECORRELATOR_MONO_GUARD] ?: true,
+                soloDecorrelatedSide = prefs[PreferencesKeys.SPATIAL_DECORRELATOR_SOLO] ?: false
             )
         )
     }
@@ -833,6 +857,14 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.BASS_ATTACK_SUSTAIN_DAMPING] = config.bassAttackReshaperConfig.sustainDampingPercent
             prefs[PreferencesKeys.BASS_ATTACK_CROSSOVER_HZ] = config.bassAttackReshaperConfig.crossoverFrequencyHz
             prefs[PreferencesKeys.BASS_ATTACK_SOLO] = config.bassAttackReshaperConfig.soloAttackTransient
+            prefs[PreferencesKeys.SPATIAL_DECORRELATOR_ENABLED] = config.spatialDecorrelatorConfig.isEnabled
+            prefs[PreferencesKeys.SPATIAL_DECORRELATOR_PRESET] = config.spatialDecorrelatorConfig.preset.name
+            prefs[PreferencesKeys.SPATIAL_DECORRELATOR_STAGE] = config.spatialDecorrelatorConfig.stage.name
+            prefs[PreferencesKeys.SPATIAL_DECORRELATOR_MODE] = config.spatialDecorrelatorConfig.mode.name
+            prefs[PreferencesKeys.SPATIAL_DECORRELATOR_INTENSITY] = config.spatialDecorrelatorConfig.diffusionIntensityPercent
+            prefs[PreferencesKeys.SPATIAL_DECORRELATOR_WIDTH] = config.spatialDecorrelatorConfig.stereoWidthMultiplier
+            prefs[PreferencesKeys.SPATIAL_DECORRELATOR_MONO_GUARD] = config.spatialDecorrelatorConfig.monoCompatibilityGuard
+            prefs[PreferencesKeys.SPATIAL_DECORRELATOR_SOLO] = config.spatialDecorrelatorConfig.soloDecorrelatedSide
         }
     }
 
@@ -1117,6 +1149,19 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.BASS_ATTACK_SUSTAIN_DAMPING] = config.sustainDampingPercent
             prefs[PreferencesKeys.BASS_ATTACK_CROSSOVER_HZ] = config.crossoverFrequencyHz
             prefs[PreferencesKeys.BASS_ATTACK_SOLO] = config.soloAttackTransient
+        }
+    }
+
+    suspend fun updateSpatialDecorrelatorConfig(config: SpatialDecorrelatorConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.SPATIAL_DECORRELATOR_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.SPATIAL_DECORRELATOR_PRESET] = config.preset.name
+            prefs[PreferencesKeys.SPATIAL_DECORRELATOR_STAGE] = config.stage.name
+            prefs[PreferencesKeys.SPATIAL_DECORRELATOR_MODE] = config.mode.name
+            prefs[PreferencesKeys.SPATIAL_DECORRELATOR_INTENSITY] = config.diffusionIntensityPercent
+            prefs[PreferencesKeys.SPATIAL_DECORRELATOR_WIDTH] = config.stereoWidthMultiplier
+            prefs[PreferencesKeys.SPATIAL_DECORRELATOR_MONO_GUARD] = config.monoCompatibilityGuard
+            prefs[PreferencesKeys.SPATIAL_DECORRELATOR_SOLO] = config.soloDecorrelatedSide
         }
     }
 

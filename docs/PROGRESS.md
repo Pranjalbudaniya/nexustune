@@ -872,17 +872,29 @@
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.36-1`
 
-- [ ] Improvement Loop 87 (v6.37 Milestone - In Flight)
-  - [ ] Audiophile Dynamic Mid-Side Spatial Phase Decorrelator & Ambience Diffuser Studio (`SpatialDecorrelatorEngine`):
-    - [ ] `DecorrelatorStage`, `DecorrelatorMode`, `DecorrelatorPreset`, `SpatialDecorrelatorConfig`, and `SpatialDecorrelatorMetrics` in `:core:model`
-    - [ ] `SpatialDecorrelatorEngine` in `:core:domain:audio` with mid/side matrix separation, prime-number delay all-pass filter cascade, dynamic mono-compatibility safeguarding, and correlation index estimation
-    - [ ] Hardware equalizer integration in `NexusAudioEffects` (`applyDecorrelatorOffset`, `clearDecorrelatorOffset`, `getDecorrelatorOffset`) targeting Bands 1 & 3
+- [x] Improvement Loop 87 (v6.37 Milestone - Tagged `v6.37-1`)
+  - [x] Audiophile Dynamic Mid-Side Spatial Phase Decorrelator & Ambience Diffuser Studio (`SpatialDecorrelatorEngine`):
+    - [x] `DecorrelatorStage`, `DecorrelatorMode`, `DecorrelatorPreset`, `SpatialDecorrelatorConfig`, and `SpatialDecorrelatorMetrics` in `:core:model`
+    - [x] `SpatialDecorrelatorEngine` in `:core:domain:audio` with mid/side matrix separation, prime-number delay all-pass filter cascade, dynamic mono-compatibility safeguarding, and correlation index estimation
+    - [x] Hardware equalizer integration in `NexusAudioEffects` (`applyDecorrelatorOffset`, `clearDecorrelatorOffset`, `getDecorrelatorOffset`) targeting Bands 1 & 3
+    - [x] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
+    - [x] `SettingsViewModel` spatial decorrelator control methods
+    - [x] Interactive "Dynamic Mid-Side Spatial Phase Decorrelator & Ambience Diffuser Studio" card in `SettingsScreen` in dedicated `item { ... }` block
+    - [x] Comprehensive test suites in `SpatialDecorrelatorEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v6.37-1`
+
+- [ ] Improvement Loop 88 (v6.38 Milestone - In Flight)
+  - [ ] Audiophile Dynamic Analog Tape Flutter & Wow Harmonic Modulation Studio (`TapeModulationEngine`):
+    - [ ] `TapeModulationMachine`, `TapeModulationMode`, `TapeModulationPreset`, `TapeModulationConfig`, and `TapeModulationMetrics` in `:core:model`
+    - [ ] `TapeModulationEngine` in `:core:domain:audio` with fractional pitch delay line with cubic Hermite interpolation, dual-LFO modulation (capstan wow $0.5\dots 1.2\text{ Hz}$, scrape flutter $25\dots 55\text{ Hz}$), tape head scrape anti-resonance notch biquad ($3.2\dots 4.8\text{ kHz}$), and magnetic hysteresis saturation
+    - [ ] Hardware equalizer integration in `NexusAudioEffects` (`applyTapeModulationOffset`, `clearTapeModulationOffset`, `getTapeModulationOffset`) targeting Bands 2 & 4
     - [ ] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
-    - [ ] `SettingsViewModel` spatial decorrelator control methods
-    - [ ] Interactive "Dynamic Mid-Side Spatial Phase Decorrelator & Ambience Diffuser Studio" card in `SettingsScreen` in dedicated `item { ... }` block
-    - [ ] Comprehensive test suites in `SpatialDecorrelatorEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
+    - [ ] `SettingsViewModel` tape modulation control methods
+    - [ ] Interactive "Dynamic Analog Tape Flutter & Wow Harmonic Modulation Studio" card in `SettingsScreen` in dedicated `item { ... }` block
+    - [ ] Comprehensive test suites in `TapeModulationEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
   - [ ] Slice gate passed
-  - [ ] Final gate passed & tagged: `v6.37-1`
+  - [ ] Final gate passed & tagged: `v6.38-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

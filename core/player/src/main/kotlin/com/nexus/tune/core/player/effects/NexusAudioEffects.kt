@@ -40,6 +40,7 @@ class NexusAudioEffects {
     private var slewRateOffset: Int = 0
     private var hornDiffuserOffset: Int = 0
     private var bassAttackOffset: Int = 0
+    private var decorrelatorOffset: Int = 0
 
     fun attachToAudioSession(sessionId: Int) {
         if (sessionId == 0 || sessionId == currentSessionId) return
@@ -480,6 +481,18 @@ class NexusAudioEffects {
 
     fun getBassAttackOffset(): Int = bassAttackOffset
 
+    fun applyDecorrelatorOffset(offset: Int) {
+        decorrelatorOffset = offset
+        refreshBands()
+    }
+
+    fun clearDecorrelatorOffset() {
+        decorrelatorOffset = 0
+        refreshBands()
+    }
+
+    fun getDecorrelatorOffset(): Int = decorrelatorOffset
+
     fun setBassBoostStrength(strength: Short) {
         try {
             bassBoost?.setStrength(strength)
@@ -515,7 +528,8 @@ class NexusAudioEffects {
                 val slewOffset = if (i == 3 || i == 4) (slewRateOffset * (if (i == 4) 1.0f else 0.7f)).toInt() else 0
                 val hornOffset = if (i == 2 || i == 4) (hornDiffuserOffset * (if (i == 2) 1.0f else 0.8f)).toInt() else 0
                 val bassAttack = if (i == 0 || i == 1) (bassAttackOffset * (if (i == 0) 1.0f else 0.7f)).toInt() else 0
-                val combined = (base + kOffset + hOffset + sOffset + dOffset + tOffset + mOffset + aOffset + sHarmonicOffset + deEssOffset + tubeOffset + transientOffset + spatialOffset + tapeOffset + humOffset + feedbackOffset + elevationOffset + monoBassOffset + preampOffset + slewOffset + hornOffset + bassAttack).coerceIn(-1500, 1500)
+                val decorrelator = if (i == 1 || i == 3) (decorrelatorOffset * (if (i == 3) 1.0f else 0.7f)).toInt() else 0
+                val combined = (base + kOffset + hOffset + sOffset + dOffset + tOffset + mOffset + aOffset + sHarmonicOffset + deEssOffset + tubeOffset + transientOffset + spatialOffset + tapeOffset + humOffset + feedbackOffset + elevationOffset + monoBassOffset + preampOffset + slewOffset + hornOffset + bassAttack + decorrelator).coerceIn(-1500, 1500)
                 eq.setBandLevel(i.toShort(), combined.toShort())
             }
         } catch (e: Exception) {

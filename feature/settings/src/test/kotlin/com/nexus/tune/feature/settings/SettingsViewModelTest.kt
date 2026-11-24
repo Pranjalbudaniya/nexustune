@@ -1779,4 +1779,58 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.bassAttackReshaperConfig.soloAttackTransient })
         }
     }
+
+    @Test
+    fun `spatial decorrelator controls update theme config properly`() = runTest {
+        viewModel.setSpatialDecorrelatorEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.spatialDecorrelatorConfig.isEnabled })
+        }
+
+        viewModel.setSpatialDecorrelatorPreset(DecorrelatorPreset.HEADPHONE_SOUNDSTAGE_EXPAND)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match {
+                it.spatialDecorrelatorConfig.preset == DecorrelatorPreset.HEADPHONE_SOUNDSTAGE_EXPAND &&
+                        it.spatialDecorrelatorConfig.stage == DecorrelatorStage.BINAURAL_HEADPHONE_EXPANDER
+            })
+        }
+
+        viewModel.setSpatialDecorrelatorStage(DecorrelatorStage.WIDE_HOLOGRAPHIC_STAGE)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.spatialDecorrelatorConfig.stage == DecorrelatorStage.WIDE_HOLOGRAPHIC_STAGE })
+        }
+
+        viewModel.setSpatialDecorrelatorMode(DecorrelatorMode.DYNAMIC_AMBIENCE_SPREAD)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.spatialDecorrelatorConfig.mode == DecorrelatorMode.DYNAMIC_AMBIENCE_SPREAD })
+        }
+
+        viewModel.setSpatialDecorrelatorIntensity(80)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.spatialDecorrelatorConfig.diffusionIntensityPercent == 80 })
+        }
+
+        viewModel.setSpatialDecorrelatorWidth(1.6f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.spatialDecorrelatorConfig.stereoWidthMultiplier == 1.6f })
+        }
+
+        viewModel.setSpatialDecorrelatorMonoGuard(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.spatialDecorrelatorConfig.monoCompatibilityGuard })
+        }
+
+        viewModel.setSpatialDecorrelatorSoloSide(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.spatialDecorrelatorConfig.soloDecorrelatedSide })
+        }
+    }
 }

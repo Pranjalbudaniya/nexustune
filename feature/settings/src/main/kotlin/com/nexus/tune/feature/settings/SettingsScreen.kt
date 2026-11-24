@@ -33,6 +33,7 @@ import com.nexus.tune.core.domain.audio.PreampNoiseFlattenerEngine
 import com.nexus.tune.core.domain.audio.SlewRateLimiterEngine
 import com.nexus.tune.core.domain.audio.HornDiffuserEngine
 import com.nexus.tune.core.domain.audio.BassAttackReshaperEngine
+import com.nexus.tune.core.domain.audio.SpatialDecorrelatorEngine
 import com.nexus.tune.core.ui.EqCurveVisualizer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -4768,6 +4769,209 @@ fun SettingsScreen(
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            }
+
+            item {
+                // --- Dynamic Mid-Side Spatial Phase Decorrelator & Ambience Diffuser Studio ---
+                Text(
+                    text = "Spatial Phase Decorrelator & Ambience Diffuser",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                ListItem(
+                    headlineContent = { Text("Mid-Side Spatial Phase Decorrelator") },
+                    supportingContent = { Text("All-pass phase decorrelation on stereo side channel with mono-compatibility safeguarding") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.spatialDecorrelatorConfig.isEnabled,
+                            onCheckedChange = { viewModel.setSpatialDecorrelatorEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.spatialDecorrelatorConfig.isEnabled) {
+                    val decorrelatorMetrics = remember(themeConfig.spatialDecorrelatorConfig) {
+                        SpatialDecorrelatorEngine().estimateMetrics(
+                            floatArrayOf(0.6f, 0.45f, -0.3f, -0.2f, 0.5f, 0.4f),
+                            themeConfig.spatialDecorrelatorConfig
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Decorrelator Preset",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        DecorrelatorPreset.entries.forEach { preset ->
+                            FilterChip(
+                                selected = themeConfig.spatialDecorrelatorConfig.preset == preset,
+                                onClick = { viewModel.setSpatialDecorrelatorPreset(preset) },
+                                label = { Text(preset.label) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Spatial Delay Stage",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        DecorrelatorStage.entries.forEach { stage ->
+                            FilterChip(
+                                selected = themeConfig.spatialDecorrelatorConfig.stage == stage,
+                                onClick = { viewModel.setSpatialDecorrelatorStage(stage) },
+                                label = { Text(stage.label) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Decorrelator Diffusion Mode",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        DecorrelatorMode.entries.forEach { mode ->
+                            FilterChip(
+                                selected = themeConfig.spatialDecorrelatorConfig.mode == mode,
+                                onClick = { viewModel.setSpatialDecorrelatorMode(mode) },
+                                label = { Text(mode.label) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Diffusion Intensity: ${themeConfig.spatialDecorrelatorConfig.diffusionIntensityPercent}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Phase Angle: ${decorrelatorMetrics.phaseSpreadAngleDegrees}°",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.spatialDecorrelatorConfig.diffusionIntensityPercent.toFloat(),
+                        onValueChange = { viewModel.setSpatialDecorrelatorIntensity(it.toInt()) },
+                        valueRange = 0.0f..100.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Stereo Soundstage Width: ${String.format(java.util.Locale.US, "%.2fx", themeConfig.spatialDecorrelatorConfig.stereoWidthMultiplier)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "ρ: ${decorrelatorMetrics.correlationCoefficient}",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.spatialDecorrelatorConfig.stereoWidthMultiplier,
+                        onValueChange = { viewModel.setSpatialDecorrelatorWidth(it) },
+                        valueRange = 0.5f..2.5f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    ListItem(
+                        headlineContent = { Text("Mono Compatibility Guard") },
+                        supportingContent = { Text("Prevent stereo phase cancellation when summed to mono") },
+                        trailingContent = {
+                            Switch(
+                                checked = themeConfig.spatialDecorrelatorConfig.monoCompatibilityGuard,
+                                onCheckedChange = { viewModel.setSpatialDecorrelatorMonoGuard(it) }
+                            )
+                        }
+                    )
+
+                    ListItem(
+                        headlineContent = { Text("Solo Decorrelated Side Audition") },
+                        supportingContent = { Text("Audition only the diffuse side ambience component") },
+                        trailingContent = {
+                            Switch(
+                                checked = themeConfig.spatialDecorrelatorConfig.soloDecorrelatedSide,
+                                onCheckedChange = { viewModel.setSpatialDecorrelatorSoloSide(it) }
+                            )
+                        }
+                    )
+
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = "SPATIAL PHASE CORRELATION & AMBIENCE HUD",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Stage: ${decorrelatorMetrics.soundstageWidthRating}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Mono Guard: ${if (decorrelatorMetrics.isMonoSafe) "PROTECTED" else "WARNING"}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (decorrelatorMetrics.isMonoSafe) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error
                                 )
                             }
                         }
