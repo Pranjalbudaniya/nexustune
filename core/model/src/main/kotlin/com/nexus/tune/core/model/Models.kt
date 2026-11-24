@@ -230,7 +230,8 @@ data class ThemeConfig(
     val beatCrossfadeConfig: BeatCrossfadeConfig = BeatCrossfadeConfig(),
     val silenceTrimConfig: SilenceTrimConfig = SilenceTrimConfig(),
     val resamplingFilterConfig: ResamplingFilterConfig = ResamplingFilterConfig(),
-    val phaseMeterConfig: PhaseMeterConfig = PhaseMeterConfig()
+    val phaseMeterConfig: PhaseMeterConfig = PhaseMeterConfig(),
+    val tiltEqualizerConfig: TiltEqualizerConfig = TiltEqualizerConfig()
 )
 
 data class SoundDoseInfo(
@@ -947,6 +948,35 @@ data class PhaseCorrelationMetrics(
     val rating: PhaseCorrelationRating,
     val sideAttenuationDb: Float,
     val isMonoSafe: Boolean
+)
+
+enum class TiltPivotFrequency(val displayName: String, val pivotHz: Float) {
+    HZ_630("630 Hz (Vocal Center)", 630.0f),
+    HZ_1000("1.0 kHz (Standard)", 1000.0f),
+    HZ_1600("1.6 kHz (Upper Mid)", 1600.0f)
+}
+
+data class TiltEqualizerConfig(
+    val isEnabled: Boolean = false,
+    val tiltDb: Float = 0.0f,
+    val pivotHz: Float = 1000.0f,
+    val loudnessCompensate: Boolean = true
+)
+
+data class TiltSpectralMetrics(
+    val bassGainDb: Float,
+    val trebleGainDb: Float,
+    val pivotHz: Float,
+    val apparentLoudnessOffsetDb: Float,
+    val tonalBalanceDescription: String
+)
+
+data class TiltBiquadCoefficients(
+    val b0: Float,
+    val b1: Float,
+    val b2: Float,
+    val a1: Float,
+    val a2: Float
 )
 
 

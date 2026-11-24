@@ -933,4 +933,31 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.phaseMeterConfig.minCorrelationThreshold == 0.35f })
         }
     }
+
+    @Test
+    fun `tilt equalizer settings update theme config`() = runTest {
+        viewModel.setTiltEqEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.tiltEqualizerConfig.isEnabled })
+        }
+
+        viewModel.setTiltEqDb(2.5f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.tiltEqualizerConfig.tiltDb == 2.5f })
+        }
+
+        viewModel.setTiltEqPivotHz(630.0f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.tiltEqualizerConfig.pivotHz == 630.0f })
+        }
+
+        viewModel.setTiltEqLoudnessCompensate(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.tiltEqualizerConfig.loudnessCompensate })
+        }
+    }
 }

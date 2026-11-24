@@ -5,6 +5,17 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.15.0] - 2026-11-24
+
+### Added
+- **Audiophile Tilt Equalizer & Tonal Balance Shifter Studio (`TiltEqualizerEngine`)**: Added `TiltPivotFrequency` (`HZ_630`, `HZ_1000`, `HZ_1600`), `TiltEqualizerConfig`, `TiltSpectralMetrics`, and `TiltBiquadCoefficients` in `:core:model`.
+- **Logarithmic Spectral Tilt & Unconditionally Stable Biquad Filter DSP**: Implemented `TiltEqualizerEngine` in `:core:domain:audio` rotating the entire audible frequency spectrum around a pivotal center frequency (630 Hz, 1 kHz, or 1.6 kHz) with smooth logarithmic curve $G_{dB}(f)$, preserving pristine stereo imaging and micro-dynamics without comb filtering, supported by stable 1st-order bilinear shelving biquad coefficients ($|a_1| < 1$) and equal-energy pink-noise loudness compensation.
+- **Hardware Equalizer Integration**: Added `applyTiltOffsets`, `clearTiltOffsets`, and `getTiltOffsets` in `NexusAudioEffects` in `:core:player`, translating tilt slopes to millibel offsets across standard 5-band Equalizer bands.
+- **DataStore Persistence**: Added `TILT_EQ_ENABLED`, `TILT_EQ_DB`, `TILT_EQ_PIVOT_HZ`, and `TILT_EQ_LOUDNESS_COMPENSATE` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Tilt Equalizer Studio**: Added interactive "Audiophile Tilt Equalizer" card in `SettingsScreen` with continuous dB slider (-6.0 dB to +6.0 dB), pivot frequency chips, loudness compensation toggle, and real-time tonal balance descriptor badge ("Warm Analog Tube", "Crisp Detail Sheen", etc.).
+- **Unit Test Coverage**: Comprehensive test suites in `TiltEqualizerEngineTest` in `:core:domain`, `NexusAudioEffectsTest` in `:core:player`, and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.14.0] - 2026-11-24
 
 ### Added

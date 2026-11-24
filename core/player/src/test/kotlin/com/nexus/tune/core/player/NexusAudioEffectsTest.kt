@@ -111,5 +111,15 @@ class NexusAudioEffectsTest {
         audioEffects.clearDynamicLoudnessOffsets()
         assertEquals(listOf(0, 0, 0, 0, 0), audioEffects.getDynamicLoudnessOffsets())
     }
+
+    @Test
+    fun `tilt equalizer offsets can be applied and cleared`() {
+        val tiltOffsets = listOf(300, 150, 0, -150, -300)
+        audioEffects.applyTiltOffsets(tiltOffsets)
+        assertEquals(tiltOffsets, audioEffects.getTiltOffsets())
+
+        audioEffects.clearTiltOffsets()
+        assertEquals(listOf(0, 0, 0, 0, 0), audioEffects.getTiltOffsets())
+    }
 }
 

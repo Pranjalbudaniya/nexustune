@@ -862,6 +862,132 @@ fun SettingsScreen(
                             }
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+                    ListItem(
+                        headlineContent = { Text("Audiophile Tilt Equalizer") },
+                        supportingContent = { Text("Smooth tonal tilt rotating the entire spectrum around a center pivot") },
+                        trailingContent = {
+                            Switch(
+                                checked = themeConfig.tiltEqualizerConfig.isEnabled,
+                                onCheckedChange = { viewModel.setTiltEqEnabled(it) }
+                            )
+                        }
+                    )
+
+                    if (themeConfig.tiltEqualizerConfig.isEnabled) {
+                        val tiltMetrics = com.nexus.tune.core.domain.audio.TiltEqualizerEngine.calculateSpectralMetrics(themeConfig.tiltEqualizerConfig)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Tonal Balance: ${if (themeConfig.tiltEqualizerConfig.tiltDb < 0) "Warm" else if (themeConfig.tiltEqualizerConfig.tiltDb > 0) "Bright" else "Flat"} (${String.format(java.util.Locale.US, "%+.1f dB", themeConfig.tiltEqualizerConfig.tiltDb)})",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = tiltMetrics.tonalBalanceDescription,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
+                        Slider(
+                            value = themeConfig.tiltEqualizerConfig.tiltDb,
+                            onValueChange = { viewModel.setTiltEqDb(it) },
+                            valueRange = -6.0f..6.0f,
+                            steps = 23,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "◄ Warmer (-6 dB)",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.outline
+                            )
+                            Text(
+                                text = "Pivot: ${themeConfig.tiltEqualizerConfig.pivotHz.toInt()} Hz",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.tertiary
+                            )
+                            Text(
+                                text = "Brighter (+6 dB) ►",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.outline
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = "Pivot Frequency",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState()),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            listOf(
+                                630.0f to "630 Hz (Vocal)",
+                                1000.0f to "1.0 kHz (Standard)",
+                                1600.0f to "1.6 kHz (Upper Mid)"
+                            ).forEach { (freq, label) ->
+                                FilterChip(
+                                    selected = themeConfig.tiltEqualizerConfig.pivotHz == freq,
+                                    onClick = { viewModel.setTiltEqPivotHz(freq) },
+                                    label = { Text(label) }
+                                )
+                            }
+                        }
+
+                        ListItem(
+                            headlineContent = { Text("Loudness Energy Compensation") },
+                            supportingContent = { Text("Automatically offsets volume so perceived SPL remains constant") },
+                            trailingContent = {
+                                Switch(
+                                    checked = themeConfig.tiltEqualizerConfig.loudnessCompensate,
+                                    onCheckedChange = { viewModel.setTiltEqLoudnessCompensate(it) }
+                                )
+                            }
+                        )
+
+                        Surface(
+                            shape = MaterialTheme.shapes.small,
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(8.dp),
+                                horizontalArrangement = Arrangement.SpaceAround,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Bass (100Hz): ${String.format(java.util.Locale.US, "%+.1f dB", tiltMetrics.bassGainDb)}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Treble (10kHz): ${String.format(java.util.Locale.US, "%+.1f dB", tiltMetrics.trebleGainDb)}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                                Text(
+                                    text = "Loudness: ${String.format(java.util.Locale.US, "%+.1f dB", tiltMetrics.apparentLoudnessOffsetDb)}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                        }
+                    }
                 }
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))

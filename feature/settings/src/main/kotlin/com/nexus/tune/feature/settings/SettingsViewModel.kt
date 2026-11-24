@@ -729,4 +729,24 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(phaseMeterConfig = current.phaseMeterConfig.copy(minCorrelationThreshold = threshold.coerceIn(-0.5f, 0.8f))))
     }
+
+    fun setTiltEqEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(tiltEqualizerConfig = current.tiltEqualizerConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setTiltEqDb(tiltDb: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(tiltEqualizerConfig = current.tiltEqualizerConfig.copy(tiltDb = tiltDb.coerceIn(-6.0f, 6.0f))))
+    }
+
+    fun setTiltEqPivotHz(pivotHz: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(tiltEqualizerConfig = current.tiltEqualizerConfig.copy(pivotHz = pivotHz.coerceIn(100.0f, 10000.0f))))
+    }
+
+    fun setTiltEqLoudnessCompensate(compensate: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(tiltEqualizerConfig = current.tiltEqualizerConfig.copy(loudnessCompensate = compensate)))
+    }
 }

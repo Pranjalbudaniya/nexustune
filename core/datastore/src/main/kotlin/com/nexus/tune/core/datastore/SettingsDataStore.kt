@@ -96,6 +96,10 @@ class SettingsDataStore(private val context: Context) {
         val PHASE_GUARD_ENABLED = booleanPreferencesKey("phase_guard_enabled")
         val PHASE_GUARD_MODE = stringPreferencesKey("phase_guard_mode")
         val PHASE_GUARD_THRESHOLD = floatPreferencesKey("phase_guard_threshold")
+        val TILT_EQ_ENABLED = booleanPreferencesKey("tilt_eq_enabled")
+        val TILT_EQ_DB = floatPreferencesKey("tilt_eq_db")
+        val TILT_EQ_PIVOT_HZ = floatPreferencesKey("tilt_eq_pivot_hz")
+        val TILT_EQ_LOUDNESS_COMPENSATE = booleanPreferencesKey("tilt_eq_loudness_compensate")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -234,6 +238,12 @@ class SettingsDataStore(private val context: Context) {
                     MonoGuardMode.valueOf(prefs[PreferencesKeys.PHASE_GUARD_MODE] ?: MonoGuardMode.INTELLIGENT_SAFEGUARD.name)
                 }.getOrDefault(MonoGuardMode.INTELLIGENT_SAFEGUARD),
                 minCorrelationThreshold = prefs[PreferencesKeys.PHASE_GUARD_THRESHOLD] ?: 0.20f
+            ),
+            tiltEqualizerConfig = TiltEqualizerConfig(
+                isEnabled = prefs[PreferencesKeys.TILT_EQ_ENABLED] ?: false,
+                tiltDb = prefs[PreferencesKeys.TILT_EQ_DB] ?: 0.0f,
+                pivotHz = prefs[PreferencesKeys.TILT_EQ_PIVOT_HZ] ?: 1000.0f,
+                loudnessCompensate = prefs[PreferencesKeys.TILT_EQ_LOUDNESS_COMPENSATE] ?: true
             )
         )
     }
@@ -313,6 +323,10 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.PHASE_GUARD_ENABLED] = config.phaseMeterConfig.isEnabled
             prefs[PreferencesKeys.PHASE_GUARD_MODE] = config.phaseMeterConfig.guardMode.name
             prefs[PreferencesKeys.PHASE_GUARD_THRESHOLD] = config.phaseMeterConfig.minCorrelationThreshold
+            prefs[PreferencesKeys.TILT_EQ_ENABLED] = config.tiltEqualizerConfig.isEnabled
+            prefs[PreferencesKeys.TILT_EQ_DB] = config.tiltEqualizerConfig.tiltDb
+            prefs[PreferencesKeys.TILT_EQ_PIVOT_HZ] = config.tiltEqualizerConfig.pivotHz
+            prefs[PreferencesKeys.TILT_EQ_LOUDNESS_COMPENSATE] = config.tiltEqualizerConfig.loudnessCompensate
         }
     }
 
@@ -359,6 +373,15 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.PHASE_GUARD_ENABLED] = config.isEnabled
             prefs[PreferencesKeys.PHASE_GUARD_MODE] = config.guardMode.name
             prefs[PreferencesKeys.PHASE_GUARD_THRESHOLD] = config.minCorrelationThreshold
+        }
+    }
+
+    suspend fun updateTiltEqualizerConfig(config: TiltEqualizerConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.TILT_EQ_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.TILT_EQ_DB] = config.tiltDb
+            prefs[PreferencesKeys.TILT_EQ_PIVOT_HZ] = config.pivotHz
+            prefs[PreferencesKeys.TILT_EQ_LOUDNESS_COMPENSATE] = config.loudnessCompensate
         }
     }
 
