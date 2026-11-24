@@ -194,6 +194,14 @@ class SettingsDataStore(private val context: Context) {
         val MONO_BASS_ALIGN_AUTO_PHASE = booleanPreferencesKey("mono_bass_align_auto_phase")
         val MONO_BASS_ALIGN_PUNCH_GAIN = floatPreferencesKey("mono_bass_align_punch_gain")
         val MONO_BASS_ALIGN_SIDE_SOLO = booleanPreferencesKey("mono_bass_align_side_solo")
+        val PREAMP_NOISE_FLATTENER_ENABLED = booleanPreferencesKey("preamp_noise_flattener_enabled")
+        val PREAMP_NOISE_FLATTENER_PRESET = stringPreferencesKey("preamp_noise_flattener_preset")
+        val PREAMP_NOISE_FLATTENER_PROFILE = stringPreferencesKey("preamp_noise_flattener_profile")
+        val PREAMP_NOISE_FLATTENER_MODE = stringPreferencesKey("preamp_noise_flattener_mode")
+        val PREAMP_NOISE_FLATTENER_FLATTEN_DEPTH = floatPreferencesKey("preamp_noise_flattener_flatten_depth")
+        val PREAMP_NOISE_FLATTENER_THRESHOLD_DB = floatPreferencesKey("preamp_noise_flattener_threshold_db")
+        val PREAMP_NOISE_FLATTENER_DITHER_LEVEL = floatPreferencesKey("preamp_noise_flattener_dither_level")
+        val PREAMP_NOISE_FLATTENER_HF_TILT_DB = floatPreferencesKey("preamp_noise_flattener_hf_tilt_db")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -526,6 +534,22 @@ class SettingsDataStore(private val context: Context) {
                 autoPhaseAlign = prefs[PreferencesKeys.MONO_BASS_ALIGN_AUTO_PHASE] ?: true,
                 subPunchGainDb = prefs[PreferencesKeys.MONO_BASS_ALIGN_PUNCH_GAIN] ?: 1.5f,
                 sideSoloAudition = prefs[PreferencesKeys.MONO_BASS_ALIGN_SIDE_SOLO] ?: false
+            ),
+            preampNoiseFlattenerConfig = PreampNoiseFlattenerConfig(
+                isEnabled = prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_ENABLED] ?: false,
+                preset = runCatching {
+                    PreampNoiseFlattenerPreset.valueOf(prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_PRESET] ?: PreampNoiseFlattenerPreset.OFF.name)
+                }.getOrDefault(PreampNoiseFlattenerPreset.OFF),
+                profile = runCatching {
+                    PreampNoiseProfile.valueOf(prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_PROFILE] ?: PreampNoiseProfile.AUTO_DETECT.name)
+                }.getOrDefault(PreampNoiseProfile.AUTO_DETECT),
+                mode = runCatching {
+                    PreampFlattenerMode.valueOf(prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_MODE] ?: PreampFlattenerMode.DYNAMIC_FLATTEN.name)
+                }.getOrDefault(PreampFlattenerMode.DYNAMIC_FLATTEN),
+                flattenDepth = prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_FLATTEN_DEPTH] ?: 0.5f,
+                downwardThresholdDb = prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_THRESHOLD_DB] ?: -45.0f,
+                thermalDitherLevel = prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_DITHER_LEVEL] ?: 0.0f,
+                hfTiltDb = prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_HF_TILT_DB] ?: 0.0f
             )
         )
     }
@@ -703,6 +727,14 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.MONO_BASS_ALIGN_AUTO_PHASE] = config.monoBassAlignConfig.autoPhaseAlign
             prefs[PreferencesKeys.MONO_BASS_ALIGN_PUNCH_GAIN] = config.monoBassAlignConfig.subPunchGainDb
             prefs[PreferencesKeys.MONO_BASS_ALIGN_SIDE_SOLO] = config.monoBassAlignConfig.sideSoloAudition
+            prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_ENABLED] = config.preampNoiseFlattenerConfig.isEnabled
+            prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_PRESET] = config.preampNoiseFlattenerConfig.preset.name
+            prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_PROFILE] = config.preampNoiseFlattenerConfig.profile.name
+            prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_MODE] = config.preampNoiseFlattenerConfig.mode.name
+            prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_FLATTEN_DEPTH] = config.preampNoiseFlattenerConfig.flattenDepth
+            prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_THRESHOLD_DB] = config.preampNoiseFlattenerConfig.downwardThresholdDb
+            prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_DITHER_LEVEL] = config.preampNoiseFlattenerConfig.thermalDitherLevel
+            prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_HF_TILT_DB] = config.preampNoiseFlattenerConfig.hfTiltDb
         }
     }
 
@@ -937,6 +969,19 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.MONO_BASS_ALIGN_AUTO_PHASE] = config.autoPhaseAlign
             prefs[PreferencesKeys.MONO_BASS_ALIGN_PUNCH_GAIN] = config.subPunchGainDb
             prefs[PreferencesKeys.MONO_BASS_ALIGN_SIDE_SOLO] = config.sideSoloAudition
+        }
+    }
+
+    suspend fun updatePreampNoiseFlattenerConfig(config: PreampNoiseFlattenerConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_PRESET] = config.preset.name
+            prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_PROFILE] = config.profile.name
+            prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_MODE] = config.mode.name
+            prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_FLATTEN_DEPTH] = config.flattenDepth
+            prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_THRESHOLD_DB] = config.downwardThresholdDb
+            prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_DITHER_LEVEL] = config.thermalDitherLevel
+            prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_HF_TILT_DB] = config.hfTiltDb
         }
     }
 

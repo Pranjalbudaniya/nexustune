@@ -248,7 +248,8 @@ data class ThemeConfig(
     val mainsHumIsolatorConfig: MainsHumIsolatorConfig = MainsHumIsolatorConfig(),
     val acousticFeedbackConfig: AcousticFeedbackConfig = AcousticFeedbackConfig(),
     val soundstageElevationConfig: SoundstageElevationConfig = SoundstageElevationConfig(),
-    val monoBassAlignConfig: MonoBassAlignConfig = MonoBassAlignConfig()
+    val monoBassAlignConfig: MonoBassAlignConfig = MonoBassAlignConfig(),
+    val preampNoiseFlattenerConfig: PreampNoiseFlattenerConfig = PreampNoiseFlattenerConfig()
 )
 
 data class SoundDoseInfo(
@@ -1620,6 +1621,108 @@ data class MonoBassAlignMetrics(
     val phaseAlignmentDegrees: Float,
     val crossoverFrequencyHz: Float,
     val coherenceRating: String
+)
+
+enum class PreampNoiseProfile(
+    val displayName: String,
+    val description: String
+) {
+    AUTO_DETECT("Auto Detect", "Dynamically evaluates spectral slope across low, mid, and high frequency partitions"),
+    FLICKER_PINK("1/f Pink Flicker", "3 dB/octave attenuation dominant in semiconductor gate junctions"),
+    THERMAL_WHITE("Johnson-Nyquist White", "Flat thermal agitation noise floor across full audible spectrum"),
+    BROWNIAN_LOW("1/f² Brownian Lows", "6 dB/octave deep rumble from inductive magnetic cartridge drift"),
+    SHOT_BLUE("Blue/Violet Highs", "+3 dB/octave rising thermal hiss from transistor shot noise")
+}
+
+enum class PreampFlattenerMode(
+    val displayName: String,
+    val description: String
+) {
+    DYNAMIC_FLATTEN("Dynamic Flatten", "Applies inverse spectral weighting to restore linear acoustic balance"),
+    DOWNWARD_EXPAND("Downward Expand", "Soft-knee gating of quiescent preamp noise between musical passages"),
+    WARM_DITHER("Warm Thermal Dither", "Fletcher-Munson shaped low-level analog dither for cold digital streams"),
+    SOLO_NOISE_PROFILE("Solo Noise Profile", "Auditions isolated residual preamp noise and spectral cuts")
+}
+
+enum class PreampNoiseFlattenerPreset(
+    val displayName: String,
+    val profile: PreampNoiseProfile,
+    val mode: PreampFlattenerMode,
+    val flattenDepth: Float,
+    val downwardThresholdDb: Float,
+    val thermalDitherLevel: Float,
+    val hfTiltDb: Float,
+    val description: String
+) {
+    OFF(
+        "Off (Bypassed)",
+        PreampNoiseProfile.AUTO_DETECT,
+        PreampFlattenerMode.DYNAMIC_FLATTEN,
+        0.0f,
+        -45.0f,
+        0.0f,
+        0.0f,
+        "Direct signal pass-through without noise profiling or spectral flattening"
+    ),
+    STUDIO_SOLID_STATE(
+        "Studio Clean Preamp",
+        PreampNoiseProfile.THERMAL_WHITE,
+        PreampFlattenerMode.DYNAMIC_FLATTEN,
+        0.5f,
+        -48.0f,
+        0.08f,
+        -1.0f,
+        "Gentle white noise leveling and 1 dB HF hiss reduction for clean discrete solid-state preamps"
+    ),
+    VINTAGE_VINYL_RESTORE(
+        "Vintage Vinyl Preamp",
+        PreampNoiseProfile.BROWNIAN_LOW,
+        PreampFlattenerMode.DYNAMIC_FLATTEN,
+        0.75f,
+        -40.0f,
+        0.0f,
+        1.5f,
+        "Brownian LF drift stabilization and gentle high-frequency surface hiss balance"
+    ),
+    DISCRETE_TUBE_WARMER(
+        "Discrete Tube Console",
+        PreampNoiseProfile.FLICKER_PINK,
+        PreampFlattenerMode.WARM_DITHER,
+        0.4f,
+        -42.0f,
+        0.25f,
+        0.5f,
+        "Adds subtle Fletcher-Munson thermal dither and smooths low-mid 1/f flicker accumulation"
+    ),
+    TRANSPARENT_EXPANDER(
+        "Transparent Noise Gate",
+        PreampNoiseProfile.AUTO_DETECT,
+        PreampFlattenerMode.DOWNWARD_EXPAND,
+        0.8f,
+        -45.0f,
+        0.0f,
+        0.0f,
+        "Fast attack, soft-knee downward expansion eliminating background noise floor in quiet passages"
+    )
+}
+
+data class PreampNoiseFlattenerConfig(
+    val isEnabled: Boolean = false,
+    val preset: PreampNoiseFlattenerPreset = PreampNoiseFlattenerPreset.OFF,
+    val profile: PreampNoiseProfile = PreampNoiseProfile.AUTO_DETECT,
+    val mode: PreampFlattenerMode = PreampFlattenerMode.DYNAMIC_FLATTEN,
+    val flattenDepth: Float = 0.5f,
+    val downwardThresholdDb: Float = -45.0f,
+    val thermalDitherLevel: Float = 0.0f,
+    val hfTiltDb: Float = 0.0f
+)
+
+data class PreampNoiseFlattenerMetrics(
+    val estimatedNoiseFloorDb: Float,
+    val spectralTiltSlope: Float,
+    val dynamicGainReductionDb: Float,
+    val ditherActive: Boolean,
+    val noiseFloorRating: String
 )
 
 

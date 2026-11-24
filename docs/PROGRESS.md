@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 83 (v6.33.0 Audiophile Dynamic Preamp Thermal Noise Profiler & Spectral Flattener Studio)
+- Active Phase: Post-v1.0 Improvement Loop 84 (v6.34.0 Audiophile Dynamic Transient Peak Slew-Rate Limiter & Electrostatic Diaphragm Protector Studio)
 - In Flight: Domain engine, models, audio effects, datastore, viewmodel, and settings studio card implementation
 - Branches: `main`
 
@@ -823,17 +823,29 @@
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.32-1`
 
-- [ ] Improvement Loop 83 (v6.33 Milestone - In Flight)
-  - [ ] Audiophile Dynamic Preamp Thermal Noise Profiler & Spectral Flattener Studio (`PreampNoiseFlattenerEngine`):
-    - [ ] `PreampNoiseProfile`, `PreampFlattenerMode`, `PreampNoiseFlattenerPreset`, `PreampNoiseFlattenerConfig`, and `PreampNoiseFlattenerMetrics` in `:core:model`
-    - [ ] `PreampNoiseFlattenerEngine` in `:core:domain:audio` with real-time multi-band spectral slope estimator, inverse tilt filter, soft-knee downward expander, Fletcher-Munson thermal dither generator, and solo noise audition mode
-    - [ ] Hardware equalizer integration in `NexusAudioEffects` (`applyPreampTiltOffset`, `clearPreampTiltOffset`, `getPreampTiltOffset`) targeting Band 4
+- [x] Improvement Loop 83 (v6.33 Milestone - Tagged `v6.33-1`)
+  - [x] Audiophile Dynamic Preamp Thermal Noise Profiler & Spectral Flattener Studio (`PreampNoiseFlattenerEngine`):
+    - [x] `PreampNoiseProfile`, `PreampFlattenerMode`, `PreampNoiseFlattenerPreset`, `PreampNoiseFlattenerConfig`, and `PreampNoiseFlattenerMetrics` in `:core:model`
+    - [x] `PreampNoiseFlattenerEngine` in `:core:domain:audio` with real-time multi-band spectral slope estimator, inverse tilt filter, soft-knee downward expander, Fletcher-Munson thermal dither generator, and solo noise audition mode
+    - [x] Hardware equalizer integration in `NexusAudioEffects` (`applyPreampTiltOffset`, `clearPreampTiltOffset`, `getPreampTiltOffset`) targeting Band 4
+    - [x] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
+    - [x] `SettingsViewModel` preamp noise flattener control methods
+    - [x] Interactive "Dynamic Preamp Thermal Noise Profiler & Spectral Flattener Studio" card in `SettingsScreen` in dedicated `item { ... }` block
+    - [x] Comprehensive test suites in `PreampNoiseFlattenerEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v6.33-1`
+
+- [ ] Improvement Loop 84 (v6.34 Milestone - In Flight)
+  - [ ] Audiophile Dynamic Transient Peak Slew-Rate Limiter & Electrostatic Diaphragm Protector Studio (`SlewRateLimiterEngine`):
+    - [ ] `SlewRateSpeed`, `SlewLimiterMode`, `SlewRateLimiterPreset`, `SlewRateLimiterConfig`, and `SlewRateLimiterMetrics` in `:core:model`
+    - [ ] `SlewRateLimiterEngine` in `:core:domain:audio` with discrete $\frac{dV}{dt}$ tracker, second-order sample acceleration (TIM distortion index) detector, electrostatic stator arc soft-knee limiting curve, and solo clamped transient audition mode
+    - [ ] Hardware equalizer integration in `NexusAudioEffects` (`applySlewRateOffset`, `clearSlewRateOffset`, `getSlewRateOffset`) targeting Bands 3 & 4
     - [ ] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
-    - [ ] `SettingsViewModel` preamp noise flattener control methods
-    - [ ] Interactive "Dynamic Preamp Thermal Noise Profiler & Spectral Flattener Studio" card in `SettingsScreen` in dedicated `item { ... }` block
-    - [ ] Comprehensive test suites in `PreampNoiseFlattenerEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
+    - [ ] `SettingsViewModel` slew rate limiter control methods
+    - [ ] Interactive "Dynamic Transient Peak Slew-Rate Limiter & Electrostatic Protector Studio" card in `SettingsScreen` in dedicated `item { ... }` block
+    - [ ] Comprehensive test suites in `SlewRateLimiterEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
   - [ ] Slice gate passed
-  - [ ] Final gate passed & tagged: `v6.33-1`
+  - [ ] Final gate passed & tagged: `v6.34-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

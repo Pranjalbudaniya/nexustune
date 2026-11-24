@@ -1575,4 +1575,58 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.monoBassAlignConfig.sideSoloAudition })
         }
     }
+
+    @Test
+    fun `preamp noise flattener settings update theme config`() = runTest {
+        viewModel.setPreampNoiseFlattenerEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.preampNoiseFlattenerConfig.isEnabled })
+        }
+
+        viewModel.setPreampNoiseFlattenerPreset(PreampNoiseFlattenerPreset.STUDIO_SOLID_STATE)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match {
+                it.preampNoiseFlattenerConfig.preset == PreampNoiseFlattenerPreset.STUDIO_SOLID_STATE &&
+                        it.preampNoiseFlattenerConfig.profile == PreampNoiseProfile.THERMAL_WHITE
+            })
+        }
+
+        viewModel.setPreampNoiseProfile(PreampNoiseProfile.SHOT_BLUE)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.preampNoiseFlattenerConfig.profile == PreampNoiseProfile.SHOT_BLUE })
+        }
+
+        viewModel.setPreampFlattenerMode(PreampFlattenerMode.DOWNWARD_EXPAND)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.preampNoiseFlattenerConfig.mode == PreampFlattenerMode.DOWNWARD_EXPAND })
+        }
+
+        viewModel.setPreampFlattenDepth(0.9f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.preampNoiseFlattenerConfig.flattenDepth == 0.9f })
+        }
+
+        viewModel.setPreampDownwardThreshold(-35.0f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.preampNoiseFlattenerConfig.downwardThresholdDb == -35.0f })
+        }
+
+        viewModel.setPreampThermalDitherLevel(0.4f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.preampNoiseFlattenerConfig.thermalDitherLevel == 0.4f })
+        }
+
+        viewModel.setPreampHfTiltDb(-2.5f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.preampNoiseFlattenerConfig.hfTiltDb == -2.5f })
+        }
+    }
 }

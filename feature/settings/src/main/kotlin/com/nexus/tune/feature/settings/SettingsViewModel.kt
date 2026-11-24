@@ -1430,4 +1430,58 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(monoBassAlignConfig = current.monoBassAlignConfig.copy(sideSoloAudition = enabled)))
     }
+
+    fun setPreampNoiseFlattenerEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(preampNoiseFlattenerConfig = current.preampNoiseFlattenerConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setPreampNoiseFlattenerPreset(preset: PreampNoiseFlattenerPreset) {
+        val current = themeConfig.value
+        val isEnabled = preset != PreampNoiseFlattenerPreset.OFF
+        updateTheme(
+            current.copy(
+                preampNoiseFlattenerConfig = current.preampNoiseFlattenerConfig.copy(
+                    isEnabled = isEnabled,
+                    preset = preset,
+                    profile = preset.profile,
+                    mode = preset.mode,
+                    flattenDepth = preset.flattenDepth,
+                    downwardThresholdDb = preset.downwardThresholdDb,
+                    thermalDitherLevel = preset.thermalDitherLevel,
+                    hfTiltDb = preset.hfTiltDb
+                )
+            )
+        )
+    }
+
+    fun setPreampNoiseProfile(profile: PreampNoiseProfile) {
+        val current = themeConfig.value
+        updateTheme(current.copy(preampNoiseFlattenerConfig = current.preampNoiseFlattenerConfig.copy(profile = profile)))
+    }
+
+    fun setPreampFlattenerMode(mode: PreampFlattenerMode) {
+        val current = themeConfig.value
+        updateTheme(current.copy(preampNoiseFlattenerConfig = current.preampNoiseFlattenerConfig.copy(mode = mode)))
+    }
+
+    fun setPreampFlattenDepth(depth: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(preampNoiseFlattenerConfig = current.preampNoiseFlattenerConfig.copy(flattenDepth = depth.coerceIn(0.0f, 1.0f))))
+    }
+
+    fun setPreampDownwardThreshold(thresholdDb: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(preampNoiseFlattenerConfig = current.preampNoiseFlattenerConfig.copy(downwardThresholdDb = thresholdDb.coerceIn(-60.0f, -20.0f))))
+    }
+
+    fun setPreampThermalDitherLevel(level: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(preampNoiseFlattenerConfig = current.preampNoiseFlattenerConfig.copy(thermalDitherLevel = level.coerceIn(0.0f, 1.0f))))
+    }
+
+    fun setPreampHfTiltDb(tiltDb: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(preampNoiseFlattenerConfig = current.preampNoiseFlattenerConfig.copy(hfTiltDb = tiltDb.coerceIn(-6.0f, 6.0f))))
+    }
 }

@@ -148,3 +148,4 @@ class MonoBassAlignEngineTest {
         assertTrue(metrics.coherenceRating.contains("THX Subwoofer"))
     }
 }
+

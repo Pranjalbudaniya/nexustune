@@ -229,5 +229,14 @@ class NexusAudioEffectsTest {
         audioEffects.clearMonoBassPunchOffset()
         assertEquals(0, audioEffects.getMonoBassPunchOffset())
     }
+
+    @Test
+    fun `preamp tilt offset can be applied and cleared`() {
+        audioEffects.applyPreampTiltOffset(-75)
+        assertEquals(-75, audioEffects.getPreampTiltOffset())
+
+        audioEffects.clearPreampTiltOffset()
+        assertEquals(0, audioEffects.getPreampTiltOffset())
+    }
 }
 

@@ -5,6 +5,17 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.33.0] - 2026-11-24
+
+### Added
+- **Audiophile Dynamic Analog Preamp Thermal Noise Profiler & Spectral Flattener Studio (`PreampNoiseFlattenerEngine`)**: Added `PreampNoiseProfile` (`AUTO_DETECT`, `FLICKER_PINK`, `THERMAL_WHITE`, `BROWNIAN_LOW`, `SHOT_BLUE`), `PreampFlattenerMode` (`DYNAMIC_FLATTEN`, `DOWNWARD_EXPAND`, `WARM_DITHER`, `SOLO_NOISE_PROFILE`), `PreampNoiseFlattenerPreset` (`OFF`, `STUDIO_SOLID_STATE`, `VINTAGE_VINYL_RESTORE`, `DISCRETE_TUBE_WARMER`, `TRANSPARENT_EXPANDER`), `PreampNoiseFlattenerConfig`, and `PreampNoiseFlattenerMetrics` in `:core:model`.
+- **Johnson-Nyquist Thermal Noise Profiling & Fletcher-Munson Shaped Dither DSP**: Implemented `PreampNoiseFlattenerEngine` in `:core:domain:audio`. Evaluates real-time spectral noise slope across low, mid, and high frequency partitions, applies dynamic high-shelf biquad tilt flattening to eliminate cold/shrill high-frequency hiss or brownian low-end rumble, features soft-knee downward expander ballistics to gently silence background preamp hiss during quiet musical passages, and injects Fletcher-Munson equal-loudness shaped thermal dither to eliminate cold PCM quantization artifacts on digital tracks.
+- **Hardware Equalizer Integration**: Added `applyPreampTiltOffset`, `clearPreampTiltOffset`, and `getPreampTiltOffset` targeting Band 4 in `NexusAudioEffects` in `:core:player` for physical hardware treble air and tilt compensation.
+- **DataStore Persistence**: Added `PREAMP_NOISE_FLATTENER_ENABLED`, `PREAMP_NOISE_FLATTENER_PRESET`, `PREAMP_NOISE_FLATTENER_PROFILE`, `PREAMP_NOISE_FLATTENER_MODE`, `PREAMP_NOISE_FLATTENER_FLATTEN_DEPTH`, `PREAMP_NOISE_FLATTENER_THRESHOLD_DB`, `PREAMP_NOISE_FLATTENER_DITHER_LEVEL`, and `PREAMP_NOISE_FLATTENER_HF_TILT_DB` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Preamp Flattener Studio**: Added interactive "Dynamic Preamp Noise Profiler & Spectral Flattener Studio" card in its own dedicated `item { ... }` block in `SettingsScreen` with restoration preset chips, thermal noise profile chips, mode chips, flatten depth slider, downward threshold slider, HF tilt slider, Fletcher-Munson dither slider, and real-time noise floor & spectral HUD.
+- **Unit Test Coverage**: Comprehensive test suites in `PreampNoiseFlattenerEngineTest` in `:core:domain`, `NexusAudioEffectsTest` in `:core:player`, and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.32.0] - 2026-11-24
 
 ### Added

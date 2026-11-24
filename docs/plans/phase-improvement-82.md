@@ -52,3 +52,4 @@ Loop 82 introduces an Elliptical Equalizer and Dynamic Phase Alignment engine th
   - Player tests: `NexusAudioEffectsTest`
   - ViewModel tests: `SettingsViewModelTest`
   - Gates: `./scripts/gate.sh slice` and `./scripts/gate.sh final`
+

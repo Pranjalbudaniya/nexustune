@@ -29,6 +29,7 @@ import com.nexus.tune.core.domain.audio.MainsHumIsolatorEngine
 import com.nexus.tune.core.domain.audio.AcousticFeedbackEngine
 import com.nexus.tune.core.domain.audio.SoundstageElevationEngine
 import com.nexus.tune.core.domain.audio.MonoBassAlignEngine
+import com.nexus.tune.core.domain.audio.PreampNoiseFlattenerEngine
 import com.nexus.tune.core.ui.EqCurveVisualizer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -3925,6 +3926,230 @@ fun SettingsScreen(
                                     text = "ρ: ${String.format(java.util.Locale.US, "%.2f", monoMetrics.subBassCorrelation)}",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            }
+
+            item {
+                // --- Dynamic Preamp Thermal Noise Profiler & Spectral Flattener Studio ---
+                Text(
+                    text = "Dynamic Preamp Noise Profiler & Spectral Flattener Studio",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                ListItem(
+                    headlineContent = { Text("Preamp Noise Profiler & Spectral Flattener") },
+                    supportingContent = { Text("Johnson-Nyquist thermal noise profiler, dynamic spectral tilt flattener, soft-knee downward expander, and warm Fletcher-Munson dither") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.preampNoiseFlattenerConfig.isEnabled,
+                            onCheckedChange = { viewModel.setPreampNoiseFlattenerEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.preampNoiseFlattenerConfig.isEnabled) {
+                    val preampMetrics = remember(themeConfig.preampNoiseFlattenerConfig) {
+                        PreampNoiseFlattenerEngine.calculateMetrics(
+                            themeConfig.preampNoiseFlattenerConfig,
+                            floatArrayOf(0.02f, 0.02f, 0.01f, 0.01f)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Preamp Restoration Preset",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        PreampNoiseFlattenerPreset.entries.forEach { preset ->
+                            FilterChip(
+                                selected = themeConfig.preampNoiseFlattenerConfig.preset == preset,
+                                onClick = { viewModel.setPreampNoiseFlattenerPreset(preset) },
+                                label = { Text(preset.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Thermal Noise Profile",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        PreampNoiseProfile.entries.forEach { profile ->
+                            FilterChip(
+                                selected = themeConfig.preampNoiseFlattenerConfig.profile == profile,
+                                onClick = { viewModel.setPreampNoiseProfile(profile) },
+                                label = { Text(profile.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Restoration Mode",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        PreampFlattenerMode.entries.forEach { mode ->
+                            FilterChip(
+                                selected = themeConfig.preampNoiseFlattenerConfig.mode == mode,
+                                onClick = { viewModel.setPreampFlattenerMode(mode) },
+                                label = { Text(mode.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Spectral Flatten Depth: ${(themeConfig.preampNoiseFlattenerConfig.flattenDepth * 100).toInt()}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Tilt: ${String.format(java.util.Locale.US, "%.1f dB/oct", preampMetrics.spectralTiltSlope)}",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.preampNoiseFlattenerConfig.flattenDepth,
+                        onValueChange = { viewModel.setPreampFlattenDepth(it) },
+                        valueRange = 0.0f..1.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Downward Expansion Threshold: ${themeConfig.preampNoiseFlattenerConfig.downwardThresholdDb.toInt()} dB",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Floor: ${preampMetrics.estimatedNoiseFloorDb.toInt()} dB",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.preampNoiseFlattenerConfig.downwardThresholdDb,
+                        onValueChange = { viewModel.setPreampDownwardThreshold(it) },
+                        valueRange = -60.0f..-20.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "HF Tilt Offset: ${String.format(java.util.Locale.US, "%+.1f dB", themeConfig.preampNoiseFlattenerConfig.hfTiltDb)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.preampNoiseFlattenerConfig.hfTiltDb,
+                        onValueChange = { viewModel.setPreampHfTiltDb(it) },
+                        valueRange = -6.0f..6.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Fletcher-Munson Dither Level: ${(themeConfig.preampNoiseFlattenerConfig.thermalDitherLevel * 100).toInt()}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = if (preampMetrics.ditherActive) "Dither Active" else "Dither Off",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = if (preampMetrics.ditherActive) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.outline
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.preampNoiseFlattenerConfig.thermalDitherLevel,
+                        onValueChange = { viewModel.setPreampThermalDitherLevel(it) },
+                        valueRange = 0.0f..1.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = "ANALOG PREAMP THERMAL NOISE & SPECTRAL HUD",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Status: ${preampMetrics.noiseFloorRating}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Reduct: -${String.format(java.util.Locale.US, "%.1f dB", preampMetrics.dynamicGainReductionDb)}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.secondary
                                 )
                             }
                         }
