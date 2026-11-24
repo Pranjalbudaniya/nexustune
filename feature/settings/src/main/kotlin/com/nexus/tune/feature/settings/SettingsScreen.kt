@@ -1022,6 +1022,30 @@ fun SettingsScreen(
                     )
                 }
 
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Seekbar Style",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    FilterChip(
+                        selected = themeConfig.seekbarStyle == SeekbarStyle.WAVEFORM,
+                        onClick = { viewModel.setSeekbarStyle(SeekbarStyle.WAVEFORM) },
+                        label = { Text("Dynamic Waveform") }
+                    )
+                    FilterChip(
+                        selected = themeConfig.seekbarStyle == SeekbarStyle.CLASSIC_SLIDER,
+                        onClick = { viewModel.setSeekbarStyle(SeekbarStyle.CLASSIC_SLIDER) },
+                        label = { Text("Classic Slider") }
+                    )
+                }
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
             }
 

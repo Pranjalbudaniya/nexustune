@@ -519,4 +519,14 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.bedtimeHandoffDurationMinutes == 120 })
         }
     }
+
+    @Test
+    fun `setSeekbarStyle updates theme config`() = runTest {
+        viewModel.setSeekbarStyle(SeekbarStyle.WAVEFORM)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.seekbarStyle == SeekbarStyle.WAVEFORM })
+        }
+    }
 }

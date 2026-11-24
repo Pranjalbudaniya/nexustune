@@ -48,7 +48,8 @@ fun PlayerScreen(
     onSetABPointA: () -> Unit = {},
     onSetABPointB: () -> Unit = {},
     onToggleABLoop: () -> Unit = {},
-    onClearABLoop: () -> Unit = {}
+    onClearABLoop: () -> Unit = {},
+    seekbarStyle: com.nexus.tune.core.model.SeekbarStyle = com.nexus.tune.core.model.SeekbarStyle.WAVEFORM
 ) {
     val track = playbackState.currentTrack ?: return
     val isPlaying = playbackState.status == PlaybackStatus.PLAYING
@@ -318,13 +319,26 @@ fun PlayerScreen(
                 (playbackState.positionMs.toFloat() / playbackState.durationMs.toFloat()).coerceIn(0f, 1f)
             } else 0f
 
-            Slider(
-                value = progress,
-                onValueChange = { newFrac ->
-                    onSeek((newFrac * playbackState.durationMs).toLong())
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
+            if (seekbarStyle == com.nexus.tune.core.model.SeekbarStyle.WAVEFORM) {
+                com.nexus.tune.core.ui.WaveformSeekbar(
+                    progress = progress,
+                    trackId = track.id,
+                    onSeek = { fraction ->
+                        onSeek((fraction * playbackState.durationMs).toLong())
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp, vertical = 6.dp)
+                )
+            } else {
+                Slider(
+                    value = progress,
+                    onValueChange = { newFrac ->
+                        onSeek((newFrac * playbackState.durationMs).toLong())
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),

@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 33 (v4.3.0 A-B Repeat Segment & Audio Practice Loop Engine)
+- Active Phase: Post-v1.0 Improvement Loop 34 (v4.4.0 Interactive Waveform Seekbar & Peak Profile Engine)
 - In Flight: Running test suites and ./scripts/gate.sh slice
 - Branches: `main`
 
@@ -266,14 +266,24 @@
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `git tag v4.2-1`
 
-## Improvement Loop 33 (v4.3 Milestone - In Progress)
-- [ ] A-B Repeat Segment & Audio Practice Loop Engine:
-  - [x] `ABLoopState` and `ABLoopManager` in `:core:player` with position monitoring and auto-seek
-  - [x] Tactile A-B Loop controls (Point A, Point B, active loop count badge, clear action) in `PlayerScreen`
-  - [x] Reactive state flow and action methods in `PlayerViewModel`
-  - [x] Unit tests in `ABLoopManagerTest` and `PlayerViewModelTest`
-- [ ] Slice gate passed
-- [ ] Final gate passed & tagged: `git tag v4.3-1`
+- [x] Improvement Loop 33 (v4.3 Milestone - Tagged `v4.3-1`)
+  - [x] A-B Repeat Segment & Audio Practice Loop Engine:
+    - [x] `ABLoopState` and `ABLoopManager` in `:core:player` with position monitoring and auto-seek
+    - [x] Tactile A-B Loop controls (Point A, Point B, active loop count badge, clear action) in `PlayerScreen`
+    - [x] Reactive state flow and action methods in `PlayerViewModel`
+    - [x] Unit tests in `ABLoopManagerTest` and `PlayerViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `git tag v4.3-1`
+
+## Improvement Loop 34 (v4.4 Milestone - In Progress)
+- [x] Interactive Waveform Seekbar & Peak Profile Engine:
+  - [x] `WaveformProfileGenerator` and `WaveformSeekbar` in `:core:ui` with Canvas rendering and touch seeking
+  - [x] `SeekbarStyle` enum in `ThemeConfig` and persistence in `SettingsDataStore`
+  - [x] Conditional seekbar rendering in `PlayerScreen`
+  - [x] Seekbar style selector chips in `SettingsScreen`
+  - [x] Unit tests in `WaveformProfileGeneratorTest` and `SettingsViewModelTest`
+- [x] Slice gate passed
+- [ ] Final gate passed & tagged: `git tag v4.4-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

@@ -5,6 +5,13 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.0] - 2026-11-24
+
+### Added
+- **Interactive Waveform Seekbar & Peak Profile Engine**: Implemented `WaveformProfileGenerator` and `WaveformSeekbar` in `:core:ui`, rendering a 48-bar dynamic amplitude waveform visualization on Compose `Canvas` with interactive gesture seeking (tap and drag).
+- **Seekbar Style Preferences**: Added `SeekbarStyle` (`CLASSIC_SLIDER`, `WAVEFORM`) to `ThemeConfig` and `SettingsDataStore`, persisted across app launches.
+- **Player Screen & Settings Integration**: Added conditional rendering in `PlayerScreen` for classic smooth slider vs. dynamic waveform bars, with a dedicated selector in `SettingsScreen` under Player Customization.
+
 ## [4.3.0] - 2026-11-24
 
 ### Added

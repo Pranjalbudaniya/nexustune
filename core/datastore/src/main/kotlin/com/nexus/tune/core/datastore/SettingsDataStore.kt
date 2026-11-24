@@ -40,6 +40,7 @@ class SettingsDataStore(private val context: Context) {
         val BEDTIME_HANDOFF_SOUND_TYPE = stringPreferencesKey("bedtime_handoff_sound_type")
         val BEDTIME_HANDOFF_VOLUME = floatPreferencesKey("bedtime_handoff_volume")
         val BEDTIME_HANDOFF_DURATION = intPreferencesKey("bedtime_handoff_duration_minutes")
+        val SEEKBAR_STYLE = stringPreferencesKey("theme_seekbar_style")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -73,7 +74,10 @@ class SettingsDataStore(private val context: Context) {
                 AmbientSoundType.valueOf(prefs[PreferencesKeys.BEDTIME_HANDOFF_SOUND_TYPE] ?: AmbientSoundType.BROWN_NOISE.name)
             }.getOrDefault(AmbientSoundType.BROWN_NOISE),
             bedtimeHandoffVolume = prefs[PreferencesKeys.BEDTIME_HANDOFF_VOLUME] ?: 0.3f,
-            bedtimeHandoffDurationMinutes = prefs[PreferencesKeys.BEDTIME_HANDOFF_DURATION] ?: 60
+            bedtimeHandoffDurationMinutes = prefs[PreferencesKeys.BEDTIME_HANDOFF_DURATION] ?: 60,
+            seekbarStyle = runCatching {
+                SeekbarStyle.valueOf(prefs[PreferencesKeys.SEEKBAR_STYLE] ?: SeekbarStyle.WAVEFORM.name)
+            }.getOrDefault(SeekbarStyle.WAVEFORM)
         )
     }
 
@@ -101,6 +105,7 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.BEDTIME_HANDOFF_SOUND_TYPE] = config.bedtimeHandoffSoundType.name
             prefs[PreferencesKeys.BEDTIME_HANDOFF_VOLUME] = config.bedtimeHandoffVolume
             prefs[PreferencesKeys.BEDTIME_HANDOFF_DURATION] = config.bedtimeHandoffDurationMinutes
+            prefs[PreferencesKeys.SEEKBAR_STYLE] = config.seekbarStyle.name
         }
     }
 

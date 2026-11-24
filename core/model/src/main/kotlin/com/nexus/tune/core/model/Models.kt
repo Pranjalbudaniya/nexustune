@@ -92,6 +92,11 @@ enum class VisualizerMode {
     OFF, SPECTRUM_BARS, CIRCULAR_WAVE, GLOW_PULSE
 }
 
+enum class SeekbarStyle {
+    CLASSIC_SLIDER,
+    WAVEFORM
+}
+
 enum class SpatialAudioStage {
     OFF, STUDIO, LOUNGE, CONCERT_HALL, WIDE_ARENA
 }
@@ -162,7 +167,8 @@ data class ThemeConfig(
     val bedtimeHandoffEnabled: Boolean = false,
     val bedtimeHandoffSoundType: AmbientSoundType = AmbientSoundType.BROWN_NOISE,
     val bedtimeHandoffVolume: Float = 0.3f,
-    val bedtimeHandoffDurationMinutes: Int = 60
+    val bedtimeHandoffDurationMinutes: Int = 60,
+    val seekbarStyle: SeekbarStyle = SeekbarStyle.WAVEFORM
 )
 
 data class SoundDoseInfo(

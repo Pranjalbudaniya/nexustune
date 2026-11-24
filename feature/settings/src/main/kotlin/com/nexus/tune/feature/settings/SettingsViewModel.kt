@@ -263,6 +263,11 @@ class SettingsViewModel(
         updateTheme(current.copy(volumeLimitPercent = percent))
     }
 
+    fun setSeekbarStyle(style: SeekbarStyle) {
+        val current = themeConfig.value
+        updateTheme(current.copy(seekbarStyle = style))
+    }
+
     fun toggleSafeListeningAlert(enabled: Boolean) {
         val current = themeConfig.value
         updateTheme(current.copy(safeListeningAlertEnabled = enabled))
