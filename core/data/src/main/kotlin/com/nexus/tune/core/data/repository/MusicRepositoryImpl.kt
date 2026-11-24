@@ -51,7 +51,11 @@ class MusicRepositoryImpl(
     }
 
     override suspend fun resolveStreamUrl(trackId: String): MusicResult<AudioStream> {
-        return musicSource.resolveStreamUrl(trackId)
+        return resolveStreamUrl(trackId, "AUTO")
+    }
+
+    override suspend fun resolveStreamUrl(trackId: String, quality: String): MusicResult<AudioStream> {
+        return musicSource.resolveStreamUrl(trackId, quality)
     }
 
     override suspend fun getLyrics(

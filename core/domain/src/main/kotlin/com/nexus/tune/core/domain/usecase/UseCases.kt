@@ -4,6 +4,7 @@ import com.nexus.tune.core.common.MusicResult
 import com.nexus.tune.core.domain.repository.*
 import com.nexus.tune.core.model.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 
 class SearchMusicUseCase(private val musicRepository: MusicRepository) {
     suspend operator fun invoke(query: String, filter: String? = null): MusicResult<SearchResult> {
@@ -28,9 +29,25 @@ class GetHomeFeedUseCase(private val musicRepository: MusicRepository) {
     }
 }
 
-class ResolveStreamUseCase(private val musicRepository: MusicRepository) {
-    suspend operator fun invoke(trackId: String): MusicResult<AudioStream> {
-        return musicRepository.resolveStreamUrl(trackId)
+class ResolveStreamUseCase(
+    private val musicRepository: MusicRepository,
+    private val settingsRepository: SettingsRepository? = null,
+    private val isMeteredConnectionProvider: (() -> Boolean)? = null
+) {
+    suspend operator fun invoke(trackId: String, qualityOverride: String? = null): MusicResult<AudioStream> {
+        if (qualityOverride == null && settingsRepository == null && isMeteredConnectionProvider == null) {
+            return musicRepository.resolveStreamUrl(trackId)
+        }
+        val targetQuality = qualityOverride ?: run {
+            val pref = settingsRepository?.getPreferredQuality()?.firstOrNull() ?: "AUTO"
+            if (pref.equals("AUTO", ignoreCase = true)) {
+                val isMetered = isMeteredConnectionProvider?.invoke() ?: false
+                if (isMetered) "LOW" else "HIGH"
+            } else {
+                pref
+            }
+        }
+        return musicRepository.resolveStreamUrl(trackId, targetQuality)
     }
 }
 

@@ -33,6 +33,7 @@ class SettingsViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         every { settingsRepository.getThemeConfig() } returns themeFlow
+        every { settingsRepository.getPreferredQuality() } returns flowOf("AUTO")
         every { getListeningStatsUseCase() } returns flowOf(
             ListeningStats(
                 totalPlays = 42,
@@ -355,5 +356,24 @@ class SettingsViewModelTest {
 
         coVerify { mockBackupManager.importFromNewPipeJson(any()) }
         assertTrue(vm.backupImportStatus.value?.contains("Imported 1 playlists") == true)
+    }
+
+    @Test
+    fun `setPreferredQuality delegates to settingsRepository`() = runTest {
+        viewModel.setPreferredQuality("LOW")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { settingsRepository.setPreferredQuality("LOW") }
+    }
+
+    @Test
+    fun `isMeteredConnection reflects provider value`() = runTest {
+        val meteredVm = SettingsViewModel(
+            settingsRepository = settingsRepository,
+            getListeningStatsUseCase = getListeningStatsUseCase,
+            sleepTimerManager = sleepTimerManager,
+            isMeteredConnectionProvider = { true }
+        )
+        assertTrue(meteredVm.isMeteredConnection.value)
     }
 }

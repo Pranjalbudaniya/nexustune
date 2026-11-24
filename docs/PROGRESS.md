@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 25 (v3.5.0 Recent Search History & Quick Chips - Verification)
-- In Flight: Running test suites and ./scripts/gate.sh final
+- Active Phase: Post-v1.0 Improvement Loop 26 (v3.6.0 Audio Stream Quality & Adaptive Cellular Data Saver)
+- In Flight: Running test suites and ./scripts/gate.sh slice
 - Branches: `main`
 
 ## Phase Tracking
@@ -183,12 +183,37 @@
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `git tag v2.9-1`
 
-## Improvement Loop 20 (v3.0 Milestone - Planned)
-- [ ] Spatial Audio Headphone Virtualization & 3D Stage Simulation:
-  - Hardware `Virtualizer` DSP integration with binaural room stage emulation
-  - Virtualizer strength presets (Off, Studio, Lounge, Concert Hall, Wide Arena)
+- [x] Improvement Loop 20 (v3.0 Milestone - Tagged `v3.0-1`)
+  - [x] Spatial Audio Headphone Virtualization & 3D Stage Simulation (`NexusAudioEffects`)
+  - [x] Final gate passed & tagged: `git tag v3.0-1`
+
+- [x] Improvement Loop 21 (v3.1 Milestone - Tagged `v3.1-1`)
+  - [x] Dual-Player Dynamic Crossfade DSP & Equal Power Fader Curves (`CrossfadeFader`)
+  - [x] Final gate passed & tagged: `git tag v3.1-1`
+
+- [x] Improvement Loop 22 (v3.2 Milestone - Tagged `v3.2-1`)
+  - [x] Listening Habit Insights & Genre Distribution Analytics (`ListeningHabitAnalyzer`)
+  - [x] Final gate passed & tagged: `git tag v3.2-1`
+
+- [x] Improvement Loop 23 (v3.3 Milestone - Tagged `v3.3-1`)
+  - [x] Expanded 4x2 Interactive Queue Home Screen Widget (`NexusTuneQueueWidgetProvider`)
+  - [x] Final gate passed & tagged: `git tag v3.3-1`
+
+- [x] Improvement Loop 24 (v3.4 Milestone - Tagged `v3.4-1`)
+  - [x] Full JSON Backup/Restore & NewPipe Import Engine (`BackupManager`)
+  - [x] Final gate passed & tagged: `git tag v3.4-1`
+
+- [x] Improvement Loop 25 (v3.5 Milestone - Tagged `v3.5-1`)
+  - [x] Smart Recent Search History & Quick Suggestion Chips (`SearchMusicUseCase`, `SearchScreen`)
+  - [x] Final gate passed & tagged: `git tag v3.5-1`
+
+## Improvement Loop 26 (v3.6 Milestone - In Progress)
+- [ ] Audio Stream Quality & Adaptive Cellular Data Saver:
+  - Dynamic streaming bitrate selection (`AUTO`, `HIGH`, `MEDIUM`, `LOW`)
+  - Live metered network detection via `ConnectivityManager.isActiveNetworkMetered`
+  - Interactive preference chips and network status badge in `SettingsScreen`
 - [ ] Slice gate passed
-- [ ] Final gate passed & tagged: `git tag v3.0-1`
+- [ ] Final gate passed & tagged: `git tag v3.6-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

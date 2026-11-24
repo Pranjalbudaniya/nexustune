@@ -30,6 +30,21 @@ class FakeMusicSourceTest {
     }
 
     @Test
+    fun `resolveStreamUrl respects quality tiers`() = runTest {
+        val lowResult = musicSource.resolveStreamUrl("fake_1", "LOW")
+        assertTrue(lowResult is MusicResult.Success)
+        assertEquals(64, (lowResult as MusicResult.Success).data.bitrateKbps)
+
+        val medResult = musicSource.resolveStreamUrl("fake_1", "MEDIUM")
+        assertTrue(medResult is MusicResult.Success)
+        assertEquals(128, (medResult as MusicResult.Success).data.bitrateKbps)
+
+        val highResult = musicSource.resolveStreamUrl("fake_1", "HIGH")
+        assertTrue(highResult is MusicResult.Success)
+        assertEquals(160, (highResult as MusicResult.Success).data.bitrateKbps)
+    }
+
+    @Test
     fun `getHomeFeed returns playlists`() = runTest {
         val result = musicSource.getHomeFeed()
         assertTrue(result is MusicResult.Success)

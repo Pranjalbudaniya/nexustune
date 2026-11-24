@@ -100,6 +100,13 @@ enum class CrossfadeCurve {
     EQUAL_POWER, LINEAR, EXPONENTIAL
 }
 
+enum class AudioQualityPreset(val label: String, val description: String) {
+    AUTO("Auto", "Adaptive Data Saver on Cellular"),
+    HIGH("High", "Max Fidelity (160-256 kbps)"),
+    MEDIUM("Standard", "Balanced (128 kbps)"),
+    LOW("Data Saver", "Low Bandwidth (48-70 kbps)")
+}
+
 data class VisualizerData(
     val magnitudes: FloatArray = FloatArray(32) { 0f },
     val amplitude: Float = 0f

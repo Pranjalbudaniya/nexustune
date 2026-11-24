@@ -9,7 +9,8 @@ interface MusicRepository {
     suspend fun getSearchSuggestions(query: String): List<String>
     suspend fun getHomeFeed(): MusicResult<List<Playlist>>
     suspend fun getTrackDetails(trackId: String): MusicResult<Track>
-    suspend fun resolveStreamUrl(trackId: String): MusicResult<AudioStream>
+    suspend fun resolveStreamUrl(trackId: String): MusicResult<AudioStream> = resolveStreamUrl(trackId, "AUTO")
+    suspend fun resolveStreamUrl(trackId: String, quality: String): MusicResult<AudioStream>
     suspend fun getLyrics(trackId: String, title: String, artist: String, durationSeconds: Long): MusicResult<TrackLyrics>
     fun getLikedTracks(): Flow<List<Track>>
     suspend fun toggleLike(track: Track): Boolean

@@ -20,8 +20,20 @@ class SettingsViewModel(
     private val audioOutputRouteManager: com.nexus.tune.core.player.routing.AudioOutputRouteManager? = null,
     private val musicRepository: com.nexus.tune.core.domain.repository.MusicRepository? = null,
     private val safeListeningManager: com.nexus.tune.core.player.hearing.SafeListeningManager? = null,
-    private val backupManager: com.nexus.tune.core.data.backup.BackupManager? = null
+    private val backupManager: com.nexus.tune.core.data.backup.BackupManager? = null,
+    private val isMeteredConnectionProvider: (() -> Boolean)? = null
 ) : ViewModel() {
+
+    val preferredQuality: StateFlow<String> = settingsRepository.getPreferredQuality()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "AUTO")
+
+    val isMeteredConnection: StateFlow<Boolean> = MutableStateFlow(isMeteredConnectionProvider?.invoke() ?: false).asStateFlow()
+
+    fun setPreferredQuality(quality: String) {
+        viewModelScope.launch {
+            settingsRepository.setPreferredQuality(quality)
+        }
+    }
 
     val backupExportResult = MutableStateFlow<String?>(null)
     val backupImportStatus = MutableStateFlow<String?>(null)

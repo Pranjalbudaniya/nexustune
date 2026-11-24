@@ -70,7 +70,11 @@ class MainActivity : ComponentActivity() {
             audioOutputRouteManager = app.audioOutputRouteManager,
             musicRepository = app.musicRepository,
             safeListeningManager = app.safeListeningManager,
-            backupManager = app.backupManager
+            backupManager = app.backupManager,
+            isMeteredConnectionProvider = {
+                val cm = getSystemService(android.content.Context.CONNECTIVITY_SERVICE) as? android.net.ConnectivityManager
+                cm?.isActiveNetworkMetered ?: false
+            }
         )
 
         lifecycleScope.launch {

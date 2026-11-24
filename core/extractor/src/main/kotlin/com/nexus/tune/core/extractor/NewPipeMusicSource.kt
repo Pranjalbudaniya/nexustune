@@ -122,9 +122,14 @@ class NewPipeMusicSource(
             }
         }
 
-    override suspend fun resolveStreamUrl(trackId: String): MusicResult<AudioStream> =
+    override suspend fun resolveStreamUrl(trackId: String): MusicResult<AudioStream> {
+        return resolveStreamUrl(trackId, "AUTO")
+    }
+
+    override suspend fun resolveStreamUrl(trackId: String, quality: String): MusicResult<AudioStream> =
         withContext(Dispatchers.IO) {
-            val cached = streamCache[trackId]
+            val cacheKey = "$trackId:$quality"
+            val cached = streamCache[cacheKey]
             val now = System.currentTimeMillis()
             if (cached != null && cached.expiresAtTimestampMs > now + 60_000) {
                 return@withContext MusicResult.Success(cached)
@@ -135,9 +140,7 @@ class NewPipeMusicSource(
                 val streamInfo = StreamInfo.getInfo(service, "https://www.youtube.com/watch?v=$trackId")
                 val audioStreams: List<ExtractorAudioStream> = streamInfo.audioStreams
 
-                val selectedStream = audioStreams
-                    .sortedByDescending { it.averageBitrate }
-                    .firstOrNull()
+                val selectedStream = selectStreamByQuality(audioStreams, quality)
                     ?: return@withContext MusicResult.Failure(
                         ExtractorError.UnknownError("No audio streams available for $trackId")
                     )
@@ -149,13 +152,23 @@ class NewPipeMusicSource(
                     expiresAtTimestampMs = now + 10_800_000 // 3 hours expiry
                 )
 
-                streamCache[trackId] = audioStream
+                streamCache[cacheKey] = audioStream
                 MusicResult.Success(audioStream)
             } catch (e: Exception) {
-                streamCache.remove(trackId)
+                streamCache.remove(cacheKey)
                 MusicResult.Failure(mapException(e))
             }
         }
+
+    private fun selectStreamByQuality(streams: List<ExtractorAudioStream>, quality: String): ExtractorAudioStream? {
+        if (streams.isEmpty()) return null
+        return when (quality.uppercase()) {
+            "LOW" -> streams.minByOrNull { it.averageBitrate }
+            "MEDIUM" -> streams.minByOrNull { kotlin.math.abs(it.averageBitrate - 128_000) }
+            "HIGH" -> streams.maxByOrNull { it.averageBitrate }
+            else -> streams.maxByOrNull { it.averageBitrate }
+        }
+    }
 
     override suspend fun getLyrics(
         trackId: String,

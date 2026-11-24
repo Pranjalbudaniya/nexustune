@@ -86,7 +86,14 @@ class NexusTuneApplication : Application() {
 
         searchMusicUseCase = SearchMusicUseCase(musicRepository)
         getHomeFeedUseCase = GetHomeFeedUseCase(musicRepository)
-        resolveStreamUseCase = ResolveStreamUseCase(musicRepository)
+        val connectivityManager = getSystemService(android.content.Context.CONNECTIVITY_SERVICE) as? android.net.ConnectivityManager
+        resolveStreamUseCase = ResolveStreamUseCase(
+            musicRepository = musicRepository,
+            settingsRepository = settingsRepository,
+            isMeteredConnectionProvider = {
+                connectivityManager?.isActiveNetworkMetered ?: false
+            }
+        )
         manageQueueUseCase = ManageQueueUseCase(queueRepository)
         getListeningStatsUseCase = com.nexus.tune.core.domain.usecase.GetListeningStatsUseCase(musicRepository)
         getAutoPlayRecommendationsUseCase = com.nexus.tune.core.domain.usecase.GetAutoPlayRecommendationsUseCase(musicRepository)

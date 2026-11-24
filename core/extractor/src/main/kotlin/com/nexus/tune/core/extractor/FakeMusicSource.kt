@@ -92,12 +92,21 @@ class FakeMusicSource : MusicSource {
     }
 
     override suspend fun resolveStreamUrl(trackId: String): MusicResult<AudioStream> {
+        return resolveStreamUrl(trackId, "AUTO")
+    }
+
+    override suspend fun resolveStreamUrl(trackId: String, quality: String): MusicResult<AudioStream> {
         val track = tracks.find { it.id == trackId } ?: tracks.first()
+        val bitrate = when (quality.uppercase()) {
+            "LOW" -> 64
+            "MEDIUM" -> 128
+            else -> 160
+        }
         return MusicResult.Success(
             AudioStream(
                 url = track.streamUrl ?: "https://example.com/audio/$trackId.opus",
                 format = "Opus",
-                bitrateKbps = 160,
+                bitrateKbps = bitrate,
                 expiresAtTimestampMs = System.currentTimeMillis() + 10_800_000 // 3 hours
             )
         )

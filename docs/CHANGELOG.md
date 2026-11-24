@@ -5,6 +5,13 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.6.0] - 2026-11-24
+
+### Added
+- **Audio Stream Quality & Adaptive Cellular Data Saver**: Implemented intelligent streaming bitrate tiers (`AUTO`, `HIGH`, `MEDIUM`, `LOW`) in `NewPipeMusicSource` and `FakeMusicSource`.
+- **Dynamic Metered Network Introspection**: Integrated `ConnectivityManager.isActiveNetworkMetered` via `ResolveStreamUseCase` to automatically stream in Data Saver mode (~50-70 kbps) on cellular data while maintaining maximum fidelity (160-256 kbps) on unmetered Wi-Fi.
+- **Settings Quality Selector & Live Connection Badge**: Added interactive quality preference chips and live network status indicators in `SettingsScreen` and `SettingsViewModel`.
+
 ## [3.5.0] - 2026-11-24
 
 ### Added

@@ -25,6 +25,8 @@ fun SettingsScreen(
     val equalizerEnabled by viewModel.equalizerEnabled.collectAsState()
     val listeningStats by viewModel.listeningStats.collectAsState()
     val soundDoseInfo by viewModel.soundDoseInfo.collectAsState()
+    val preferredQuality by viewModel.preferredQuality.collectAsState()
+    val isMeteredConnection by viewModel.isMeteredConnection.collectAsState()
 
     Scaffold(
         modifier = modifier,
@@ -329,6 +331,82 @@ fun SettingsScreen(
                         FilterChip(
                             selected = themeConfig.volumeLimitPercent == limit,
                             onClick = { viewModel.setVolumeLimit(limit) },
+                            label = { Text(label) }
+                        )
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+                // --- Audio Stream Quality & Data Saver ---
+                Text(
+                    text = "Audio Stream Quality & Data Saver",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (isMeteredConnection) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (isMeteredConnection) Icons.Rounded.SignalCellularAlt else Icons.Rounded.Wifi,
+                            contentDescription = null,
+                            tint = if (isMeteredConnection) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Column {
+                            Text(
+                                text = if (isMeteredConnection) "Cellular Data Detected" else "Unmetered Network / Wi-Fi",
+                                style = MaterialTheme.typography.titleSmall,
+                                color = if (isMeteredConnection) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = if (isMeteredConnection) {
+                                    if (preferredQuality.equals("AUTO", ignoreCase = true)) "Adaptive Data Saver active (low-bandwidth streaming)" else "Streaming at $preferredQuality"
+                                } else {
+                                    if (preferredQuality.equals("AUTO", ignoreCase = true)) "Full high-fidelity streaming active" else "Streaming at $preferredQuality"
+                                },
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (isMeteredConnection) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Streaming Quality Preference",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listOf(
+                        "AUTO" to "Auto (Adaptive)",
+                        "HIGH" to "High (160-256k)",
+                        "MEDIUM" to "Standard (128k)",
+                        "LOW" to "Data Saver (48-70k)"
+                    ).forEach { (qualityKey, label) ->
+                        FilterChip(
+                            selected = preferredQuality.equals(qualityKey, ignoreCase = true),
+                            onClick = { viewModel.setPreferredQuality(qualityKey) },
                             label = { Text(label) }
                         )
                     }
@@ -839,8 +917,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v3.5.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Recent Search History & Quick Suggestion Chips") }
+                    headlineContent = { Text("NexusTune v3.6.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Adaptive Cellular Data Saver & Audio Stream Quality") }
                 )
             }
         }
