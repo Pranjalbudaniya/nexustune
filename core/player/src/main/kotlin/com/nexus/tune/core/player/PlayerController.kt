@@ -27,6 +27,8 @@ class PlayerController(private val context: Context) {
 
     private val _playbackState = MutableStateFlow(PlaybackState())
     val playbackState: StateFlow<PlaybackState> = _playbackState.asStateFlow()
+    private val _preloadedTrack = MutableStateFlow<Track?>(null)
+    val preloadedTrack: StateFlow<Track?> = _preloadedTrack.asStateFlow()
     private val coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     init {
@@ -55,6 +57,16 @@ class PlayerController(private val context: Context) {
             }
 
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
+                    val preloaded = _preloadedTrack.value
+                    if (preloaded != null && mediaItem?.mediaId == preloaded.id) {
+                        _playbackState.value = _playbackState.value.copy(
+                            currentTrack = preloaded,
+                            status = PlaybackStatus.PLAYING
+                        )
+                        _preloadedTrack.value = null
+                    }
+                }
                 updateState()
             }
 
@@ -91,6 +103,7 @@ class PlayerController(private val context: Context) {
             .setMediaMetadata(metadata)
             .build()
 
+        _preloadedTrack.value = null
         controller?.apply {
             setMediaItem(mediaItem)
             prepare()
@@ -103,6 +116,35 @@ class PlayerController(private val context: Context) {
             currentTrack = track,
             status = PlaybackStatus.PLAYING
         )
+    }
+
+    fun preloadNextTrack(track: Track, resolvedStreamUrl: String? = null) {
+        val mediaUri = resolvedStreamUrl ?: track.streamUrl ?: return
+        val c = controller ?: return
+        if (c.mediaItemCount <= 1) {
+            val metadata = MediaMetadata.Builder()
+                .setTitle(track.title)
+                .setArtist(track.artist)
+                .setArtworkUri(track.artworkUrl?.let { android.net.Uri.parse(it) })
+                .build()
+
+            val mediaItem = MediaItem.Builder()
+                .setMediaId(track.id)
+                .setUri(mediaUri)
+                .setMediaMetadata(metadata)
+                .build()
+
+            c.addMediaItem(mediaItem)
+            _preloadedTrack.value = track
+        }
+    }
+
+    fun clearUpcomingPreload() {
+        val c = controller ?: return
+        if (c.mediaItemCount > 1) {
+            c.removeMediaItems(1, c.mediaItemCount)
+        }
+        _preloadedTrack.value = null
     }
 
     fun togglePlayPause() {

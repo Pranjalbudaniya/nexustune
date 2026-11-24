@@ -86,6 +86,23 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        lifecycleScope.launch {
+            kotlinx.coroutines.flow.combine(
+                app.playerController.playbackState,
+                settingsViewModel.themeConfig
+            ) { state, config ->
+                Pair(state, config)
+            }.collect { (state, config) ->
+                app.gaplessPreloadManager.checkAndPreload(
+                    currentTrack = state.currentTrack,
+                    positionMs = state.positionMs,
+                    durationMs = state.durationMs,
+                    enabled = config.gaplessPreloadEnabled,
+                    thresholdSeconds = config.gaplessPreloadSeconds
+                )
+            }
+        }
+
         setContent {
             val themeConfig by settingsViewModel.themeConfig.collectAsState()
             val playbackState by app.playerController.playbackState.collectAsState()
@@ -209,6 +226,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun playTrack(track: Track) {
+        app.gaplessPreloadManager.clear()
         lifecycleScope.launch {
             when (val streamResult = app.resolveStreamUseCase(track.id)) {
                 is MusicResult.Success -> {

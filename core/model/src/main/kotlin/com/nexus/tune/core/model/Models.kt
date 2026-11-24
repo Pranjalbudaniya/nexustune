@@ -129,7 +129,9 @@ data class ThemeConfig(
     val sleepTimerFadeSeconds: Int = 30,
     val infiniteAutoPlayEnabled: Boolean = true,
     val bitPerfectUsbAudioEnabled: Boolean = false,
-    val forceHiResSamplingRate: Int = 0
+    val forceHiResSamplingRate: Int = 0,
+    val gaplessPreloadEnabled: Boolean = true,
+    val gaplessPreloadSeconds: Int = 5
 )
 
 data class StorageUsage(

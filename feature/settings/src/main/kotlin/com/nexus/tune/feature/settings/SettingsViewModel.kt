@@ -120,6 +120,16 @@ class SettingsViewModel(
         audioOutputRouteManager?.setForcedSampleRate(rate)
     }
 
+    fun toggleGaplessPreload(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(gaplessPreloadEnabled = enabled))
+    }
+
+    fun setGaplessPreloadSeconds(seconds: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(gaplessPreloadSeconds = seconds))
+    }
+
     fun setVisualizerMode(mode: VisualizerMode) {
         val current = themeConfig.value
         updateTheme(current.copy(visualizerMode = mode))

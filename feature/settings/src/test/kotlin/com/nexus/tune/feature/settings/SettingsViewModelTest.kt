@@ -233,4 +233,24 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.forceHiResSamplingRate == 96000 })
         }
     }
+
+    @Test
+    fun `toggleGaplessPreload updates theme config`() = runTest {
+        viewModel.toggleGaplessPreload(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.gaplessPreloadEnabled })
+        }
+    }
+
+    @Test
+    fun `setGaplessPreloadSeconds updates theme config`() = runTest {
+        viewModel.setGaplessPreloadSeconds(10)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.gaplessPreloadSeconds == 10 })
+        }
+    }
 }

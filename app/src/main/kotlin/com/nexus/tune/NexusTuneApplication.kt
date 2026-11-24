@@ -57,6 +57,8 @@ class NexusTuneApplication : Application() {
         private set
     lateinit var audioOutputRouteManager: com.nexus.tune.core.player.routing.AudioOutputRouteManager
         private set
+    lateinit var gaplessPreloadManager: com.nexus.tune.core.domain.preload.GaplessPreloadManager
+        private set
 
     override fun onCreate() {
         super.onCreate()
@@ -88,6 +90,20 @@ class NexusTuneApplication : Application() {
         sleepTimerManager = com.nexus.tune.core.player.SleepTimerManager(playerController)
         skipSegmentManager = com.nexus.tune.core.player.SkipSegmentManager(playerController)
         audioOutputRouteManager = com.nexus.tune.core.player.routing.AudioOutputRouteManager(this)
+
+        val audioPreloader = object : com.nexus.tune.core.domain.preload.AudioPreloader {
+            override fun preloadTrack(track: com.nexus.tune.core.model.Track, resolvedStreamUrl: String) {
+                playerController.preloadNextTrack(track, resolvedStreamUrl)
+            }
+            override fun clearPreload() {
+                playerController.clearUpcomingPreload()
+            }
+        }
+        gaplessPreloadManager = com.nexus.tune.core.domain.preload.GaplessPreloadManager(
+            audioPreloader = audioPreloader,
+            queueRepository = queueRepository,
+            resolveStreamUseCase = resolveStreamUseCase
+        )
     }
 
     companion object {

@@ -11,3 +11,6 @@ With the physical device attached, the following tests will be executed and meas
    - Time to initial display and morph animations measured via Macrobenchmark on device.
 3. **Hardware Audio Session & Focus**:
    - MediaSessionService playback, lockscreen controls, and audio focus transitions validated on device.
+
+## Active Assertions Awaiting Additional Verification
+- **On-Device Macrobenchmark Re-Run (Post-v2.5)**: On-device macrobenchmarks were previously verified across Loops 0–15 on Vivo V2518 (`10BF7Q150G000LE`). Re-installation of test APKs on device is temporarily blocked by hardware `/data` storage threshold (<1GB free). Release builds and all 255 JVM tests continue passing via `./scripts/gate.sh final`.

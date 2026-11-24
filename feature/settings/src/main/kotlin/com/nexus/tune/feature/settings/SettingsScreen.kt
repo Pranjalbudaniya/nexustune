@@ -276,6 +276,52 @@ fun SettingsScreen(
                 }
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+                // --- Gapless Buffer Pre-Loading ---
+                Text(
+                    text = "Gapless Buffer Pre-Loading",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                ListItem(
+                    headlineContent = { Text("Pre-Buffer Upcoming Track") },
+                    supportingContent = { Text("Prime audio decoder pipeline before track end to eliminate gap latency") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.gaplessPreloadEnabled,
+                            onCheckedChange = { viewModel.toggleGaplessPreload(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.gaplessPreloadEnabled) {
+                    Text(
+                        text = "Pre-Buffer Window",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf(
+                            3 to "3 seconds",
+                            5 to "5s (Default)",
+                            10 to "10 seconds"
+                        ).forEach { (seconds, label) ->
+                            FilterChip(
+                                selected = themeConfig.gaplessPreloadSeconds == seconds,
+                                onClick = { viewModel.setGaplessPreloadSeconds(seconds) },
+                                label = { Text(label) }
+                            )
+                        }
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
             }
 
             // --- Sleep Timer ---
@@ -597,8 +643,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v2.5.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Bit-Perfect USB Audio Direct Output") }
+                    headlineContent = { Text("NexusTune v2.6.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Gapless Buffer Pipeline Warm-Up") }
                 )
             }
         }

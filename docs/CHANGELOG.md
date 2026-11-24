@@ -5,6 +5,13 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2026-11-24
+
+### Added
+- **Gapless Playback Buffer Pre-Loading & Audio Pipeline Warm-up**: Implemented `GaplessPreloadManager` in `core:domain:preload` and `AudioPreloader` contract, priming upcoming track stream resolution and Media3 ExoPlayer's playlist buffer before the current track finishes.
+- **Zero-Latency Seamless Transitions**: Configured ExoPlayer playlist pre-buffering eliminating stream resolution lag and achieving zero-millisecond gapless playback transitions across track boundaries.
+- **Configurable Pre-Buffer Window**: Added toggle and threshold selector chips (`3s`, `5s (Default)`, `10s`) in Settings under Audio Optimization.
+
 ## [2.5.0] - 2026-11-24
 
 ### Added

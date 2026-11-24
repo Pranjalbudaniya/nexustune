@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 15 (v2.5.0 Released)
-- In Flight: Preparing Improvement Loop 16 (Gapless Playback Buffer Pre-Loading & Audio Pipeline Warm-up)
+- Active Phase: Post-v1.0 Improvement Loop 16 (v2.6.0 Released)
+- In Flight: Preparing Improvement Loop 17 (Synced Lyrics Offline Caching & Calibration Persistence)
 - Branches: `main`
 
 ## Phase Tracking
@@ -151,12 +151,20 @@
   - [x] Slice & perf gates passed on physical hardware
   - [x] Final gate passed & tagged: `git tag v2.5-1`
 
-## Improvement Loop 16 (v2.6 Features - Planned)
-- [ ] Gapless Playback Buffer Pre-Loading & Audio Pipeline Warm-up:
-  - Pre-allocate Next track decoder buffer 5 seconds before end-of-track to eliminate transition latency
-  - Seamless zero-millisecond gapless playback transitions across track boundaries
+- [x] Improvement Loop 16 (v2.6 Features - Tagged `v2.6-1`)
+  - [x] Gapless Playback Buffer Pre-Loading & Audio Pipeline Warm-up:
+    - [x] Proactive stream resolution & Media3 playlist pre-buffering in `GaplessPreloadManager`
+    - [x] Zero-latency auto-transition handling in `PlayerController`
+    - [x] Configurable buffer window (3s, 5s, 10s) in Settings
+  - [x] Slice & perf gates passed on physical hardware
+  - [x] Final gate passed & tagged: `git tag v2.6-1`
+
+## Improvement Loop 17 (v2.7 Features - Planned)
+- [ ] Synced Lyrics Offline Caching & Calibration Persistence:
+  - Cache downloaded LRC lyrics locally to Room database
+  - Persist user manual offset calibrations per track ID across restarts
 - [ ] Slice & perf gates passed on physical hardware
-- [ ] Final gate passed & tagged: `git tag v2.6-1`
+- [ ] Final gate passed & tagged: `git tag v2.7-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.
