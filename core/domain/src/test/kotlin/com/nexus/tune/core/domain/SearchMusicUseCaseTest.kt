@@ -37,5 +37,23 @@ class SearchMusicUseCaseTest {
         assertEquals(1, tracks.size)
         assertEquals("Test Song", tracks[0].title)
     }
+
+    @Test
+    fun `recent search methods delegate to repository`() = runTest {
+        coEvery { repository.getRecentSearches() } returns kotlinx.coroutines.flow.flowOf(listOf("Synthwave"))
+        coEvery { repository.addRecentSearch("Synthwave") } returns Unit
+        coEvery { repository.removeRecentSearch("Synthwave") } returns Unit
+        coEvery { repository.clearRecentSearches() } returns Unit
+
+        useCase.addRecentSearch("Synthwave")
+        useCase.removeRecentSearch("Synthwave")
+        useCase.clearRecentSearches()
+
+        val list = mutableListOf<List<String>>()
+        useCase.getRecentSearches().collect { list.add(it) }
+
+        assertEquals(1, list.size)
+        assertEquals("Synthwave", list.first().first())
+    }
 }
 

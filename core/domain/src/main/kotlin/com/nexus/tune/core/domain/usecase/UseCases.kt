@@ -15,6 +15,11 @@ class SearchMusicUseCase(private val musicRepository: MusicRepository) {
         if (query.isBlank()) return emptyList()
         return musicRepository.getSearchSuggestions(query.trim())
     }
+
+    fun getRecentSearches(): Flow<List<String>> = musicRepository.getRecentSearches()
+    suspend fun addRecentSearch(query: String) = musicRepository.addRecentSearch(query)
+    suspend fun removeRecentSearch(query: String) = musicRepository.removeRecentSearch(query)
+    suspend fun clearRecentSearches() = musicRepository.clearRecentSearches()
 }
 
 class GetHomeFeedUseCase(private val musicRepository: MusicRepository) {

@@ -5,6 +5,12 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.5.0] - 2026-11-24
+
+### Added
+- **Recent Search History & Quick Suggestion Chips**: Implemented persistent recent search query caching in `SettingsDataStore`, automatically capturing executed searches up to 10 entries.
+- **Search UI Quick Action Chips**: Rendered horizontal `InputChip` row in `SearchScreen` for instant re-queries, with individual dismiss icons and a full "Clear" action.
+
 ## [3.4.0] - 2026-11-24
 
 ### Added

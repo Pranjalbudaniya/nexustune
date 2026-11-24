@@ -30,6 +30,7 @@ class SettingsDataStore(private val context: Context) {
         val SPATIAL_AUDIO_STAGE = stringPreferencesKey("spatial_audio_stage")
         val SPATIAL_AUDIO_STRENGTH = intPreferencesKey("spatial_audio_strength")
         val CROSSFADE_CURVE = stringPreferencesKey("crossfade_curve")
+        val RECENT_SEARCHES = stringPreferencesKey("recent_searches_csv")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -102,6 +103,38 @@ class SettingsDataStore(private val context: Context) {
 
     suspend fun setEqualizerPreset(preset: Int) {
         context.dataStore.edit { it[PreferencesKeys.EQUALIZER_PRESET] = preset }
+    }
+
+    val recentSearches: Flow<List<String>> = context.dataStore.data.map { prefs ->
+        val raw = prefs[PreferencesKeys.RECENT_SEARCHES] ?: ""
+        if (raw.isBlank()) emptyList() else raw.split("|||")
+    }
+
+    suspend fun addRecentSearch(query: String) {
+        val trimmed = query.trim()
+        if (trimmed.isEmpty()) return
+        context.dataStore.edit { prefs ->
+            val existing = (prefs[PreferencesKeys.RECENT_SEARCHES] ?: "")
+                .split("|||")
+                .filter { it.isNotBlank() && it != trimmed }
+            val updated = (listOf(trimmed) + existing).take(10)
+            prefs[PreferencesKeys.RECENT_SEARCHES] = updated.joinToString("|||")
+        }
+    }
+
+    suspend fun removeRecentSearch(query: String) {
+        context.dataStore.edit { prefs ->
+            val existing = (prefs[PreferencesKeys.RECENT_SEARCHES] ?: "")
+                .split("|||")
+                .filter { it.isNotBlank() && it != query }
+            prefs[PreferencesKeys.RECENT_SEARCHES] = existing.joinToString("|||")
+        }
+    }
+
+    suspend fun clearRecentSearches() {
+        context.dataStore.edit { prefs ->
+            prefs.remove(PreferencesKeys.RECENT_SEARCHES)
+        }
     }
 }
 

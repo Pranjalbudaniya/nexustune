@@ -10,8 +10,11 @@ import com.nexus.tune.core.model.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 sealed interface SearchUiState {
@@ -31,6 +34,9 @@ class SearchViewModel(
 
     private val _suggestions = MutableStateFlow<List<String>>(emptyList())
     val suggestions: StateFlow<List<String>> = _suggestions.asStateFlow()
+
+    val recentSearches: StateFlow<List<String>> = searchMusicUseCase.getRecentSearches()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _uiState = MutableStateFlow<SearchUiState>(SearchUiState.Idle)
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
@@ -58,6 +64,7 @@ class SearchViewModel(
         if (queryToSearch.isBlank()) return
         _uiState.value = SearchUiState.Loading
         viewModelScope.launch {
+            searchMusicUseCase.addRecentSearch(queryToSearch)
             when (val result = searchMusicUseCase(queryToSearch)) {
                 is MusicResult.Success -> {
                     _uiState.value = SearchUiState.Success(result.data)
@@ -66,6 +73,18 @@ class SearchViewModel(
                     _uiState.value = SearchUiState.Error(result.error.message)
                 }
             }
+        }
+    }
+
+    fun removeRecentSearch(query: String) {
+        viewModelScope.launch {
+            searchMusicUseCase.removeRecentSearch(query)
+        }
+    }
+
+    fun clearRecentSearches() {
+        viewModelScope.launch {
+            searchMusicUseCase.clearRecentSearches()
         }
     }
 

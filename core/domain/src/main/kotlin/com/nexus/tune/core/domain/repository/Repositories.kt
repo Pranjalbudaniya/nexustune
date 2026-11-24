@@ -23,6 +23,10 @@ interface MusicRepository {
     suspend fun saveLyricsOffset(trackId: String, offsetMs: Long)
     suspend fun getLyricsOffset(trackId: String): Long
     suspend fun clearLyricsCache()
+    fun getRecentSearches(): Flow<List<String>>
+    suspend fun addRecentSearch(query: String)
+    suspend fun removeRecentSearch(query: String)
+    suspend fun clearRecentSearches()
 }
 
 interface QueueRepository {

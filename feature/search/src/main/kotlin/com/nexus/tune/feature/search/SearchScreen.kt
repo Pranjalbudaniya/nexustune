@@ -26,6 +26,7 @@ fun SearchScreen(
     val query by viewModel.query.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
     val suggestions by viewModel.suggestions.collectAsState()
+    val recentSearches by viewModel.recentSearches.collectAsState()
 
     Column(modifier = modifier.fillMaxSize()) {
         SearchBar(
@@ -66,13 +67,57 @@ fun SearchScreen(
         Box(modifier = Modifier.weight(1f)) {
             when (val state = uiState) {
                 is SearchUiState.Idle -> {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Text(
-                            text = "Find your favorite music on NexusTune",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(24.dp)
-                        )
+                    val recent = recentSearches
+                    if (recent.isNotEmpty()) {
+                        Column(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Recent Searches",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                TextButton(onClick = { viewModel.clearRecentSearches() }) {
+                                    Text("Clear")
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            androidx.compose.foundation.lazy.LazyRow(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                items(recent) { recentQuery ->
+                                    InputChip(
+                                        selected = false,
+                                        onClick = {
+                                            viewModel.onQueryChange(recentQuery)
+                                            viewModel.performSearch(recentQuery)
+                                        },
+                                        label = { Text(recentQuery) },
+                                        trailingIcon = {
+                                            Icon(
+                                                Icons.Rounded.Clear,
+                                                contentDescription = "Remove",
+                                                modifier = Modifier
+                                                    .size(16.dp)
+                                                    .clickable { viewModel.removeRecentSearch(recentQuery) }
+                                            )
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            Text(
+                                text = "Find your favorite music on NexusTune",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(24.dp)
+                            )
+                        }
                     }
                 }
                 is SearchUiState.Loading -> {

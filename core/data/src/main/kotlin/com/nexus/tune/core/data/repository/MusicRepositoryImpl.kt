@@ -16,6 +16,24 @@ class MusicRepositoryImpl(
     private val database: NexusTuneDatabase
 ) : MusicRepository {
 
+    private val _recentSearches = kotlinx.coroutines.flow.MutableStateFlow<List<String>>(emptyList())
+    override fun getRecentSearches(): Flow<List<String>> = _recentSearches
+
+    override suspend fun addRecentSearch(query: String) {
+        val trimmed = query.trim()
+        if (trimmed.isEmpty()) return
+        val current = _recentSearches.value.filter { it != trimmed }
+        _recentSearches.value = (listOf(trimmed) + current).take(10)
+    }
+
+    override suspend fun removeRecentSearch(query: String) {
+        _recentSearches.value = _recentSearches.value.filter { it != query }
+    }
+
+    override suspend fun clearRecentSearches() {
+        _recentSearches.value = emptyList()
+    }
+
     override suspend fun search(query: String, filter: String?): MusicResult<SearchResult> {
         return musicSource.search(query, filter)
     }

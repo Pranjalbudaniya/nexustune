@@ -34,6 +34,10 @@ class SearchViewModelTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        coEvery { musicRepository.getRecentSearches() } returns kotlinx.coroutines.flow.flowOf(emptyList())
+        coEvery { musicRepository.addRecentSearch(any()) } returns Unit
+        coEvery { musicRepository.removeRecentSearch(any()) } returns Unit
+        coEvery { musicRepository.clearRecentSearches() } returns Unit
         viewModel = SearchViewModel(searchMusicUseCase, manageQueueUseCase)
     }
 
@@ -85,6 +89,31 @@ class SearchViewModelTest {
         viewModel.playTrack(sampleTrack)
         testDispatcher.scheduler.advanceUntilIdle()
         coVerify { queueRepository.setQueue(listOf(sampleTrack), 0) }
+    }
+
+    @Test
+    fun `performSearch records query to searchMusicUseCase`() = runTest {
+        coEvery { musicRepository.getRecentSearches() } returns kotlinx.coroutines.flow.flowOf(emptyList())
+        coEvery { musicRepository.addRecentSearch("cyberpunk") } returns Unit
+        coEvery { musicRepository.search("cyberpunk", null) } returns MusicResult.Success(SearchResult())
+
+        val vm = SearchViewModel(searchMusicUseCase, manageQueueUseCase)
+        vm.performSearch("cyberpunk")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { musicRepository.addRecentSearch("cyberpunk") }
+    }
+
+    @Test
+    fun `clearRecentSearches delegates to searchMusicUseCase`() = runTest {
+        coEvery { musicRepository.getRecentSearches() } returns kotlinx.coroutines.flow.flowOf(emptyList())
+        coEvery { musicRepository.clearRecentSearches() } returns Unit
+
+        val vm = SearchViewModel(searchMusicUseCase, manageQueueUseCase)
+        vm.clearRecentSearches()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { musicRepository.clearRecentSearches() }
     }
 }
 
