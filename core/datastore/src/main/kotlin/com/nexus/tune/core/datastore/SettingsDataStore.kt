@@ -139,6 +139,12 @@ class SettingsDataStore(private val context: Context) {
         val ULTRASONIC_MODE = stringPreferencesKey("ultrasonic_mode")
         val ULTRASONIC_TOPOLOGY = stringPreferencesKey("ultrasonic_topology")
         val ULTRASONIC_CUTOFF_HZ = floatPreferencesKey("ultrasonic_cutoff_hz")
+        val TUBE_SATURATION_ENABLED = booleanPreferencesKey("tube_saturation_enabled")
+        val TUBE_SATURATION_PROFILE = stringPreferencesKey("tube_saturation_profile")
+        val TUBE_SATURATION_TOPOLOGY = stringPreferencesKey("tube_saturation_topology")
+        val TUBE_SATURATION_DRIVE = floatPreferencesKey("tube_saturation_drive")
+        val TUBE_SATURATION_BIAS = floatPreferencesKey("tube_saturation_bias")
+        val TUBE_SATURATION_MAKEUP_GAIN = booleanPreferencesKey("tube_saturation_makeup_gain")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -366,6 +372,18 @@ class SettingsDataStore(private val context: Context) {
                     UltrasonicTopology.valueOf(prefs[PreferencesKeys.ULTRASONIC_TOPOLOGY] ?: UltrasonicTopology.LINEAR_PHASE_FIR.name)
                 }.getOrDefault(UltrasonicTopology.LINEAR_PHASE_FIR),
                 cutoffHz = prefs[PreferencesKeys.ULTRASONIC_CUTOFF_HZ] ?: 22050.0f
+            ),
+            tubeSaturationConfig = TubeSaturationConfig(
+                isEnabled = prefs[PreferencesKeys.TUBE_SATURATION_ENABLED] ?: false,
+                profile = runCatching {
+                    TubeWarmthProfile.valueOf(prefs[PreferencesKeys.TUBE_SATURATION_PROFILE] ?: TubeWarmthProfile.OFF.name)
+                }.getOrDefault(TubeWarmthProfile.OFF),
+                topology = runCatching {
+                    TubeTopology.valueOf(prefs[PreferencesKeys.TUBE_SATURATION_TOPOLOGY] ?: TubeTopology.TRIODE_12AX7.name)
+                }.getOrDefault(TubeTopology.TRIODE_12AX7),
+                drive = prefs[PreferencesKeys.TUBE_SATURATION_DRIVE] ?: 0.35f,
+                bias = prefs[PreferencesKeys.TUBE_SATURATION_BIAS] ?: 0.20f,
+                autoMakeupGain = prefs[PreferencesKeys.TUBE_SATURATION_MAKEUP_GAIN] ?: true
             )
         )
     }
@@ -488,6 +506,12 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.ULTRASONIC_MODE] = config.ultrasonicFilterConfig.mode.name
             prefs[PreferencesKeys.ULTRASONIC_TOPOLOGY] = config.ultrasonicFilterConfig.topology.name
             prefs[PreferencesKeys.ULTRASONIC_CUTOFF_HZ] = config.ultrasonicFilterConfig.cutoffHz
+            prefs[PreferencesKeys.TUBE_SATURATION_ENABLED] = config.tubeSaturationConfig.isEnabled
+            prefs[PreferencesKeys.TUBE_SATURATION_PROFILE] = config.tubeSaturationConfig.profile.name
+            prefs[PreferencesKeys.TUBE_SATURATION_TOPOLOGY] = config.tubeSaturationConfig.topology.name
+            prefs[PreferencesKeys.TUBE_SATURATION_DRIVE] = config.tubeSaturationConfig.drive
+            prefs[PreferencesKeys.TUBE_SATURATION_BIAS] = config.tubeSaturationConfig.bias
+            prefs[PreferencesKeys.TUBE_SATURATION_MAKEUP_GAIN] = config.tubeSaturationConfig.autoMakeupGain
         }
     }
 
@@ -627,6 +651,17 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.ULTRASONIC_MODE] = config.mode.name
             prefs[PreferencesKeys.ULTRASONIC_TOPOLOGY] = config.topology.name
             prefs[PreferencesKeys.ULTRASONIC_CUTOFF_HZ] = config.cutoffHz
+        }
+    }
+
+    suspend fun updateTubeSaturationConfig(config: TubeSaturationConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.TUBE_SATURATION_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.TUBE_SATURATION_PROFILE] = config.profile.name
+            prefs[PreferencesKeys.TUBE_SATURATION_TOPOLOGY] = config.topology.name
+            prefs[PreferencesKeys.TUBE_SATURATION_DRIVE] = config.drive
+            prefs[PreferencesKeys.TUBE_SATURATION_BIAS] = config.bias
+            prefs[PreferencesKeys.TUBE_SATURATION_MAKEUP_GAIN] = config.autoMakeupGain
         }
     }
 

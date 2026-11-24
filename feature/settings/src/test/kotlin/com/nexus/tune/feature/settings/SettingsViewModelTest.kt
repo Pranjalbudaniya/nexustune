@@ -1221,4 +1221,43 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.ultrasonicFilterConfig.cutoffHz == 24000.0f })
         }
     }
+
+    @Test
+    fun `tube saturation settings update theme config`() = runTest {
+        viewModel.setTubeSaturationEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.tubeSaturationConfig.isEnabled })
+        }
+
+        viewModel.setTubeSaturationProfile(TubeWarmthProfile.LUSH_TRIODE_WARMTH)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.tubeSaturationConfig.profile == TubeWarmthProfile.LUSH_TRIODE_WARMTH })
+        }
+
+        viewModel.setTubeSaturationTopology(TubeTopology.PENTODE_EL34)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.tubeSaturationConfig.topology == TubeTopology.PENTODE_EL34 })
+        }
+
+        viewModel.setTubeSaturationDrive(0.65f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.tubeSaturationConfig.drive == 0.65f })
+        }
+
+        viewModel.setTubeSaturationBias(0.15f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.tubeSaturationConfig.bias == 0.15f })
+        }
+
+        viewModel.setTubeSaturationAutoMakeupGain(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.tubeSaturationConfig.autoMakeupGain })
+        }
+    }
 }

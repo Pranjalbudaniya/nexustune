@@ -21,6 +21,7 @@ import com.nexus.tune.core.domain.audio.SubHarmonicSynthEngine
 import com.nexus.tune.core.domain.audio.DeEsserEngine
 import com.nexus.tune.core.domain.audio.TruePeakGuardEngine
 import com.nexus.tune.core.domain.audio.UltrasonicFilterEngine
+import com.nexus.tune.core.domain.audio.TubeSaturationEngine
 import com.nexus.tune.core.ui.EqCurveVisualizer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -2453,6 +2454,163 @@ fun SettingsScreen(
                                     text = ultrasonicMetrics.imdShieldRating,
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+                ListItem(
+                    headlineContent = { Text("Analog Vacuum Tube Saturation & Warmth Studio") },
+                    supportingContent = { Text("Physical triode/pentode tube modeling injecting euphonic 2nd/3rd harmonics, dynamic analog warmth, and tape glue") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.tubeSaturationConfig.isEnabled,
+                            onCheckedChange = { viewModel.setTubeSaturationEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.tubeSaturationConfig.isEnabled) {
+                    val tubeMetrics = remember(themeConfig.tubeSaturationConfig) {
+                        TubeSaturationEngine.calculateMetrics(themeConfig.tubeSaturationConfig)
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Warmth Profile",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        TubeWarmthProfile.entries.forEach { profile ->
+                            FilterChip(
+                                selected = themeConfig.tubeSaturationConfig.profile == profile,
+                                onClick = { viewModel.setTubeSaturationProfile(profile) },
+                                label = { Text(profile.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "Tube & Saturation Topology",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        TubeTopology.entries.forEach { topology ->
+                            FilterChip(
+                                selected = themeConfig.tubeSaturationConfig.topology == topology,
+                                onClick = { viewModel.setTubeSaturationTopology(topology) },
+                                label = { Text(topology.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Tube Drive / Saturation: ${(themeConfig.tubeSaturationConfig.drive * 100).toInt()}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Auto Makeup: ${if (themeConfig.tubeSaturationConfig.autoMakeupGain) "Active (${tubeMetrics.headroomCompensationDb} dB)" else "Off"}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.tubeSaturationConfig.drive,
+                        onValueChange = { viewModel.setTubeSaturationDrive(it) },
+                        valueRange = 0.0f..1.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = "Cathode Bias Offset (Even vs Odd Balance): ${String.format(java.util.Locale.US, "%+.2f", themeConfig.tubeSaturationConfig.bias)}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Slider(
+                        value = themeConfig.tubeSaturationConfig.bias,
+                        onValueChange = { viewModel.setTubeSaturationBias(it) },
+                        valueRange = -0.5f..0.5f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Auto Headroom Makeup Gain",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Switch(
+                            checked = themeConfig.tubeSaturationConfig.autoMakeupGain,
+                            onCheckedChange = { viewModel.setTubeSaturationAutoMakeupGain(it) }
+                        )
+                    }
+
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Text(
+                                text = tubeMetrics.characterRating,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "2nd (2f): ${tubeMetrics.secondHarmonicDb} dB",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "3rd (3f): ${tubeMetrics.thirdHarmonicDb} dB",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                                Text(
+                                    text = "THD: ${tubeMetrics.totalHarmonicDistortionPercent}%",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                                Text(
+                                    text = "Warmth: ${tubeMetrics.warmthScore}/100",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }

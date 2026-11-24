@@ -1057,4 +1057,45 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(ultrasonicFilterConfig = current.ultrasonicFilterConfig.copy(cutoffHz = cutoffHz.coerceIn(16000.0f, 48000.0f))))
     }
+
+    fun setTubeSaturationEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(tubeSaturationConfig = current.tubeSaturationConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setTubeSaturationProfile(profile: TubeWarmthProfile) {
+        val current = themeConfig.value
+        val isEnabled = profile != TubeWarmthProfile.OFF
+        updateTheme(
+            current.copy(
+                tubeSaturationConfig = current.tubeSaturationConfig.copy(
+                    isEnabled = isEnabled,
+                    profile = profile,
+                    topology = profile.topology,
+                    drive = if (profile != TubeWarmthProfile.OFF) profile.drive else current.tubeSaturationConfig.drive,
+                    bias = if (profile != TubeWarmthProfile.OFF) profile.bias else current.tubeSaturationConfig.bias
+                )
+            )
+        )
+    }
+
+    fun setTubeSaturationTopology(topology: TubeTopology) {
+        val current = themeConfig.value
+        updateTheme(current.copy(tubeSaturationConfig = current.tubeSaturationConfig.copy(topology = topology)))
+    }
+
+    fun setTubeSaturationDrive(drive: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(tubeSaturationConfig = current.tubeSaturationConfig.copy(drive = drive.coerceIn(0.0f, 1.0f))))
+    }
+
+    fun setTubeSaturationBias(bias: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(tubeSaturationConfig = current.tubeSaturationConfig.copy(bias = bias.coerceIn(-0.5f, 0.5f))))
+    }
+
+    fun setTubeSaturationAutoMakeupGain(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(tubeSaturationConfig = current.tubeSaturationConfig.copy(autoMakeupGain = enabled)))
+    }
 }

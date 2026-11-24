@@ -5,6 +5,17 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.25.0] - 2026-11-24
+
+### Added
+- **Audiophile Analog Vacuum Tube Saturation & Even-Harmonic Warmth Studio (`TubeSaturationEngine`)**: Added `TubeTopology` (`TRIODE_12AX7`, `PENTODE_EL34`, `WARM_TAPE_SATURATION`, `CLEAN_ANALOG_CONSOLE`), `TubeWarmthProfile` (`OFF`, `LUSH_TRIODE_WARMTH`, `VINTAGE_TUBE_HOT`, `MAGNETIC_TAPE_GLUE`, `SUBTLE_CONSOLE_AIR`), `TubeSaturationConfig`, and `TubeSaturationMetrics` in `:core:model`.
+- **Physical Triode/Pentode Transfer Curves & Auto Makeup Gain DSP**: Implemented `TubeSaturationEngine` in `:core:domain:audio` modeling the non-linear physics of vacuum tube grid conduction, plate saturation, and magnetic hysteresis. Triode mode delivers euphonic asymmetric soft clipping dominated by lush 2nd-order even harmonics ($2f$), while pentode mode delivers punchy 3rd-order presence ($3f$) and dynamic push-pull bite. Features dynamic DC offset blocking and auto-makeup gain compensation $\frac{1}{\sqrt{1 + 1.2 \cdot \text{drive}^2}}$ preserving perceived volume parity while enriching harmonic texture.
+- **Hardware Equalizer Integration**: Added `applyTubeWarmthOffset`, `clearTubeWarmthOffset`, and `getTubeWarmthOffset` targeting Bands 1 & 2 in `NexusAudioEffects` in `:core:player` for physical acoustic low-mid warmth reinforcement.
+- **DataStore Persistence**: Added `TUBE_SATURATION_ENABLED`, `TUBE_SATURATION_PROFILE`, `TUBE_SATURATION_TOPOLOGY`, `TUBE_SATURATION_DRIVE`, `TUBE_SATURATION_BIAS`, and `TUBE_SATURATION_MAKEUP_GAIN` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Tube Warmth Studio**: Added interactive "Analog Vacuum Tube Saturation & Warmth Studio" card in `SettingsScreen` with profile chips, topology selector, interactive Drive slider (0-100%), Bias offset slider (-0.50 to +0.50), auto-makeup switch, and real-time Fourier diagnostic HUD displaying 2nd harmonic (dB), 3rd harmonic (dB), THD (%), warmth score (10-100), and auto-headroom compensation.
+- **Unit Test Coverage**: Comprehensive test suites in `TubeSaturationEngineTest` in `:core:domain`, `NexusAudioEffectsTest` in `:core:player`, and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.24.0] - 2026-11-24
 
 ### Added

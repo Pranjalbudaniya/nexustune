@@ -157,5 +157,14 @@ class NexusAudioEffectsTest {
         audioEffects.clearDeEsserOffset()
         assertEquals(0, audioEffects.getDeEsserOffset())
     }
+
+    @Test
+    fun `tube warmth offset can be applied and cleared`() {
+        audioEffects.applyTubeWarmthOffset(180)
+        assertEquals(180, audioEffects.getTubeWarmthOffset())
+
+        audioEffects.clearTubeWarmthOffset()
+        assertEquals(0, audioEffects.getTubeWarmthOffset())
+    }
 }
 

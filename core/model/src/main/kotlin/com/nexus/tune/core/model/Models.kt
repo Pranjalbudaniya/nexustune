@@ -240,7 +240,8 @@ data class ThemeConfig(
     val subHarmonicSynthConfig: SubHarmonicSynthConfig = SubHarmonicSynthConfig(),
     val deEsserConfig: DeEsserConfig = DeEsserConfig(),
     val truePeakGuardConfig: TruePeakGuardConfig = TruePeakGuardConfig(),
-    val ultrasonicFilterConfig: UltrasonicFilterConfig = UltrasonicFilterConfig()
+    val ultrasonicFilterConfig: UltrasonicFilterConfig = UltrasonicFilterConfig(),
+    val tubeSaturationConfig: TubeSaturationConfig = TubeSaturationConfig()
 )
 
 data class SoundDoseInfo(
@@ -1281,6 +1282,45 @@ data class UltrasonicBiquadCoefficients(
     val b2: Float,
     val a1: Float,
     val a2: Float
+)
+
+enum class TubeTopology(val displayName: String, val description: String) {
+    TRIODE_12AX7("Triode (12AX7 / ECC83)", "Asymmetric warm soft-clipping dominated by lush 2nd-order even harmonics"),
+    PENTODE_EL34("Pentode (EL34 / 6L6)", "Dynamic push-pull saturation with punchy 3rd-order presence and bite"),
+    WARM_TAPE_SATURATION("Warm Tape Core", "Magnetic hysteresis tape compression with mellow top-end smoothing"),
+    CLEAN_ANALOG_CONSOLE("Analog Console (Class A)", "Ultra-subtle discrete operational amplifier warmth and air")
+}
+
+enum class TubeWarmthProfile(
+    val displayName: String,
+    val topology: TubeTopology,
+    val drive: Float,
+    val bias: Float,
+    val description: String
+) {
+    OFF("Off (Bypassed)", TubeTopology.TRIODE_12AX7, 0.0f, 0.0f, "Pure transparent digital stream without analog coloration"),
+    LUSH_TRIODE_WARMTH("Lush Triode Warmth", TubeTopology.TRIODE_12AX7, 0.35f, 0.20f, "Classic audiophile tube amp warmth enriching acoustic vocals and bass"),
+    VINTAGE_TUBE_HOT("Hot Driven Pentode", TubeTopology.PENTODE_EL34, 0.60f, -0.15f, "Aggressive harmonic bloom with rich dynamic punch and presence"),
+    MAGNETIC_TAPE_GLUE("Analog Tape Glue", TubeTopology.WARM_TAPE_SATURATION, 0.40f, 0.05f, "Subtle tape saturation gently gluing transients and rounding peaks"),
+    SUBTLE_CONSOLE_AIR("Class A Console Air", TubeTopology.CLEAN_ANALOG_CONSOLE, 0.20f, 0.10f, "Delicate high-headroom analog console character for pristine mastering")
+}
+
+data class TubeSaturationConfig(
+    val isEnabled: Boolean = false,
+    val profile: TubeWarmthProfile = TubeWarmthProfile.OFF,
+    val topology: TubeTopology = TubeTopology.TRIODE_12AX7,
+    val drive: Float = 0.35f,
+    val bias: Float = 0.20f,
+    val autoMakeupGain: Boolean = true
+)
+
+data class TubeSaturationMetrics(
+    val secondHarmonicDb: Float,
+    val thirdHarmonicDb: Float,
+    val totalHarmonicDistortionPercent: Float,
+    val warmthScore: Int,
+    val headroomCompensationDb: Float,
+    val characterRating: String
 )
 
 
