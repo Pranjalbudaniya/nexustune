@@ -220,5 +220,14 @@ class NexusAudioEffectsTest {
         audioEffects.clearSoundstageElevationOffset()
         assertEquals(0, audioEffects.getSoundstageElevationOffset())
     }
+
+    @Test
+    fun `mono bass punch offset can be applied and cleared`() {
+        audioEffects.applyMonoBassPunchOffset(90)
+        assertEquals(90, audioEffects.getMonoBassPunchOffset())
+
+        audioEffects.clearMonoBassPunchOffset()
+        assertEquals(0, audioEffects.getMonoBassPunchOffset())
+    }
 }
 

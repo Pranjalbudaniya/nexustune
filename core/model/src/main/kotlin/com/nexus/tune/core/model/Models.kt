@@ -247,7 +247,8 @@ data class ThemeConfig(
     val tapeHysteresisConfig: TapeHysteresisConfig = TapeHysteresisConfig(),
     val mainsHumIsolatorConfig: MainsHumIsolatorConfig = MainsHumIsolatorConfig(),
     val acousticFeedbackConfig: AcousticFeedbackConfig = AcousticFeedbackConfig(),
-    val soundstageElevationConfig: SoundstageElevationConfig = SoundstageElevationConfig()
+    val soundstageElevationConfig: SoundstageElevationConfig = SoundstageElevationConfig(),
+    val monoBassAlignConfig: MonoBassAlignConfig = MonoBassAlignConfig()
 )
 
 data class SoundDoseInfo(
@@ -1573,6 +1574,52 @@ data class SoundstageElevationMetrics(
     val ceilingDelaySamples: Int,
     val spatialHeightScore: Int,
     val elevationRating: String
+)
+
+enum class MonoBassCrossover(val cutoffHz: Float, val displayName: String, val description: String) {
+    HZ_60(60.0f, "60 Hz (Sub-Bass Only)", "Collapses only the lowest sub-bass rumble, leaving bass guitars and kick punch in wide stereo"),
+    HZ_80(80.0f, "80 Hz (THX Cinema Standard)", "Industry standard subwoofer crossover point for clean, punchy low-end focus"),
+    HZ_100(100.0f, "100 Hz (Club PA Standard)", "Maximizes acoustic efficiency and amplifier dynamic headroom for physical club bass slam"),
+    HZ_120(120.0f, "120 Hz (Headphone Slam)", "Eliminates muddy lower-mid phase smearing on planar magnetic and dynamic headphones"),
+    HZ_150(150.0f, "150 Hz (Punch Anchor)", "Aggressive low-end mono consolidation locking the entire rhythmic foundation dead center")
+}
+
+enum class MonoBassFilterSlope(val order: Int, val dbPerOctave: Int, val displayName: String) {
+    SLOPE_12DB_OCT(2, 12, "12 dB/oct (Smooth 2nd-Order)"),
+    SLOPE_24DB_OCT(4, 24, "24 dB/oct (Linkwitz-Riley 4th-Order)")
+}
+
+enum class MonoBassAlignPreset(
+    val displayName: String,
+    val crossover: MonoBassCrossover,
+    val slope: MonoBassFilterSlope,
+    val autoPhaseAlign: Boolean,
+    val punchGainDb: Float,
+    val description: String
+) {
+    OFF("Off (Bypassed)", MonoBassCrossover.HZ_80, MonoBassFilterSlope.SLOPE_12DB_OCT, false, 0.0f, "Direct stereo without sub-bass mono folding or phase alignment"),
+    SUBWOOFER_MONO_LOCK_80HZ("Subwoofer Mono Lock (80 Hz)", MonoBassCrossover.HZ_80, MonoBassFilterSlope.SLOPE_24DB_OCT, true, 1.5f, "THX crossover standard ensuring tight, unified low-end punch without speaker phase cancellation"),
+    CLUB_PA_TIGHT_100HZ("Club PA High-Impact (100 Hz)", MonoBassCrossover.HZ_100, MonoBassFilterSlope.SLOPE_24DB_OCT, true, 2.5f, "Authoritative club bass consolidation focusing all low-end power in the center channel"),
+    VINYL_ELLIPTICAL_60HZ("Vinyl Mastering Lathe (60 Hz)", MonoBassCrossover.HZ_60, MonoBassFilterSlope.SLOPE_12DB_OCT, true, 0.8f, "Classic elliptical equalizer slope preventing turntable stylus bounce from out-of-phase groove wobble"),
+    HEADPHONE_PUNCH_120HZ("Headphone De-Mud & Punch (120 Hz)", MonoBassCrossover.HZ_120, MonoBassFilterSlope.SLOPE_24DB_OCT, true, 2.0f, "Tightens acoustic kick drum slam and clarifies muddy mid-bass on in-ear monitors")
+}
+
+data class MonoBassAlignConfig(
+    val isEnabled: Boolean = false,
+    val preset: MonoBassAlignPreset = MonoBassAlignPreset.OFF,
+    val crossover: MonoBassCrossover = MonoBassCrossover.HZ_80,
+    val slope: MonoBassFilterSlope = MonoBassFilterSlope.SLOPE_24DB_OCT,
+    val autoPhaseAlign: Boolean = true,
+    val subPunchGainDb: Float = 1.5f,
+    val sideSoloAudition: Boolean = false
+)
+
+data class MonoBassAlignMetrics(
+    val subBassCorrelation: Float,
+    val restoredEnergyDb: Float,
+    val phaseAlignmentDegrees: Float,
+    val crossoverFrequencyHz: Float,
+    val coherenceRating: String
 )
 
 

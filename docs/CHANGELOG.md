@@ -5,6 +5,17 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.32.0] - 2026-11-24
+
+### Added
+- **Audiophile Dynamic Sub-Bass Phase Alignment & Mono-Sum Studio (`MonoBassAlignEngine`)**: Added `MonoBassCrossover` (`HZ_60`, `HZ_80`, `HZ_100`, `HZ_120`, `HZ_150`), `MonoBassFilterSlope` (`SLOPE_12DB_OCT`, `SLOPE_24DB_OCT`), `MonoBassAlignPreset` (`OFF`, `SUBWOOFER_MONO_LOCK_80HZ`, `CLUB_PA_TIGHT_100HZ`, `VINYL_ELLIPTICAL_60HZ`, `HEADPHONE_PUNCH_120HZ`), `MonoBassAlignConfig`, and `MonoBassAlignMetrics` in `:core:model`.
+- **Elliptical Linkwitz-Riley Equalizer & Dynamic Phase Coherence DSP**: Implemented `MonoBassAlignEngine` in `:core:domain:audio`. Employs Mid/Side matrixing ($M = \frac{L+R}{\sqrt{2}}$, $S = \frac{L-R}{\sqrt{2}}$) with cascaded 2nd/4th order Linkwitz-Riley highpass filters on the Side channel, eliminating out-of-phase low-frequency cancellation below 60-150 Hz while preserving 100% of stereo width in midrange and treble. Features dynamic phase correlation tracking ($\rho_{\text{bass}}$), sub-punch foundation makeup gain on the Mid channel, and a solo audition mode for removed side mud.
+- **Hardware Equalizer Integration**: Added `applyMonoBassPunchOffset`, `clearMonoBassPunchOffset`, and `getMonoBassPunchOffset` targeting Bands 0 & 1 in `NexusAudioEffects` in `:core:player` for physical hardware sub-bass punch consolidation.
+- **DataStore Persistence**: Added `MONO_BASS_ALIGN_ENABLED`, `MONO_BASS_ALIGN_PRESET`, `MONO_BASS_ALIGN_CROSSOVER`, `MONO_BASS_ALIGN_SLOPE`, `MONO_BASS_ALIGN_AUTO_PHASE`, `MONO_BASS_ALIGN_PUNCH_GAIN`, and `MONO_BASS_ALIGN_SIDE_SOLO` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Mono Bass Studio**: Added interactive "Dynamic Sub-Bass Phase Alignment & Mono Studio" card in `SettingsScreen` with crossover cutoff chips, slope selector, preset chips, sub-punch makeup slider, phase align switch, solo mud audition switch, and live sub-bass phase coherence HUD.
+- **Unit Test Coverage**: Comprehensive test suites in `MonoBassAlignEngineTest` in `:core:domain`, `NexusAudioEffectsTest` in `:core:player`, and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.31.0] - 2026-11-24
 
 ### Added

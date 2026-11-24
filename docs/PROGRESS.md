@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 81 (v6.31.0 Audiophile Psychoacoustic Soundstage Elevation & Height Virtualizer Studio - Completed)
-- In Flight: Advancing to Loop 82 (v6.32.0 Audiophile Dynamic Sub-Bass Phase Align & Mono-Sum Studio)
+- Active Phase: Post-v1.0 Improvement Loop 83 (v6.33.0 Audiophile Dynamic Preamp Thermal Noise Profiler & Spectral Flattener Studio)
+- In Flight: Domain engine, models, audio effects, datastore, viewmodel, and settings studio card implementation
 - Branches: `main`
 
 ## Phase Tracking
@@ -810,6 +810,30 @@
     - [x] Comprehensive test suites in `SoundstageElevationEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.31-1`
+
+- [x] Improvement Loop 82 (v6.32 Milestone - Tagged `v6.32-1`)
+  - [x] Audiophile Dynamic Sub-Bass Phase Alignment & Mono-Sum Studio (`MonoBassAlignEngine`):
+    - [x] `MonoBassCrossover`, `MonoBassFilterSlope`, `MonoBassAlignPreset`, `MonoBassAlignConfig`, and `MonoBassAlignMetrics` in `:core:model`
+    - [x] `MonoBassAlignEngine` in `:core:domain:audio` with Mid/Side matrixing, 2nd/4th order Linkwitz-Riley highpass filtering on the Side channel, sub-bass phase correlation tracking, Mid channel punch makeup, and solo side mud audition
+    - [x] Hardware equalizer integration in `NexusAudioEffects` (`applyMonoBassPunchOffset`, `clearMonoBassPunchOffset`, `getMonoBassPunchOffset`) targeting Bands 0 & 1
+    - [x] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
+    - [x] `SettingsViewModel` mono bass control methods
+    - [x] Interactive "Dynamic Sub-Bass Phase Alignment & Mono Studio" card in `SettingsScreen` with crossover cutoff chips, slope selector, preset chips, sub-punch makeup slider, phase align switch, solo mud audition switch, and live sub-bass phase coherence HUD
+    - [x] Comprehensive test suites in `MonoBassAlignEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v6.32-1`
+
+- [ ] Improvement Loop 83 (v6.33 Milestone - In Flight)
+  - [ ] Audiophile Dynamic Preamp Thermal Noise Profiler & Spectral Flattener Studio (`PreampNoiseFlattenerEngine`):
+    - [ ] `PreampNoiseProfile`, `PreampFlattenerMode`, `PreampNoiseFlattenerPreset`, `PreampNoiseFlattenerConfig`, and `PreampNoiseFlattenerMetrics` in `:core:model`
+    - [ ] `PreampNoiseFlattenerEngine` in `:core:domain:audio` with real-time multi-band spectral slope estimator, inverse tilt filter, soft-knee downward expander, Fletcher-Munson thermal dither generator, and solo noise audition mode
+    - [ ] Hardware equalizer integration in `NexusAudioEffects` (`applyPreampTiltOffset`, `clearPreampTiltOffset`, `getPreampTiltOffset`) targeting Band 4
+    - [ ] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
+    - [ ] `SettingsViewModel` preamp noise flattener control methods
+    - [ ] Interactive "Dynamic Preamp Thermal Noise Profiler & Spectral Flattener Studio" card in `SettingsScreen` in dedicated `item { ... }` block
+    - [ ] Comprehensive test suites in `PreampNoiseFlattenerEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
+  - [ ] Slice gate passed
+  - [ ] Final gate passed & tagged: `v6.33-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

@@ -1530,4 +1530,49 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { !it.soundstageElevationConfig.diffuseCeilingSpread })
         }
     }
+
+    @Test
+    fun `mono bass align settings update theme config`() = runTest {
+        viewModel.setMonoBassAlignEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.monoBassAlignConfig.isEnabled })
+        }
+
+        viewModel.setMonoBassAlignPreset(MonoBassAlignPreset.SUBWOOFER_MONO_LOCK_80HZ)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.monoBassAlignConfig.preset == MonoBassAlignPreset.SUBWOOFER_MONO_LOCK_80HZ })
+        }
+
+        viewModel.setMonoBassAlignCrossover(MonoBassCrossover.HZ_120)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.monoBassAlignConfig.crossover == MonoBassCrossover.HZ_120 })
+        }
+
+        viewModel.setMonoBassAlignSlope(MonoBassFilterSlope.SLOPE_12DB_OCT)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.monoBassAlignConfig.slope == MonoBassFilterSlope.SLOPE_12DB_OCT })
+        }
+
+        viewModel.setMonoBassAlignAutoPhase(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.monoBassAlignConfig.autoPhaseAlign })
+        }
+
+        viewModel.setMonoBassAlignPunchGain(3.0f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.monoBassAlignConfig.subPunchGainDb == 3.0f })
+        }
+
+        viewModel.setMonoBassAlignSideSolo(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.monoBassAlignConfig.sideSoloAudition })
+        }
+    }
 }

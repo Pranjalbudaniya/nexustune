@@ -28,6 +28,7 @@ import com.nexus.tune.core.domain.audio.TapeHysteresisEngine
 import com.nexus.tune.core.domain.audio.MainsHumIsolatorEngine
 import com.nexus.tune.core.domain.audio.AcousticFeedbackEngine
 import com.nexus.tune.core.domain.audio.SoundstageElevationEngine
+import com.nexus.tune.core.domain.audio.MonoBassAlignEngine
 import com.nexus.tune.core.ui.EqCurveVisualizer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -3737,6 +3738,191 @@ fun SettingsScreen(
                                 )
                                 Text(
                                     text = "Angle: ${String.format(java.util.Locale.US, "%.1f°", elevationMetrics.virtualElevationDegrees)}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            }
+
+            item {
+                // --- Audiophile Dynamic Sub-Bass Phase Alignment & Mono Studio ---
+                ListItem(
+                    headlineContent = { Text("Dynamic Sub-Bass Phase Alignment & Mono Studio") },
+                    supportingContent = { Text("Elliptical Linkwitz-Riley equalizer collapsing out-of-phase low-end into monolithic mono punch while keeping wide stereo highs") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.monoBassAlignConfig.isEnabled,
+                            onCheckedChange = { viewModel.setMonoBassAlignEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.monoBassAlignConfig.isEnabled) {
+                    val monoMetrics = remember(themeConfig.monoBassAlignConfig) {
+                        MonoBassAlignEngine.calculateMetrics(themeConfig.monoBassAlignConfig)
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Sub-Bass Mono Preset",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(bottom = 6.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        MonoBassAlignPreset.entries.forEach { preset ->
+                            FilterChip(
+                                selected = themeConfig.monoBassAlignConfig.preset == preset,
+                                onClick = { viewModel.setMonoBassAlignPreset(preset) },
+                                label = { Text(preset.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "Mono Crossover Cutoff Frequency",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(bottom = 6.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        MonoBassCrossover.entries.forEach { cutoff ->
+                            FilterChip(
+                                selected = themeConfig.monoBassAlignConfig.crossover == cutoff,
+                                onClick = { viewModel.setMonoBassAlignCrossover(cutoff) },
+                                label = { Text(cutoff.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "Crossover Filter Slope",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(bottom = 6.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        MonoBassFilterSlope.entries.forEach { slope ->
+                            FilterChip(
+                                selected = themeConfig.monoBassAlignConfig.slope == slope,
+                                onClick = { viewModel.setMonoBassAlignSlope(slope) },
+                                label = { Text(slope.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Restored Sub-Punch Makeup Gain: ${String.format(java.util.Locale.US, "+%.1f dB", themeConfig.monoBassAlignConfig.subPunchGainDb)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Restored: +${String.format(java.util.Locale.US, "%.1f dB", monoMetrics.restoredEnergyDb)}",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.monoBassAlignConfig.subPunchGainDb,
+                        onValueChange = { viewModel.setMonoBassAlignPunchGain(it) },
+                        valueRange = 0.0f..4.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Inter-Channel Low-End Phase Alignment",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Switch(
+                            checked = themeConfig.monoBassAlignConfig.autoPhaseAlign,
+                            onCheckedChange = { viewModel.setMonoBassAlignAutoPhase(it) }
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Audition Removed Side Sub-Bass (Solo Pruned Mud)",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Switch(
+                            checked = themeConfig.monoBassAlignConfig.sideSoloAudition,
+                            onCheckedChange = { viewModel.setMonoBassAlignSideSolo(it) }
+                        )
+                    }
+
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = "SUB-BASS PHASE COHERENCE & ELLIPTICAL HUD",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Status: ${monoMetrics.coherenceRating}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Cutoff: ${monoMetrics.crossoverFrequencyHz.toInt()} Hz",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                                Text(
+                                    text = "ρ: ${String.format(java.util.Locale.US, "%.2f", monoMetrics.subBassCorrelation)}",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.tertiary
                                 )

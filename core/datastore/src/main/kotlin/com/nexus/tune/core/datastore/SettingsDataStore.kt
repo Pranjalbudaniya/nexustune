@@ -187,6 +187,13 @@ class SettingsDataStore(private val context: Context) {
         val SOUNDSTAGE_ELEVATION_CEILING_MS = floatPreferencesKey("soundstage_elevation_ceiling_ms")
         val SOUNDSTAGE_ELEVATION_PINNA_DEPTH = floatPreferencesKey("soundstage_elevation_pinna_depth")
         val SOUNDSTAGE_ELEVATION_DIFFUSE_SPREAD = booleanPreferencesKey("soundstage_elevation_diffuse_spread")
+        val MONO_BASS_ALIGN_ENABLED = booleanPreferencesKey("mono_bass_align_enabled")
+        val MONO_BASS_ALIGN_PRESET = stringPreferencesKey("mono_bass_align_preset")
+        val MONO_BASS_ALIGN_CROSSOVER = stringPreferencesKey("mono_bass_align_crossover")
+        val MONO_BASS_ALIGN_SLOPE = stringPreferencesKey("mono_bass_align_slope")
+        val MONO_BASS_ALIGN_AUTO_PHASE = booleanPreferencesKey("mono_bass_align_auto_phase")
+        val MONO_BASS_ALIGN_PUNCH_GAIN = floatPreferencesKey("mono_bass_align_punch_gain")
+        val MONO_BASS_ALIGN_SIDE_SOLO = booleanPreferencesKey("mono_bass_align_side_solo")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -504,6 +511,21 @@ class SettingsDataStore(private val context: Context) {
                 ceilingReflectionMs = prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_CEILING_MS] ?: 4.2f,
                 pinnaNotchDepthDb = prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_PINNA_DEPTH] ?: -4.5f,
                 diffuseCeilingSpread = prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_DIFFUSE_SPREAD] ?: true
+            ),
+            monoBassAlignConfig = MonoBassAlignConfig(
+                isEnabled = prefs[PreferencesKeys.MONO_BASS_ALIGN_ENABLED] ?: false,
+                preset = runCatching {
+                    MonoBassAlignPreset.valueOf(prefs[PreferencesKeys.MONO_BASS_ALIGN_PRESET] ?: MonoBassAlignPreset.OFF.name)
+                }.getOrDefault(MonoBassAlignPreset.OFF),
+                crossover = runCatching {
+                    MonoBassCrossover.valueOf(prefs[PreferencesKeys.MONO_BASS_ALIGN_CROSSOVER] ?: MonoBassCrossover.HZ_80.name)
+                }.getOrDefault(MonoBassCrossover.HZ_80),
+                slope = runCatching {
+                    MonoBassFilterSlope.valueOf(prefs[PreferencesKeys.MONO_BASS_ALIGN_SLOPE] ?: MonoBassFilterSlope.SLOPE_24DB_OCT.name)
+                }.getOrDefault(MonoBassFilterSlope.SLOPE_24DB_OCT),
+                autoPhaseAlign = prefs[PreferencesKeys.MONO_BASS_ALIGN_AUTO_PHASE] ?: true,
+                subPunchGainDb = prefs[PreferencesKeys.MONO_BASS_ALIGN_PUNCH_GAIN] ?: 1.5f,
+                sideSoloAudition = prefs[PreferencesKeys.MONO_BASS_ALIGN_SIDE_SOLO] ?: false
             )
         )
     }
@@ -674,6 +696,13 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_CEILING_MS] = config.soundstageElevationConfig.ceilingReflectionMs
             prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_PINNA_DEPTH] = config.soundstageElevationConfig.pinnaNotchDepthDb
             prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_DIFFUSE_SPREAD] = config.soundstageElevationConfig.diffuseCeilingSpread
+            prefs[PreferencesKeys.MONO_BASS_ALIGN_ENABLED] = config.monoBassAlignConfig.isEnabled
+            prefs[PreferencesKeys.MONO_BASS_ALIGN_PRESET] = config.monoBassAlignConfig.preset.name
+            prefs[PreferencesKeys.MONO_BASS_ALIGN_CROSSOVER] = config.monoBassAlignConfig.crossover.name
+            prefs[PreferencesKeys.MONO_BASS_ALIGN_SLOPE] = config.monoBassAlignConfig.slope.name
+            prefs[PreferencesKeys.MONO_BASS_ALIGN_AUTO_PHASE] = config.monoBassAlignConfig.autoPhaseAlign
+            prefs[PreferencesKeys.MONO_BASS_ALIGN_PUNCH_GAIN] = config.monoBassAlignConfig.subPunchGainDb
+            prefs[PreferencesKeys.MONO_BASS_ALIGN_SIDE_SOLO] = config.monoBassAlignConfig.sideSoloAudition
         }
     }
 
@@ -896,6 +925,18 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_CEILING_MS] = config.ceilingReflectionMs
             prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_PINNA_DEPTH] = config.pinnaNotchDepthDb
             prefs[PreferencesKeys.SOUNDSTAGE_ELEVATION_DIFFUSE_SPREAD] = config.diffuseCeilingSpread
+        }
+    }
+
+    suspend fun updateMonoBassAlignConfig(config: MonoBassAlignConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.MONO_BASS_ALIGN_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.MONO_BASS_ALIGN_PRESET] = config.preset.name
+            prefs[PreferencesKeys.MONO_BASS_ALIGN_CROSSOVER] = config.crossover.name
+            prefs[PreferencesKeys.MONO_BASS_ALIGN_SLOPE] = config.slope.name
+            prefs[PreferencesKeys.MONO_BASS_ALIGN_AUTO_PHASE] = config.autoPhaseAlign
+            prefs[PreferencesKeys.MONO_BASS_ALIGN_PUNCH_GAIN] = config.subPunchGainDb
+            prefs[PreferencesKeys.MONO_BASS_ALIGN_SIDE_SOLO] = config.sideSoloAudition
         }
     }
 

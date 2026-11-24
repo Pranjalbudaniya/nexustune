@@ -1383,4 +1383,51 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(soundstageElevationConfig = current.soundstageElevationConfig.copy(diffuseCeilingSpread = enabled)))
     }
+
+    fun setMonoBassAlignEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(monoBassAlignConfig = current.monoBassAlignConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setMonoBassAlignPreset(preset: MonoBassAlignPreset) {
+        val current = themeConfig.value
+        val isEnabled = preset != MonoBassAlignPreset.OFF
+        updateTheme(
+            current.copy(
+                monoBassAlignConfig = current.monoBassAlignConfig.copy(
+                    isEnabled = isEnabled,
+                    preset = preset,
+                    crossover = if (preset != MonoBassAlignPreset.OFF) preset.crossover else current.monoBassAlignConfig.crossover,
+                    slope = if (preset != MonoBassAlignPreset.OFF) preset.slope else current.monoBassAlignConfig.slope,
+                    autoPhaseAlign = if (preset != MonoBassAlignPreset.OFF) preset.autoPhaseAlign else current.monoBassAlignConfig.autoPhaseAlign,
+                    subPunchGainDb = if (preset != MonoBassAlignPreset.OFF) preset.punchGainDb else current.monoBassAlignConfig.subPunchGainDb
+                )
+            )
+        )
+    }
+
+    fun setMonoBassAlignCrossover(crossover: MonoBassCrossover) {
+        val current = themeConfig.value
+        updateTheme(current.copy(monoBassAlignConfig = current.monoBassAlignConfig.copy(crossover = crossover)))
+    }
+
+    fun setMonoBassAlignSlope(slope: MonoBassFilterSlope) {
+        val current = themeConfig.value
+        updateTheme(current.copy(monoBassAlignConfig = current.monoBassAlignConfig.copy(slope = slope)))
+    }
+
+    fun setMonoBassAlignAutoPhase(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(monoBassAlignConfig = current.monoBassAlignConfig.copy(autoPhaseAlign = enabled)))
+    }
+
+    fun setMonoBassAlignPunchGain(gainDb: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(monoBassAlignConfig = current.monoBassAlignConfig.copy(subPunchGainDb = gainDb.coerceIn(0.0f, 4.0f))))
+    }
+
+    fun setMonoBassAlignSideSolo(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(monoBassAlignConfig = current.monoBassAlignConfig.copy(sideSoloAudition = enabled)))
+    }
 }
