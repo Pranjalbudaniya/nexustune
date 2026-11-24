@@ -247,5 +247,14 @@ class NexusAudioEffectsTest {
         audioEffects.clearSlewRateOffset()
         assertEquals(0, audioEffects.getSlewRateOffset())
     }
+
+    @Test
+    fun `horn diffuser offset can be applied and cleared`() {
+        audioEffects.applyHornDiffuserOffset(110)
+        assertEquals(110, audioEffects.getHornDiffuserOffset())
+
+        audioEffects.clearHornDiffuserOffset()
+        assertEquals(0, audioEffects.getHornDiffuserOffset())
+    }
 }
 

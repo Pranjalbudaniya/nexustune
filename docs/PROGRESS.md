@@ -847,17 +847,30 @@
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.34-1`
 
-- [ ] Improvement Loop 85 (v6.35 Milestone - In Flight)
-  - [ ] Audiophile Dynamic Acoustic Resonator & Cabinet Horn Diffuser Studio (`HornDiffuserEngine`):
-    - [ ] `HornFlareGeometry`, `HornDiffuserMode`, `HornDiffuserPreset`, `HornDiffuserConfig`, and `HornDiffuserMetrics` in `:core:model`
-    - [ ] `HornDiffuserEngine` in `:core:domain:audio` with Tractrix / Exponential flare loading impedance matcher, throat anti-resonance notch biquad ($1.2\dots 2.8\text{ kHz}$), horizontal QRD flare dispersion matrix, and compression driver air viscosity simulation
-    - [ ] Hardware equalizer integration in `NexusAudioEffects` (`applyHornDiffuserOffset`, `clearHornDiffuserOffset`, `getHornDiffuserOffset`) targeting Bands 2 & 4
+- [x] Improvement Loop 85 (v6.35 Milestone - Tagged `v6.35-1`)
+  - [x] Audiophile Dynamic Acoustic Resonator & Cabinet Horn Diffuser Studio (`HornDiffuserEngine`):
+    - [x] `HornFlareGeometry`, `HornDiffuserMode`, `HornDiffuserPreset`, `HornDiffuserConfig`, and `HornDiffuserMetrics` in `:core:model`
+    - [x] `HornDiffuserEngine` in `:core:domain:audio` with Tractrix / Exponential flare loading impedance matcher, throat anti-resonance notch biquad ($1.2\dots 2.8\text{ kHz}$), horizontal QRD flare dispersion matrix, and compression driver air viscosity simulation
+    - [x] Hardware equalizer integration in `NexusAudioEffects` (`applyHornDiffuserOffset`, `clearHornDiffuserOffset`, `getHornDiffuserOffset`) targeting Bands 2 & 4
+    - [x] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
+    - [x] `SettingsViewModel` horn diffuser control methods
+    - [x] Interactive "Dynamic Acoustic Resonator & Cabinet Horn Diffuser Studio" card in `SettingsScreen` in dedicated `item { ... }` block
+    - [x] Comprehensive test suites in `HornDiffuserEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
+    - [x] Production R8 Proguard & Crash Fixes: Added keep rules for all model enums, Room database implementation/entities/DAOs, Media3 session services, and NewPipe extractor; added defensive safe parsing and error handlers in DataStore, Activity, and Application
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v6.35-1`
+
+- [ ] Improvement Loop 86 (v6.36 Milestone - In Flight)
+  - [ ] Audiophile Dynamic Multiband Sub-Bass Transient Punch & Attack Reshaper Studio (`BassAttackReshaperEngine`):
+    - [ ] `BassAttackTarget`, `BassReshaperMode`, `BassAttackPreset`, `BassAttackReshaperConfig`, and `BassAttackReshaperMetrics` in `:core:model`
+    - [ ] `BassAttackReshaperEngine` in `:core:domain:audio` with 2nd-order Linkwitz-Riley lowpass crossover (<160 Hz), dual envelope detection (attack $\tau_{att}\approx 6\text{ ms}$, sustain $\tau_{rel}\approx 180\text{ ms}$), dynamic attack ratio multiplier, and sustain tail damping
+    - [ ] Hardware equalizer integration in `NexusAudioEffects` (`applyBassAttackOffset`, `clearBassAttackOffset`, `getBassAttackOffset`) targeting Bands 0 & 1
     - [ ] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
-    - [ ] `SettingsViewModel` horn diffuser control methods
-    - [ ] Interactive "Dynamic Acoustic Resonator & Cabinet Horn Diffuser Studio" card in `SettingsScreen` in dedicated `item { ... }` block
-    - [ ] Comprehensive test suites in `HornDiffuserEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
+    - [ ] `SettingsViewModel` bass attack reshaper control methods
+    - [ ] Interactive "Dynamic Sub-Bass Transient Punch & Attack Reshaper Studio" card in `SettingsScreen` in dedicated `item { ... }` block
+    - [ ] Comprehensive test suites in `BassAttackReshaperEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
   - [ ] Slice gate passed
-  - [ ] Final gate passed & tagged: `v6.35-1`
+  - [ ] Final gate passed & tagged: `v6.36-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

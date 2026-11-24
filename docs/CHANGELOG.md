@@ -5,6 +5,17 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.35.0] - 2026-11-24
+
+### Added
+- **Audiophile Dynamic Acoustic Resonator & Cabinet Horn Diffuser Studio (`HornDiffuserEngine`)**: Added `HornFlareGeometry` (`TRACTRIX`, `EXPONENTIAL`, `CONICAL_WAVEGUIDE`, `SECTORAL_RADIAL`, `CONSTANT_DIRECTIVITY`), `HornDiffuserMode` (`ACOUSTIC_LOADING`, `THROAT_ANTI_RESONANCE`, `WIDE_DISPERSION`, `SOLO_HORN_COLORATION`), `HornDiffuserPreset` (`OFF`, `KLIPSCHORN_HERITAGE`, `WESTERN_ELECTRIC_VINTAGE`, `STUDIO_BI_RADIAL`, `ULTRA_WIDE_TRACTRIX`), `HornDiffuserConfig`, and `HornDiffuserMetrics` in `:core:model`.
+- **Acoustic Waveguide Impedance Matching & QRD Dispersion DSP**: Implemented `HornDiffuserEngine` in `:core:domain:audio`. Simulates Tractrix and Exponential horn flare loading curves for effortless transient speed and dynamic acoustic efficiency, applies high-Q peaking anti-resonance notch biquads targeting throat cavity standing wave honk ($1.2\dots 2.8\text{ kHz}$), models air particle viscosity inside the compression driver flare, and incorporates a quadratic residue dispersion (QRD) cross-channel micro-delay matrix for expansive horizontal wavefront imaging without vertical boundary reflections.
+- **Hardware Equalizer Integration**: Added `applyHornDiffuserOffset`, `clearHornDiffuserOffset`, and `getHornDiffuserOffset` targeting Bands 2 & 4 in `NexusAudioEffects` in `:core:player` for physical hardware horn presence and air elevation.
+- **DataStore Persistence**: Added `HORN_DIFFUSER_ENABLED`, `HORN_DIFFUSER_PRESET`, `HORN_DIFFUSER_GEOMETRY`, `HORN_DIFFUSER_MODE`, `HORN_DIFFUSER_CUTOFF_HZ`, `HORN_DIFFUSER_INTENSITY`, `HORN_DIFFUSER_ANTI_RESONANCE_DB`, and `HORN_DIFFUSER_COVERAGE_ANGLE` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Horn Diffuser Studio**: Added interactive "Dynamic Acoustic Resonator & Cabinet Horn Diffuser Studio" card in its own dedicated `item { ... }` block in `SettingsScreen` with preset chips, flare geometry chips, diffusion mode chips, throat cutoff slider, flare intensity slider, throat anti-resonance notch slider, horizontal coverage angle slider, and real-time acoustic loading & dispersion HUD.
+- **Unit Test Coverage**: Comprehensive test suites in `HornDiffuserEngineTest` in `:core:domain`, `NexusAudioEffectsTest` in `:core:player`, and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.34.0] - 2026-11-24
 
 ### Added

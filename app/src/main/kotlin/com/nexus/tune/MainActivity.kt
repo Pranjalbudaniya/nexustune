@@ -367,19 +367,33 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun negotiate120HzDisplayMode() {
-        val display = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            display
-        } else {
-            val displayManager = getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
-            displayManager.getDisplay(Display.DEFAULT_DISPLAY)
-        } ?: return
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        negotiate120HzDisplayMode()
+    }
 
-        val highestRefreshMode = display.supportedModes.maxByOrNull { it.refreshRate }
-        if (highestRefreshMode != null) {
-            val params = window.attributes
-            params.preferredDisplayModeId = highestRefreshMode.modeId
-            window.attributes = params
+    private fun negotiate120HzDisplayMode() {
+        try {
+            val display = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                try {
+                    display
+                } catch (_: Throwable) {
+                    val displayManager = getSystemService(Context.DISPLAY_SERVICE) as? DisplayManager
+                    displayManager?.getDisplay(Display.DEFAULT_DISPLAY)
+                }
+            } else {
+                val displayManager = getSystemService(Context.DISPLAY_SERVICE) as? DisplayManager
+                displayManager?.getDisplay(Display.DEFAULT_DISPLAY)
+            } ?: return
+
+            val highestRefreshMode = display.supportedModes?.maxByOrNull { it.refreshRate }
+            if (highestRefreshMode != null) {
+                val params = window.attributes
+                params.preferredDisplayModeId = highestRefreshMode.modeId
+                window.attributes = params
+            }
+        } catch (t: Throwable) {
+            android.util.Log.w("MainActivity", "Failed to negotiate display mode", t)
         }
     }
 }

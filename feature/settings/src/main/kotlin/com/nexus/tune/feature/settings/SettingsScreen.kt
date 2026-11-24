@@ -31,6 +31,7 @@ import com.nexus.tune.core.domain.audio.SoundstageElevationEngine
 import com.nexus.tune.core.domain.audio.MonoBassAlignEngine
 import com.nexus.tune.core.domain.audio.PreampNoiseFlattenerEngine
 import com.nexus.tune.core.domain.audio.SlewRateLimiterEngine
+import com.nexus.tune.core.domain.audio.HornDiffuserEngine
 import com.nexus.tune.core.ui.EqCurveVisualizer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -4328,6 +4329,230 @@ fun SettingsScreen(
                                 )
                                 Text(
                                     text = "Clamped: ${slewMetrics.clampedTransientsCount} transients",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            }
+
+            item {
+                // --- Dynamic Acoustic Resonator & Cabinet Horn Diffuser Studio ---
+                Text(
+                    text = "Dynamic Acoustic Resonator & Cabinet Horn Diffuser Studio",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                ListItem(
+                    headlineContent = { Text("Acoustic Horn Loading & QRD Diffuser") },
+                    supportingContent = { Text("Tractrix flare impedance matching, throat cavity anti-resonance notch, and horizontal QRD dispersion") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.hornDiffuserConfig.isEnabled,
+                            onCheckedChange = { viewModel.setHornDiffuserEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.hornDiffuserConfig.isEnabled) {
+                    val hornMetrics = remember(themeConfig.hornDiffuserConfig) {
+                        HornDiffuserEngine.calculateMetrics(
+                            themeConfig.hornDiffuserConfig,
+                            floatArrayOf(0.1f, 0.1f, 0.05f, 0.05f)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Horn Diffuser Preset",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        HornDiffuserPreset.entries.forEach { preset ->
+                            FilterChip(
+                                selected = themeConfig.hornDiffuserConfig.preset == preset,
+                                onClick = { viewModel.setHornDiffuserPreset(preset) },
+                                label = { Text(preset.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Horn Flare Geometry",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        HornFlareGeometry.entries.forEach { geo ->
+                            FilterChip(
+                                selected = themeConfig.hornDiffuserConfig.geometry == geo,
+                                onClick = { viewModel.setHornFlareGeometry(geo) },
+                                label = { Text(geo.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Acoustic Diffusion Mode",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        HornDiffuserMode.entries.forEach { mode ->
+                            FilterChip(
+                                selected = themeConfig.hornDiffuserConfig.mode == mode,
+                                onClick = { viewModel.setHornDiffuserMode(mode) },
+                                label = { Text(mode.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Throat Cutoff Frequency: ${themeConfig.hornDiffuserConfig.throatCutoffHz.toInt()} Hz",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "fc: ${hornMetrics.effectiveCutoffFrequencyHz.toInt()} Hz",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.hornDiffuserConfig.throatCutoffHz,
+                        onValueChange = { viewModel.setHornThroatCutoffHz(it) },
+                        valueRange = 200.0f..1000.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Flare Acoustic Loading Intensity: ${(themeConfig.hornDiffuserConfig.flareIntensity * 100).toInt()}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Z: ${String.format(java.util.Locale.US, "%.1fx", hornMetrics.throatAcousticImpedanceRatio)}",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.hornDiffuserConfig.flareIntensity,
+                        onValueChange = { viewModel.setHornFlareIntensity(it) },
+                        valueRange = 0.0f..1.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Throat Anti-Resonance Notch: ${String.format(java.util.Locale.US, "%.1f dB", themeConfig.hornDiffuserConfig.throatAntiResonanceDb)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.hornDiffuserConfig.throatAntiResonanceDb,
+                        onValueChange = { viewModel.setHornThroatAntiResonanceDb(it) },
+                        valueRange = -8.0f..0.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Horizontal Coverage Angle: ${themeConfig.hornDiffuserConfig.horizontalCoverageAngle}°",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "${hornMetrics.horizontalCoverageAngle}° QRD",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.hornDiffuserConfig.horizontalCoverageAngle.toFloat(),
+                        onValueChange = { viewModel.setHornHorizontalCoverageAngle(it.toInt()) },
+                        valueRange = 45.0f..120.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = "ACOUSTIC HORN LOADING & DISPERSION HUD",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Status: ${hornMetrics.hornLoadingRating}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Coverage: ${hornMetrics.horizontalCoverageAngle}°",
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.secondary

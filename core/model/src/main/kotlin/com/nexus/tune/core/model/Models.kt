@@ -250,7 +250,8 @@ data class ThemeConfig(
     val soundstageElevationConfig: SoundstageElevationConfig = SoundstageElevationConfig(),
     val monoBassAlignConfig: MonoBassAlignConfig = MonoBassAlignConfig(),
     val preampNoiseFlattenerConfig: PreampNoiseFlattenerConfig = PreampNoiseFlattenerConfig(),
-    val slewRateLimiterConfig: SlewRateLimiterConfig = SlewRateLimiterConfig()
+    val slewRateLimiterConfig: SlewRateLimiterConfig = SlewRateLimiterConfig(),
+    val hornDiffuserConfig: HornDiffuserConfig = HornDiffuserConfig()
 )
 
 data class SoundDoseInfo(
@@ -1812,6 +1813,107 @@ data class SlewRateLimiterMetrics(
     val timDistortionIndex: Float,
     val clampedTransientsCount: Int,
     val membraneSafetyRating: String
+)
+
+enum class HornFlareGeometry(
+    val displayName: String,
+    val description: String
+) {
+    TRACTRIX("Tractrix Flare", "Constant expansion curve matching acoustic wavefront with zero throat boundary reflections"),
+    EXPONENTIAL("Exponential Horn", "Classic exponential flare rate delivering high acoustic loading and deep dynamic impact"),
+    CONICAL_WAVEGUIDE("Conical Waveguide", "Constant directivity linear cone delivering smooth off-axis tonal balance"),
+    SECTORAL_RADIAL("Sectoral Radial", "Multi-cell segmented radial horn eliminating high-frequency acoustic beaming"),
+    CONSTANT_DIRECTIVITY("Bi-Radial CD", "Uniform horizontal and vertical sound radiation across 90° x 40° coverage")
+}
+
+enum class HornDiffuserMode(
+    val displayName: String,
+    val description: String
+) {
+    ACOUSTIC_LOADING("Acoustic Loading", "Simulates throat impedance matching providing effortless transient speed and dynamic punch"),
+    THROAT_ANTI_RESONANCE("Throat Anti-Resonance", "Suppresses horn honk and standing-wave resonances inside driver throat cavity (1.2 - 2.8 kHz)"),
+    WIDE_DISPERSION("Wide QRD Dispersion", "Quadratic residue acoustic diffusion spreading horizontal imaging without ceiling reflections"),
+    SOLO_HORN_COLORATION("Solo Horn Coloration", "Auditions isolated throat reflections and horn resonance curves")
+}
+
+enum class HornDiffuserPreset(
+    val displayName: String,
+    val geometry: HornFlareGeometry,
+    val mode: HornDiffuserMode,
+    val throatCutoffHz: Float,
+    val flareIntensity: Float,
+    val throatAntiResonanceDb: Float,
+    val horizontalCoverageAngle: Int,
+    val description: String
+) {
+    OFF(
+        "Off (Bypassed)",
+        HornFlareGeometry.TRACTRIX,
+        HornDiffuserMode.ACOUSTIC_LOADING,
+        400.0f,
+        0.0f,
+        0.0f,
+        90,
+        "Direct signal pass-through without acoustic horn loading or throat filtering"
+    ),
+    KLIPSCHORN_HERITAGE(
+        "Heritage Corner Horn",
+        HornFlareGeometry.TRACTRIX,
+        HornDiffuserMode.ACOUSTIC_LOADING,
+        350.0f,
+        0.8f,
+        -2.5f,
+        80,
+        "Classic corner horn acoustic impedance matching with tactile midrange punch and live realism"
+    ),
+    WESTERN_ELECTRIC_VINTAGE(
+        "Vintage Theater Horn",
+        HornFlareGeometry.EXPONENTIAL,
+        HornDiffuserMode.ACOUSTIC_LOADING,
+        250.0f,
+        0.9f,
+        -1.5f,
+        65,
+        "Warm, massive acoustic loading evocative of 1930s cinema sound systems"
+    ),
+    STUDIO_BI_RADIAL(
+        "Studio Bi-Radial Monitor",
+        HornFlareGeometry.CONSTANT_DIRECTIVITY,
+        HornDiffuserMode.THROAT_ANTI_RESONANCE,
+        500.0f,
+        0.65f,
+        -4.0f,
+        90,
+        "Precision studio horn waveguide with aggressive throat honk elimination and razor-sharp imaging"
+    ),
+    ULTRA_WIDE_TRACTRIX(
+        "Ultra-Wide Soundstage",
+        HornFlareGeometry.TRACTRIX,
+        HornDiffuserMode.WIDE_DISPERSION,
+        400.0f,
+        0.7f,
+        -3.0f,
+        110,
+        "Expansive horizontal wavefront dispersion with quadratic residue phase decorrelation"
+    )
+}
+
+data class HornDiffuserConfig(
+    val isEnabled: Boolean = false,
+    val preset: HornDiffuserPreset = HornDiffuserPreset.OFF,
+    val geometry: HornFlareGeometry = HornFlareGeometry.TRACTRIX,
+    val mode: HornDiffuserMode = HornDiffuserMode.ACOUSTIC_LOADING,
+    val throatCutoffHz: Float = 400.0f,
+    val flareIntensity: Float = 0.7f,
+    val throatAntiResonanceDb: Float = -3.0f,
+    val horizontalCoverageAngle: Int = 90
+)
+
+data class HornDiffuserMetrics(
+    val throatAcousticImpedanceRatio: Float,
+    val effectiveCutoffFrequencyHz: Float,
+    val horizontalCoverageAngle: Int,
+    val hornLoadingRating: String
 )
 
 

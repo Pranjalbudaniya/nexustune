@@ -208,17 +208,33 @@ class SettingsDataStore(private val context: Context) {
         val SLEW_RATE_LIMITER_MODE = stringPreferencesKey("slew_rate_limiter_mode")
         val SLEW_RATE_LIMITER_DAMPING = floatPreferencesKey("slew_rate_limiter_damping")
         val SLEW_RATE_LIMITER_PEAK_THRESHOLD = floatPreferencesKey("slew_rate_limiter_peak_threshold")
+        val HORN_DIFFUSER_ENABLED = booleanPreferencesKey("horn_diffuser_enabled")
+        val HORN_DIFFUSER_PRESET = stringPreferencesKey("horn_diffuser_preset")
+        val HORN_DIFFUSER_GEOMETRY = stringPreferencesKey("horn_diffuser_geometry")
+        val HORN_DIFFUSER_MODE = stringPreferencesKey("horn_diffuser_mode")
+        val HORN_DIFFUSER_CUTOFF_HZ = floatPreferencesKey("horn_diffuser_cutoff_hz")
+        val HORN_DIFFUSER_INTENSITY = floatPreferencesKey("horn_diffuser_intensity")
+        val HORN_DIFFUSER_ANTI_RESONANCE_DB = floatPreferencesKey("horn_diffuser_anti_resonance_db")
+        val HORN_DIFFUSER_COVERAGE_ANGLE = intPreferencesKey("horn_diffuser_coverage_angle")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
         ThemeConfig(
-            seedMode = ThemeSeedMode.valueOf(prefs[PreferencesKeys.SEED_MODE] ?: ThemeSeedMode.DYNAMIC.name),
+            seedMode = runCatching {
+                ThemeSeedMode.valueOf(prefs[PreferencesKeys.SEED_MODE] ?: ThemeSeedMode.DYNAMIC.name)
+            }.getOrDefault(ThemeSeedMode.DYNAMIC),
             customSeedColorHex = prefs[PreferencesKeys.CUSTOM_SEED_HEX] ?: "#6750A4",
             isDarkMode = prefs[PreferencesKeys.IS_DARK_MODE] ?: true,
             isAmoled = prefs[PreferencesKeys.IS_AMOLED] ?: false,
-            shapePreset = ShapePreset.valueOf(prefs[PreferencesKeys.SHAPE_PRESET] ?: ShapePreset.SOFT_ROUNDED.name),
-            playerLayout = PlayerLayout.valueOf(prefs[PreferencesKeys.PLAYER_LAYOUT] ?: PlayerLayout.ART_FORWARD.name),
-            miniPlayerStyle = MiniPlayerStyle.valueOf(prefs[PreferencesKeys.MINI_PLAYER_STYLE] ?: MiniPlayerStyle.DOCKED_BAR.name),
+            shapePreset = runCatching {
+                ShapePreset.valueOf(prefs[PreferencesKeys.SHAPE_PRESET] ?: ShapePreset.SOFT_ROUNDED.name)
+            }.getOrDefault(ShapePreset.SOFT_ROUNDED),
+            playerLayout = runCatching {
+                PlayerLayout.valueOf(prefs[PreferencesKeys.PLAYER_LAYOUT] ?: PlayerLayout.ART_FORWARD.name)
+            }.getOrDefault(PlayerLayout.ART_FORWARD),
+            miniPlayerStyle = runCatching {
+                MiniPlayerStyle.valueOf(prefs[PreferencesKeys.MINI_PLAYER_STYLE] ?: MiniPlayerStyle.DOCKED_BAR.name)
+            }.getOrDefault(MiniPlayerStyle.DOCKED_BAR),
             refreshRatePreferred = prefs[PreferencesKeys.REFRESH_RATE] ?: 120,
             crossfadeSeconds = prefs[PreferencesKeys.CROSSFADE_SECONDS] ?: 0,
             spatialAudioEnabled = prefs[PreferencesKeys.SPATIAL_AUDIO_ENABLED] ?: false,
@@ -570,6 +586,22 @@ class SettingsDataStore(private val context: Context) {
                 }.getOrDefault(SlewLimiterMode.TRANSPARENT_TIM_GUARD),
                 dampingRatio = prefs[PreferencesKeys.SLEW_RATE_LIMITER_DAMPING] ?: 0.5f,
                 peakThreshold = prefs[PreferencesKeys.SLEW_RATE_LIMITER_PEAK_THRESHOLD] ?: 0.9f
+            ),
+            hornDiffuserConfig = HornDiffuserConfig(
+                isEnabled = prefs[PreferencesKeys.HORN_DIFFUSER_ENABLED] ?: false,
+                preset = runCatching {
+                    HornDiffuserPreset.valueOf(prefs[PreferencesKeys.HORN_DIFFUSER_PRESET] ?: HornDiffuserPreset.OFF.name)
+                }.getOrDefault(HornDiffuserPreset.OFF),
+                geometry = runCatching {
+                    HornFlareGeometry.valueOf(prefs[PreferencesKeys.HORN_DIFFUSER_GEOMETRY] ?: HornFlareGeometry.TRACTRIX.name)
+                }.getOrDefault(HornFlareGeometry.TRACTRIX),
+                mode = runCatching {
+                    HornDiffuserMode.valueOf(prefs[PreferencesKeys.HORN_DIFFUSER_MODE] ?: HornDiffuserMode.ACOUSTIC_LOADING.name)
+                }.getOrDefault(HornDiffuserMode.ACOUSTIC_LOADING),
+                throatCutoffHz = prefs[PreferencesKeys.HORN_DIFFUSER_CUTOFF_HZ] ?: 400.0f,
+                flareIntensity = prefs[PreferencesKeys.HORN_DIFFUSER_INTENSITY] ?: 0.7f,
+                throatAntiResonanceDb = prefs[PreferencesKeys.HORN_DIFFUSER_ANTI_RESONANCE_DB] ?: -3.0f,
+                horizontalCoverageAngle = prefs[PreferencesKeys.HORN_DIFFUSER_COVERAGE_ANGLE] ?: 90
             )
         )
     }
@@ -761,6 +793,14 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.SLEW_RATE_LIMITER_MODE] = config.slewRateLimiterConfig.mode.name
             prefs[PreferencesKeys.SLEW_RATE_LIMITER_DAMPING] = config.slewRateLimiterConfig.dampingRatio
             prefs[PreferencesKeys.SLEW_RATE_LIMITER_PEAK_THRESHOLD] = config.slewRateLimiterConfig.peakThreshold
+            prefs[PreferencesKeys.HORN_DIFFUSER_ENABLED] = config.hornDiffuserConfig.isEnabled
+            prefs[PreferencesKeys.HORN_DIFFUSER_PRESET] = config.hornDiffuserConfig.preset.name
+            prefs[PreferencesKeys.HORN_DIFFUSER_GEOMETRY] = config.hornDiffuserConfig.geometry.name
+            prefs[PreferencesKeys.HORN_DIFFUSER_MODE] = config.hornDiffuserConfig.mode.name
+            prefs[PreferencesKeys.HORN_DIFFUSER_CUTOFF_HZ] = config.hornDiffuserConfig.throatCutoffHz
+            prefs[PreferencesKeys.HORN_DIFFUSER_INTENSITY] = config.hornDiffuserConfig.flareIntensity
+            prefs[PreferencesKeys.HORN_DIFFUSER_ANTI_RESONANCE_DB] = config.hornDiffuserConfig.throatAntiResonanceDb
+            prefs[PreferencesKeys.HORN_DIFFUSER_COVERAGE_ANGLE] = config.hornDiffuserConfig.horizontalCoverageAngle
         }
     }
 
@@ -1019,6 +1059,19 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.SLEW_RATE_LIMITER_MODE] = config.mode.name
             prefs[PreferencesKeys.SLEW_RATE_LIMITER_DAMPING] = config.dampingRatio
             prefs[PreferencesKeys.SLEW_RATE_LIMITER_PEAK_THRESHOLD] = config.peakThreshold
+        }
+    }
+
+    suspend fun updateHornDiffuserConfig(config: HornDiffuserConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.HORN_DIFFUSER_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.HORN_DIFFUSER_PRESET] = config.preset.name
+            prefs[PreferencesKeys.HORN_DIFFUSER_GEOMETRY] = config.geometry.name
+            prefs[PreferencesKeys.HORN_DIFFUSER_MODE] = config.mode.name
+            prefs[PreferencesKeys.HORN_DIFFUSER_CUTOFF_HZ] = config.throatCutoffHz
+            prefs[PreferencesKeys.HORN_DIFFUSER_INTENSITY] = config.flareIntensity
+            prefs[PreferencesKeys.HORN_DIFFUSER_ANTI_RESONANCE_DB] = config.throatAntiResonanceDb
+            prefs[PreferencesKeys.HORN_DIFFUSER_COVERAGE_ANGLE] = config.horizontalCoverageAngle
         }
     }
 

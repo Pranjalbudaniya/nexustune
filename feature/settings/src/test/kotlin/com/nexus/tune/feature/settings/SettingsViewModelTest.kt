@@ -1671,4 +1671,58 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.slewRateLimiterConfig.peakThreshold == 0.88f })
         }
     }
+
+    @Test
+    fun `horn diffuser settings update theme config`() = runTest {
+        viewModel.setHornDiffuserEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.hornDiffuserConfig.isEnabled })
+        }
+
+        viewModel.setHornDiffuserPreset(HornDiffuserPreset.KLIPSCHORN_HERITAGE)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match {
+                it.hornDiffuserConfig.preset == HornDiffuserPreset.KLIPSCHORN_HERITAGE &&
+                        it.hornDiffuserConfig.geometry == HornFlareGeometry.TRACTRIX
+            })
+        }
+
+        viewModel.setHornFlareGeometry(HornFlareGeometry.EXPONENTIAL)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.hornDiffuserConfig.geometry == HornFlareGeometry.EXPONENTIAL })
+        }
+
+        viewModel.setHornDiffuserMode(HornDiffuserMode.THROAT_ANTI_RESONANCE)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.hornDiffuserConfig.mode == HornDiffuserMode.THROAT_ANTI_RESONANCE })
+        }
+
+        viewModel.setHornThroatCutoffHz(300.0f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.hornDiffuserConfig.throatCutoffHz == 300.0f })
+        }
+
+        viewModel.setHornFlareIntensity(0.85f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.hornDiffuserConfig.flareIntensity == 0.85f })
+        }
+
+        viewModel.setHornThroatAntiResonanceDb(-5.5f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.hornDiffuserConfig.throatAntiResonanceDb == -5.5f })
+        }
+
+        viewModel.setHornHorizontalCoverageAngle(105)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.hornDiffuserConfig.horizontalCoverageAngle == 105 })
+        }
+    }
 }

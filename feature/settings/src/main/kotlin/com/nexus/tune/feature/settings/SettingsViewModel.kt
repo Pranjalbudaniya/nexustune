@@ -1526,4 +1526,58 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(slewRateLimiterConfig = current.slewRateLimiterConfig.copy(peakThreshold = threshold.coerceIn(0.5f, 1.0f))))
     }
+
+    fun setHornDiffuserEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(hornDiffuserConfig = current.hornDiffuserConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setHornDiffuserPreset(preset: HornDiffuserPreset) {
+        val current = themeConfig.value
+        val isEnabled = preset != HornDiffuserPreset.OFF
+        updateTheme(
+            current.copy(
+                hornDiffuserConfig = current.hornDiffuserConfig.copy(
+                    isEnabled = isEnabled,
+                    preset = preset,
+                    geometry = preset.geometry,
+                    mode = preset.mode,
+                    throatCutoffHz = preset.throatCutoffHz,
+                    flareIntensity = preset.flareIntensity,
+                    throatAntiResonanceDb = preset.throatAntiResonanceDb,
+                    horizontalCoverageAngle = preset.horizontalCoverageAngle
+                )
+            )
+        )
+    }
+
+    fun setHornFlareGeometry(geometry: HornFlareGeometry) {
+        val current = themeConfig.value
+        updateTheme(current.copy(hornDiffuserConfig = current.hornDiffuserConfig.copy(geometry = geometry)))
+    }
+
+    fun setHornDiffuserMode(mode: HornDiffuserMode) {
+        val current = themeConfig.value
+        updateTheme(current.copy(hornDiffuserConfig = current.hornDiffuserConfig.copy(mode = mode)))
+    }
+
+    fun setHornThroatCutoffHz(cutoffHz: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(hornDiffuserConfig = current.hornDiffuserConfig.copy(throatCutoffHz = cutoffHz.coerceIn(200.0f, 1000.0f))))
+    }
+
+    fun setHornFlareIntensity(intensity: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(hornDiffuserConfig = current.hornDiffuserConfig.copy(flareIntensity = intensity.coerceIn(0.0f, 1.0f))))
+    }
+
+    fun setHornThroatAntiResonanceDb(antiResonanceDb: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(hornDiffuserConfig = current.hornDiffuserConfig.copy(throatAntiResonanceDb = antiResonanceDb.coerceIn(-8.0f, 0.0f))))
+    }
+
+    fun setHornHorizontalCoverageAngle(angle: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(hornDiffuserConfig = current.hornDiffuserConfig.copy(horizontalCoverageAngle = angle.coerceIn(45, 120))))
+    }
 }

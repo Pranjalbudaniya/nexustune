@@ -87,7 +87,8 @@ class NexusTuneApplication : Application(), com.nexus.tune.core.player.alarm.Wak
         // Default to NewPipe with Fake fallback on errors
         musicSource = try {
             NewPipeMusicSource()
-        } catch (e: Exception) {
+        } catch (t: Throwable) {
+            android.util.Log.e("NexusTuneApplication", "Failed to initialize NewPipeMusicSource, falling back to FakeMusicSource", t)
             FakeMusicSource()
         }
 
@@ -142,7 +143,10 @@ class NexusTuneApplication : Application(), com.nexus.tune.core.player.alarm.Wak
             playerController = playerController,
             ambientSynthesizer = com.nexus.tune.core.player.ambient.AmbientSoundSynthesizer.instance
         )
-        val appScope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main + kotlinx.coroutines.SupervisorJob())
+        val appExceptionHandler = kotlinx.coroutines.CoroutineExceptionHandler { _, throwable ->
+            android.util.Log.e("NexusTuneAppScope", "Unhandled background coroutine error", throwable)
+        }
+        val appScope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main + kotlinx.coroutines.SupervisorJob() + appExceptionHandler)
         appScope.launch {
             settingsDataStore.themeConfig.collect { config ->
                 wakeAlarmManager.scheduleAlarm(config.wakeAlarmConfig)
