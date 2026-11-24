@@ -88,3 +88,4 @@ class AudioNormalizationEngineTest {
         assertEquals(-14.0f, AudioNormalizationEngine.estimateTrackLufs(standardTrack), 0.1f)
     }
 }
+

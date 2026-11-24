@@ -5,6 +5,15 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.4.0] - 2026-11-24
+
+### Added
+- **Listening Milestones, Daily Streaks & Time-Capsule Recap Engine**: Implemented `ListeningStreak`, `MilestoneType`, `ListeningMilestone`, and `TimeCapsuleRecap` domain models in `:core:model`.
+- **Milestone Calculator & Streak Engine**: Created `MilestoneCalculator` in `:core:domain:analytics` evaluating daily playback streaks (consecutive active epoch days), evaluating milestone achievements (`First Beat`, `Night Owl`, `Early Bird`, `Sonic Explorer`, `Century Club`, `Streak Master`, `Audiophile Gold`), and generating personalized music time-capsule recaps.
+- **Persistent Daily Streak Tracking**: Added `listeningStreak` flow and `recordActiveDay(epochDay)` in `SettingsDataStore`, automatically logging playback sessions in `NexusTuneApplication`.
+- **Settings Screen Streaks & Milestones Console**: Added dedicated "Listening Milestones & Daily Streaks" card in `SettingsScreen` with fire streak counter (`🔥 7 Day Streak`), achievement badges with progress bars, and formatted Time-Capsule recap summary.
+- **Unit Test Suites**: Added `MilestoneCalculatorTest` in `:core:domain` and expanded `SettingsViewModelTest` in `:feature:settings`.
+
 ## [5.3.0] - 2026-11-24
 
 ### Added

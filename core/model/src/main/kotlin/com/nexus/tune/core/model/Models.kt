@@ -351,3 +351,43 @@ enum class LibrarySortOrder(val displayName: String) {
     DURATION_DESC("Duration (Longest)")
 }
 
+data class ListeningStreak(
+    val currentStreakDays: Int = 0,
+    val longestStreakDays: Int = 0,
+    val lastActiveDateEpochDay: Long = 0L
+)
+
+enum class MilestoneType(
+    val title: String,
+    val description: String,
+    val targetThreshold: Int
+) {
+    FIRST_BEAT("First Beat", "Completed playback of your first song", 1),
+    NIGHT_OWL("Night Owl", "50+ tracks played late at night (12 AM - 6 AM)", 50),
+    EARLY_BIRD("Early Bird", "50+ tracks played in the morning (6 AM - 12 PM)", 50),
+    EXPLORER("Sonic Explorer", "Discovered 50+ unique artists", 50),
+    CENTURY_CLUB("Century Club", "Played 100+ total tracks in your collection", 100),
+    STREAK_MASTER("Streak Master", "Maintained a 7-day continuous listening streak", 7),
+    AUDIOPHILE("Audiophile Gold", "Listened in Hi-Res, 3D Spatial Audio, or with custom DSP EQ", 1)
+}
+
+data class ListeningMilestone(
+    val type: MilestoneType,
+    val title: String,
+    val description: String,
+    val isUnlocked: Boolean,
+    val progressPercent: Float,
+    val currentCount: Int,
+    val targetCount: Int
+)
+
+data class TimeCapsuleRecap(
+    val periodName: String = "Personal Music Time-Capsule",
+    val totalPlays: Int = 0,
+    val totalMinutesListened: Long = 0L,
+    val topArtists: List<String> = emptyList(),
+    val topGenres: List<GenreShare> = emptyList(),
+    val peakPeriod: String = "All Day",
+    val streakDays: Int = 0
+)
+

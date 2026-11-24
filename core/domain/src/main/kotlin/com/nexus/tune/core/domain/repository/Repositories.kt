@@ -63,6 +63,8 @@ interface SettingsRepository {
     suspend fun setEqualizerEnabled(enabled: Boolean)
     fun getEqualizerPreset(): Flow<Int>
     suspend fun setEqualizerPreset(preset: Int)
+    fun getListeningStreak(): Flow<ListeningStreak> = kotlinx.coroutines.flow.flowOf(ListeningStreak())
+    suspend fun recordActiveDay(epochDay: Long) {}
 }
 
 

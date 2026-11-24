@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 43 (v5.3.0 Audio Loudness Normalization & Dynamic Peak Limiter Engine)
+- Active Phase: Post-v1.0 Improvement Loop 44 (v5.4.0 Listening Milestones, Daily Streaks & Time-Capsule Recap Engine)
 - In Flight: Final release qualification gate and git tagging
 - Branches: `main`
 
@@ -382,6 +382,16 @@
     - [x] Comprehensive test suites in `AudioNormalizationEngineTest` and `SettingsViewModelTest`
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v5.3-1`
+
+- [x] Improvement Loop 44 (v5.4 Milestone - Tagged `v5.4-1`)
+  - [x] Listening Milestones, Daily Streaks & Time-Capsule Recap Engine:
+    - [x] `ListeningStreak`, `MilestoneType`, `ListeningMilestone`, and `TimeCapsuleRecap` domain models in `:core:model`
+    - [x] `MilestoneCalculator` in `:core:domain:analytics` evaluating daily playback streaks, evaluating milestone achievements, and calculating time-capsule summaries
+    - [x] Persistent streak tracking via `recordActiveDay()` in `SettingsDataStore` and automatic logging in `NexusTuneApplication`
+    - [x] Interactive streaks, milestones, and recap dashboard in `SettingsScreen`
+    - [x] Unit test suites in `MilestoneCalculatorTest` and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v5.4-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

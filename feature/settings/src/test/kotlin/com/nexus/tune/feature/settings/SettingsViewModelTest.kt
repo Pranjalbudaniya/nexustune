@@ -620,4 +620,29 @@ class SettingsViewModelTest {
             })
         }
     }
+
+    @Test
+    fun `listeningStreak and milestones evaluate properly`() = runTest {
+        val streak = ListeningStreak(currentStreakDays = 5, longestStreakDays = 10)
+        every { settingsRepository.getListeningStreak() } returns flowOf(streak)
+
+        val vm = SettingsViewModel(
+            settingsRepository = settingsRepository,
+            getListeningStatsUseCase = getListeningStatsUseCase,
+            sleepTimerManager = sleepTimerManager,
+            wakeAlarmManager = wakeAlarmManager
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(5, vm.listeningStreak.value.currentStreakDays)
+        assertEquals(10, vm.listeningStreak.value.longestStreakDays)
+
+        assertTrue(vm.milestones.value.isNotEmpty())
+        val firstBeat = vm.milestones.value.find { it.type == MilestoneType.FIRST_BEAT }
+        assertNotNull(firstBeat)
+        assertTrue(firstBeat!!.isUnlocked)
+
+        assertEquals(42, vm.timeCapsuleRecap.value.totalPlays)
+        assertEquals(5, vm.timeCapsuleRecap.value.streakDays)
+    }
 }

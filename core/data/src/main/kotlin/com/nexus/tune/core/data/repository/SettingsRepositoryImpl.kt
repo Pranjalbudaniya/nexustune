@@ -38,5 +38,11 @@ class SettingsRepositoryImpl(
     override suspend fun setEqualizerPreset(preset: Int) {
         dataStore.setEqualizerPreset(preset)
     }
+
+    override fun getListeningStreak(): Flow<com.nexus.tune.core.model.ListeningStreak> = dataStore.listeningStreak
+
+    override suspend fun recordActiveDay(epochDay: Long) {
+        dataStore.recordActiveDay(epochDay)
+    }
 }
 

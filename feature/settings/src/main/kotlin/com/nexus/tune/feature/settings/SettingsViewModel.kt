@@ -154,6 +154,25 @@ class SettingsViewModel(
         ?: flowOf(ListeningStats()))
         .stateIn(viewModelScope, SharingStarted.Eagerly, ListeningStats())
 
+    val listeningStreak: StateFlow<ListeningStreak> = settingsRepository.getListeningStreak()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, ListeningStreak())
+
+    val milestones: StateFlow<List<ListeningMilestone>> = combine(
+        listeningStats,
+        listeningStreak,
+        themeConfig
+    ) { stats, streak, config ->
+        val isAudiophile = config.spatialAudioEnabled || config.bitPerfectUsbAudioEnabled || config.loudnessConfig.mode != LoudnessNormalizationMode.OFF
+        com.nexus.tune.core.domain.analytics.MilestoneCalculator.evaluateMilestones(stats, streak, isAudiophile)
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    val timeCapsuleRecap: StateFlow<TimeCapsuleRecap> = combine(
+        listeningStats,
+        listeningStreak
+    ) { stats, streak ->
+        com.nexus.tune.core.domain.analytics.MilestoneCalculator.generateRecap(stats, streak)
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, TimeCapsuleRecap())
+
     fun updateTheme(config: ThemeConfig) {
         viewModelScope.launch {
             settingsRepository.updateThemeConfig(config)

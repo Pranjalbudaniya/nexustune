@@ -52,6 +52,9 @@ class SettingsDataStore(private val context: Context) {
         val LOUDNESS_MODE = stringPreferencesKey("loudness_normalization_mode")
         val TARGET_LUFS = floatPreferencesKey("loudness_target_lufs")
         val PRE_AMP_GAIN_DB = floatPreferencesKey("loudness_preamp_gain_db")
+        val STREAK_CURRENT_DAYS = intPreferencesKey("streak_current_days")
+        val STREAK_LONGEST_DAYS = intPreferencesKey("streak_longest_days")
+        val STREAK_LAST_ACTIVE_EPOCH_DAY = longPreferencesKey("streak_last_active_epoch_day")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -205,6 +208,37 @@ class SettingsDataStore(private val context: Context) {
                 .split("|||")
                 .filter { it.isNotBlank() && it != query }
             prefs[PreferencesKeys.RECENT_SEARCHES] = existing.joinToString("|||")
+        }
+    }
+
+    val listeningStreak: Flow<ListeningStreak> = context.dataStore.data.map { prefs ->
+        ListeningStreak(
+            currentStreakDays = prefs[PreferencesKeys.STREAK_CURRENT_DAYS] ?: 0,
+            longestStreakDays = prefs[PreferencesKeys.STREAK_LONGEST_DAYS] ?: 0,
+            lastActiveDateEpochDay = prefs[PreferencesKeys.STREAK_LAST_ACTIVE_EPOCH_DAY] ?: 0L
+        )
+    }
+
+    suspend fun recordActiveDay(epochDay: Long) {
+        context.dataStore.edit { prefs ->
+            val lastDay = prefs[PreferencesKeys.STREAK_LAST_ACTIVE_EPOCH_DAY] ?: 0L
+            val currentStreak = prefs[PreferencesKeys.STREAK_CURRENT_DAYS] ?: 0
+            val longestStreak = prefs[PreferencesKeys.STREAK_LONGEST_DAYS] ?: 0
+
+            if (epochDay == lastDay) {
+                return@edit
+            }
+
+            val newCurrent = if (epochDay == lastDay + 1L) {
+                currentStreak + 1
+            } else {
+                1
+            }
+            val newLongest = maxOf(longestStreak, newCurrent)
+
+            prefs[PreferencesKeys.STREAK_CURRENT_DAYS] = newCurrent
+            prefs[PreferencesKeys.STREAK_LONGEST_DAYS] = newLongest
+            prefs[PreferencesKeys.STREAK_LAST_ACTIVE_EPOCH_DAY] = epochDay
         }
     }
 

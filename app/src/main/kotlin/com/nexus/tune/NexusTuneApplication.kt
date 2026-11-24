@@ -160,6 +160,14 @@ class NexusTuneApplication : Application(), com.nexus.tune.core.player.alarm.Wak
                 playerController.setLoudnessMultiplier(mult)
             }
         }
+        appScope.launch {
+            playerController.playbackState.map { it.status }.distinctUntilChanged().collect { status ->
+                if (status == com.nexus.tune.core.model.PlaybackStatus.PLAYING) {
+                    val epochDay = java.time.LocalDate.now().toEpochDay()
+                    settingsDataStore.recordActiveDay(epochDay)
+                }
+            }
+        }
     }
 
     override fun triggerWakeAlarm() {

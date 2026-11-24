@@ -43,3 +43,4 @@ Loop 43 introduces the **Audio Loudness Normalization & Dynamic Peak Limiter Eng
 - `AudioNormalizationEngineTest` in `:core:domain`.
 - `SettingsViewModelTest` loudness config verification in `:feature:settings`.
 - Release qualification via `./scripts/gate.sh slice` and `./scripts/gate.sh final`.
+
