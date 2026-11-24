@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -94,7 +95,11 @@ fun PlayerScreen(
     onSetKaraokeCutLevel: (com.nexus.tune.core.model.VocalCutLevel) -> Unit = {},
     onSetKaraokePitchSemitones: (Int) -> Unit = {},
     onToggleKaraokePrompter: () -> Unit = {},
-    onResetKaraoke: () -> Unit = {}
+    onResetKaraoke: () -> Unit = {},
+    chapters: List<com.nexus.tune.core.model.TrackChapter> = emptyList(),
+    onSeekToChapter: (com.nexus.tune.core.model.TrackChapter) -> Unit = {},
+    onSkipNextChapter: () -> Unit = {},
+    onSkipPreviousChapter: () -> Unit = {}
 ) {
     val track = playbackState.currentTrack ?: return
     val isPlaying = playbackState.status == PlaybackStatus.PLAYING
@@ -104,6 +109,7 @@ fun PlayerScreen(
     var showQueueSheet by remember { mutableStateOf(false) }
     var showDjSheet by remember { mutableStateOf(false) }
     var showKaraokeSheet by remember { mutableStateOf(false) }
+    var showChaptersSheet by remember { mutableStateOf(false) }
 
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -171,6 +177,15 @@ fun PlayerScreen(
                     }
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (chapters.isNotEmpty()) {
+                        IconButton(onClick = { showChaptersSheet = true }) {
+                            Icon(
+                                imageVector = Icons.Rounded.Bookmarks,
+                                contentDescription = "Track Chapters",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
                     IconButton(onClick = { showKaraokeSheet = true }) {
                         Icon(
                             imageVector = Icons.Rounded.Mic,
@@ -447,6 +462,43 @@ fun PlayerScreen(
             }
 
             Spacer(modifier = Modifier.height(12.dp))
+
+            val activeChapter = if (chapters.isNotEmpty()) com.nexus.tune.core.domain.player.TrackChapterParser.resolveActiveChapter(chapters, playbackState.positionMs) else null
+            val nextChapter = if (activeChapter != null) chapters.getOrNull(activeChapter.index) else null
+            val chapterProgress = if (activeChapter != null) {
+                com.nexus.tune.core.domain.player.TrackChapterParser.calculateChapterProgress(activeChapter, playbackState.positionMs, nextChapter)
+            } else null
+
+            if (chapters.isNotEmpty() && chapterProgress != null) {
+                Surface(
+                    shape = MaterialTheme.shapes.small,
+                    color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.85f),
+                    modifier = Modifier
+                        .padding(bottom = 6.dp)
+                        .clickable { showChaptersSheet = true }
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Bookmarks,
+                            contentDescription = null,
+                            modifier = Modifier.size(13.dp),
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Ch. ${chapterProgress.currentChapter.index}: ${chapterProgress.currentChapter.title} • ${chapterProgress.elapsedFormatted}",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+            }
 
             // Seekbar
             val progress = if (playbackState.durationMs > 0) {
@@ -1494,6 +1546,108 @@ fun PlayerScreen(
                 }
             }
         }
+
+        if (showChaptersSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showChaptersSheet = false },
+                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+            ) {
+                TrackChaptersBottomSheet(
+                    chapters = chapters,
+                    currentPositionMs = playbackState.positionMs,
+                    onChapterClick = { chapter ->
+                        onSeekToChapter(chapter)
+                        showChaptersSheet = false
+                    },
+                    onDismiss = { showChaptersSheet = false }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun TrackChaptersBottomSheet(
+    chapters: List<com.nexus.tune.core.model.TrackChapter>,
+    currentPositionMs: Long,
+    onChapterClick: (com.nexus.tune.core.model.TrackChapter) -> Unit,
+    onDismiss: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Track Chapters & DJ Cues",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            IconButton(onClick = onDismiss) {
+                Icon(Icons.Rounded.Close, contentDescription = "Close")
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f, fill = false),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            items(chapters) { chapter ->
+                val end = chapter.endTimeMs
+                val isCurrent = currentPositionMs >= chapter.startTimeMs && (end == null || currentPositionMs < end)
+                Surface(
+                    shape = MaterialTheme.shapes.medium,
+                    color = if (isCurrent) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onChapterClick(chapter) }
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 10.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(
+                                text = "${chapter.index}.",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isCurrent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = chapter.title,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Normal,
+                                color = if (isCurrent) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = com.nexus.tune.core.domain.player.TrackChapterParser.formatDuration(chapter.startTimeMs),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = if (isCurrent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 

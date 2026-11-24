@@ -372,5 +372,56 @@ class PlayerViewModel(
         val lines = _lyrics.value?.lines ?: emptyList()
         return com.nexus.tune.core.domain.audio.KaraokeEngine.calculateLyricProgress(positionMs, lines)
     }
+
+    private val _customTrackChapters = MutableStateFlow<Map<String, List<TrackChapter>>>(emptyMap())
+
+    val currentChapters: StateFlow<List<TrackChapter>> = combine(
+        activeQueue,
+        activeQueueIndex,
+        _customTrackChapters
+    ) { queue, index, customMap ->
+        if (queue.isNotEmpty() && index in 0 until queue.size) {
+            val track = queue[index]
+            customMap[track.id] ?: com.nexus.tune.core.domain.player.TrackChapterParser.parseChapters(
+                rawText = track.description ?: "",
+                totalTrackDurationMs = track.durationMs
+            )
+        } else {
+            emptyList()
+        }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    fun setCustomChaptersForTrack(trackId: String, chaptersText: String, durationMs: Long = 0L) {
+        val parsed = com.nexus.tune.core.domain.player.TrackChapterParser.parseChapters(chaptersText, durationMs)
+        _customTrackChapters.value = _customTrackChapters.value + (trackId to parsed)
+    }
+
+    fun seekToChapter(chapter: TrackChapter) {
+        playerController?.seekTo(chapter.startTimeMs)
+    }
+
+    fun skipToNextChapter(currentPositionMs: Long) {
+        val chapters = currentChapters.value
+        val target = com.nexus.tune.core.domain.player.TrackChapterParser.getSeekTarget(chapters, currentPositionMs, forward = true)
+        if (target != null) {
+            playerController?.seekTo(target)
+        }
+    }
+
+    fun skipToPreviousChapter(currentPositionMs: Long) {
+        val chapters = currentChapters.value
+        val target = com.nexus.tune.core.domain.player.TrackChapterParser.getSeekTarget(chapters, currentPositionMs, forward = false)
+        if (target != null) {
+            playerController?.seekTo(target)
+        }
+    }
+
+    fun getChapterProgress(positionMs: Long): ChapterProgress? {
+        val chapters = currentChapters.value
+        if (chapters.isEmpty()) return null
+        val active = com.nexus.tune.core.domain.player.TrackChapterParser.resolveActiveChapter(chapters, positionMs) ?: return null
+        val next = chapters.getOrNull(active.index) // next chapter if any (1-based index)
+        return com.nexus.tune.core.domain.player.TrackChapterParser.calculateChapterProgress(active, positionMs, next)
+    }
 }
 

@@ -255,6 +255,7 @@ class MainActivity : ComponentActivity() {
                             val djFxConfig by playerViewModel.djFxConfig.collectAsState()
                             val nextHarmonicTransition by playerViewModel.nextTrackHarmonicTransition.collectAsState()
                             val karaokeConfig by playerViewModel.karaokeConfig.collectAsState()
+                            val currentChapters by playerViewModel.currentChapters.collectAsState()
                             LaunchedEffect(playbackState.currentTrack) {
                                 playbackState.currentTrack?.let { playerViewModel.loadLyrics(it) }
                             }
@@ -335,7 +336,11 @@ class MainActivity : ComponentActivity() {
                                 onSetKaraokeCutLevel = { playerViewModel.setKaraokeCutLevel(it) },
                                 onSetKaraokePitchSemitones = { playerViewModel.setKaraokePitchSemitones(it) },
                                 onToggleKaraokePrompter = { playerViewModel.toggleKaraokePrompter() },
-                                onResetKaraoke = { playerViewModel.resetKaraoke() }
+                                onResetKaraoke = { playerViewModel.resetKaraoke() },
+                                chapters = currentChapters,
+                                onSeekToChapter = { playerViewModel.seekToChapter(it) },
+                                onSkipNextChapter = { playerViewModel.skipToNextChapter(playbackState.positionMs) },
+                                onSkipPreviousChapter = { playerViewModel.skipToPreviousChapter(playbackState.positionMs) }
                             )
                         }
                     }

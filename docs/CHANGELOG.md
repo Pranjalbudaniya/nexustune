@@ -5,6 +5,15 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.7.0] - 2026-11-24
+
+### Added
+- **Intelligent Audio Track Chapters & DJ Cue Navigation Studio (`TrackChapterParser`)**: Added `TrackChapter` and `ChapterProgress` in `:core:model`.
+- **Regex Chapter Parser & Relative Progress Engine**: Implemented `TrackChapterParser` in `:core:domain:player` supporting prefix timestamps (`00:00 Title`, `03:45 Title`, `1:14:20 Title`) and suffix timestamps (`Title - 03:45`, `Title (03:45)`), computing bounded start/end times and durations, evaluating active chapter progress fractions and countdowns, and providing directional skip target calculations (next chapter vs restart current/skip previous).
+- **Player Screen Chapter Pill & Interactive Sheet**: Added real-time active chapter badge above seekbar (`Ch. N: Title • MM:SS`) and `TrackChaptersBottomSheet` with full tracklist overview, active pulse indicators, and one-tap chapter seek.
+- **Top Bar Integration**: Added top-bar chapter bookmarks shortcut button displayed dynamically whenever a playing track contains chapter markers.
+- **Unit Test Coverage**: Comprehensive test suites in `TrackChapterParserTest` in `:core:domain` and `PlayerViewModelTest` in `:feature:player`.
+
 ## [6.6.0] - 2026-11-24
 
 ### Added

@@ -14,8 +14,11 @@ data class Track(
     val isLiked: Boolean = false,
     val isDownloaded: Boolean = false,
     val localFilePath: String? = null,
-    val loudnessGainDb: Float = 0.0f
-)
+    val loudnessGainDb: Float = 0.0f,
+    val description: String? = null
+) {
+    val durationMs: Long get() = durationSeconds * 1000L
+}
 
 data class Album(
     val id: String,
@@ -764,6 +767,25 @@ data class StereoPhaseRating(
     val rating: String,
     val isPhaseSafe: Boolean
 )
+
+data class TrackChapter(
+    val index: Int,
+    val title: String,
+    val startTimeMs: Long,
+    val endTimeMs: Long? = null,
+    val durationFormatted: String = ""
+)
+
+data class ChapterProgress(
+    val currentChapter: TrackChapter,
+    val nextChapter: TrackChapter? = null,
+    val progressFraction: Float = 0f,
+    val elapsedInChapterMs: Long = 0L,
+    val remainingInChapterMs: Long = 0L,
+    val elapsedFormatted: String = "00:00",
+    val remainingFormatted: String = "00:00"
+)
+
 
 
 

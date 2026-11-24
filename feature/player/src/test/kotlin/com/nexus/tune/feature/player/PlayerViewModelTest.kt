@@ -443,5 +443,52 @@ class PlayerViewModelTest {
         assertEquals(0, viewModel.karaokeConfig.value.pitchSemitones)
         assertFalse(viewModel.karaokeConfig.value.prompterMode)
     }
+
+    @Test
+    fun `chapters parse and calculate progress properly in PlayerViewModel`() = runTest {
+        val track = Track(
+            id = "set1",
+            title = "Live DJ Mix",
+            artist = "Solarstone",
+            durationSeconds = 3600
+        )
+        val qFlow = MutableStateFlow(listOf(track))
+        val idxFlow = MutableStateFlow(0)
+        every { manageQueueUseCase.getQueue() } returns qFlow
+        every { manageQueueUseCase.getQueueIndex() } returns idxFlow
+
+        val playerController = mockk<com.nexus.tune.core.player.PlayerController>(relaxed = true)
+        val vm = PlayerViewModel(musicRepository, manageQueueUseCase, playerController = playerController)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val chaptersText = """
+            00:00 Intro Warmup
+            05:30 Solarcoaster
+            12:15 Seven Cities
+        """.trimIndent()
+
+        vm.setCustomChaptersForTrack("set1", chaptersText, 3600000L)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val chapters = vm.currentChapters.value
+        assertEquals(3, chapters.size)
+        assertEquals("Intro Warmup", chapters[0].title)
+        assertEquals("Solarcoaster", chapters[1].title)
+
+        // Progress check at 6 minutes (360_000ms -> chapter 2 started at 5:30 = 330_000ms)
+        val progress = vm.getChapterProgress(360000L)
+        assertNotNull(progress)
+        assertEquals(2, progress?.currentChapter?.index)
+        assertEquals("Solarcoaster", progress?.currentChapter?.title)
+        assertEquals("Seven Cities", progress?.nextChapter?.title)
+
+        // Seek to chapter 3
+        vm.seekToChapter(chapters[2])
+        verify { playerController.seekTo(735000L) } // 12:15 = 735s = 735000ms
+
+        // Skip to next chapter from 100s
+        vm.skipToNextChapter(100000L) // in chapter 1 (0 to 330s) -> next is chapter 2 at 330000ms
+        verify { playerController.seekTo(330000L) }
+    }
 }
 
