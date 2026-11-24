@@ -64,6 +64,28 @@ class SettingsViewModel(
         }
     }
 
+    val m3uExportResult = MutableStateFlow<String?>(null)
+
+    fun exportLikedTracksToM3u() {
+        viewModelScope.launch {
+            val liked = musicRepository?.getLikedTracks()?.firstOrNull() ?: emptyList()
+            val m3u = backupManager?.exportPlaylistToM3u("NexusTune Favorites", liked)
+            m3uExportResult.value = m3u
+            backupImportStatus.value = if (m3u != null) "Exported ${liked.size} tracks to M3U" else "M3U export failed"
+        }
+    }
+
+    fun importPlaylistFromM3u(m3uContent: String, fallbackTitle: String = "Imported Playlist") {
+        viewModelScope.launch {
+            val res = backupManager?.importPlaylistFromM3u(m3uContent, fallbackTitle)
+            if (res != null && res.second > 0) {
+                backupImportStatus.value = "Imported playlist '${res.first}' (${res.second} tracks)"
+            } else {
+                backupImportStatus.value = "No tracks found in M3U playlist"
+            }
+        }
+    }
+
     val soundDoseInfo: StateFlow<SoundDoseInfo> = safeListeningManager?.soundDoseInfo
         ?: MutableStateFlow(SoundDoseInfo()).asStateFlow()
 

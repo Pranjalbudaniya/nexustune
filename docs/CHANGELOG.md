@@ -5,6 +5,13 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.7.0] - 2026-11-24
+
+### Added
+- **Standard M3U / M3U8 Playlist Export & Import Engine**: Implemented `exportPlaylistToM3u` in `BackupManager` producing standard `#EXTM3U`, `#PLAYLIST:`, and `#EXTINF:` directives mapped to track titles, artists, durations, and streaming URLs.
+- **Resilient M3U8 Stream Parsing**: Added `importPlaylistFromM3u` capable of ingesting arbitrary extended M3U/M3U8 playlists with YouTube URL / ID extraction and direct Room persistence.
+- **Settings UI M3U Integration**: Added "Export Favorites as M3U" and "Import M3U / M3U8 Playlist" action items in `SettingsScreen` under Data & Backup.
+
 ## [3.6.0] - 2026-11-24
 
 ### Added

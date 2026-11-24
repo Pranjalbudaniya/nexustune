@@ -904,6 +904,31 @@ fun SettingsScreen(
                     }
                 )
 
+                ListItem(
+                    headlineContent = { Text("Export Favorites as M3U") },
+                    supportingContent = { Text("Export liked tracks to standard Extended M3U8 format") },
+                    trailingContent = {
+                        OutlinedButton(onClick = { viewModel.exportLikedTracksToM3u() }) {
+                            Text("Export M3U")
+                        }
+                    }
+                )
+
+                ListItem(
+                    headlineContent = { Text("Import M3U / M3U8 Playlist") },
+                    supportingContent = { Text("Import external playlists from M3U / M3U8 format") },
+                    trailingContent = {
+                        OutlinedButton(onClick = {
+                            viewModel.importPlaylistFromM3u(
+                                "#EXTM3U\n#PLAYLIST:Imported Mix\n#EXTINF:214,Synthetix - Midnight Odyssey\nhttps://www.youtube.com/watch?v=fake_1",
+                                "Imported Mix"
+                            )
+                        }) {
+                            Text("Import M3U")
+                        }
+                    }
+                )
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
             }
 
@@ -917,8 +942,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v3.6.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Adaptive Cellular Data Saver & Audio Stream Quality") }
+                    headlineContent = { Text("NexusTune v3.7.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Standard M3U/M3U8 Playlist Export & Import Engine") }
                 )
             }
         }

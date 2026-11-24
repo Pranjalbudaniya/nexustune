@@ -5,6 +5,7 @@ import com.nexus.tune.core.database.entity.PlaylistEntity
 import com.nexus.tune.core.database.entity.TrackEntity
 import com.nexus.tune.core.datastore.SettingsDataStore
 import com.nexus.tune.core.model.ThemeConfig
+import com.nexus.tune.core.model.Track
 import kotlinx.coroutines.flow.first
 import org.json.JSONArray
 import org.json.JSONObject
@@ -177,6 +178,101 @@ class BackupManager(
             )
         } catch (e: Exception) {
             NewPipeImportResult(success = false)
+        }
+    }
+
+    fun exportPlaylistToM3u(playlistTitle: String, tracks: List<Track>): String {
+        val sb = StringBuilder()
+        sb.append("#EXTM3U\n")
+        sb.append("#PLAYLIST:").append(playlistTitle).append("\n\n")
+
+        for (track in tracks) {
+            val duration = if (track.durationSeconds > 0) track.durationSeconds else -1
+            sb.append("#EXTINF:").append(duration).append(",")
+            if (track.artist.isNotBlank()) {
+                sb.append(track.artist).append(" - ")
+            }
+            sb.append(track.title).append("\n")
+
+            val url = track.streamUrl ?: "https://www.youtube.com/watch?v=${track.id}"
+            sb.append(url).append("\n\n")
+        }
+        return sb.toString()
+    }
+
+    suspend fun importPlaylistFromM3u(m3uContent: String, fallbackTitle: String = "Imported Playlist"): Pair<String, Int> {
+        val lines = m3uContent.lines()
+        var playlistTitle = fallbackTitle
+        val tracksToInsert = mutableListOf<TrackEntity>()
+
+        var currentDuration = -1L
+        var currentArtist = "Unknown Artist"
+        var currentTitle = "Unknown Track"
+
+        for (rawLine in lines) {
+            val line = rawLine.trim()
+            if (line.isEmpty()) continue
+
+            if (line.startsWith("#PLAYLIST:", ignoreCase = true)) {
+                val parsedTitle = line.substringAfter(":").trim()
+                if (parsedTitle.isNotBlank()) {
+                    playlistTitle = parsedTitle
+                }
+            } else if (line.startsWith("#EXTINF:", ignoreCase = true)) {
+                val metadata = line.substringAfter(":")
+                val durationPart = metadata.substringBefore(",")
+                val titlePart = metadata.substringAfter(",", "")
+                currentDuration = durationPart.toLongOrNull() ?: -1L
+
+                if (titlePart.contains(" - ")) {
+                    currentArtist = titlePart.substringBefore(" - ").trim()
+                    currentTitle = titlePart.substringAfter(" - ").trim()
+                } else if (titlePart.isNotBlank()) {
+                    currentTitle = titlePart.trim()
+                }
+            } else if (!line.startsWith("#")) {
+                val trackId = extractTrackIdFromUri(line)
+                val entity = TrackEntity(
+                    id = trackId,
+                    title = currentTitle,
+                    artist = currentArtist,
+                    album = playlistTitle,
+                    artworkUrl = null,
+                    isLiked = false
+                )
+                tracksToInsert.add(entity)
+
+                currentDuration = -1L
+                currentArtist = "Unknown Artist"
+                currentTitle = "Unknown Track"
+            }
+        }
+
+        if (tracksToInsert.isNotEmpty()) {
+            val playlistId = "m3u_${System.currentTimeMillis()}"
+            val playlistEntity = PlaylistEntity(
+                id = playlistId,
+                title = playlistTitle,
+                author = "M3U Import",
+                artworkUrl = null,
+                trackCount = tracksToInsert.size,
+                isUserCreated = true
+            )
+            database.playlistDao().insert(playlistEntity)
+            for (track in tracksToInsert) {
+                database.trackDao().insertOrUpdate(track)
+            }
+            return Pair(playlistTitle, tracksToInsert.size)
+        }
+        return Pair(playlistTitle, 0)
+    }
+
+    private fun extractTrackIdFromUri(uri: String): String {
+        return when {
+            uri.contains("watch?v=") -> uri.substringAfter("watch?v=").substringBefore("&")
+            uri.contains("youtu.be/") -> uri.substringAfter("youtu.be/").substringBefore("?")
+            uri.contains("/") -> uri.substringAfterLast("/").substringBefore(".")
+            else -> uri
         }
     }
 }

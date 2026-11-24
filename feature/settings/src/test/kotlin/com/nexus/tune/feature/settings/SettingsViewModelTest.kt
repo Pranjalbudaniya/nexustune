@@ -376,4 +376,40 @@ class SettingsViewModelTest {
         )
         assertTrue(meteredVm.isMeteredConnection.value)
     }
+
+    @Test
+    fun `exportLikedTracksToM3u exports liked tracks via backupManager`() = runTest {
+        val mockBackupManager = mockk<com.nexus.tune.core.data.backup.BackupManager>(relaxed = true)
+        val mockMusicRepo = mockk<com.nexus.tune.core.domain.repository.MusicRepository>(relaxed = true)
+        val sampleLiked = listOf(Track("t1", "Title 1", "Artist 1"))
+        every { mockMusicRepo.getLikedTracks() } returns flowOf(sampleLiked)
+        every { mockBackupManager.exportPlaylistToM3u(any(), any()) } returns "#EXTM3U\n#EXTINF:100,Artist 1 - Title 1\nurl"
+
+        val vm = SettingsViewModel(
+            settingsRepository = settingsRepository,
+            backupManager = mockBackupManager,
+            musicRepository = mockMusicRepo
+        )
+        vm.exportLikedTracksToM3u()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        verify { mockBackupManager.exportPlaylistToM3u("NexusTune Favorites", sampleLiked) }
+        assertTrue(vm.m3uExportResult.value?.contains("#EXTM3U") == true)
+    }
+
+    @Test
+    fun `importPlaylistFromM3u delegates to backupManager`() = runTest {
+        val mockBackupManager = mockk<com.nexus.tune.core.data.backup.BackupManager>(relaxed = true)
+        coEvery { mockBackupManager.importPlaylistFromM3u(any(), any()) } returns Pair("Road Trip", 4)
+
+        val vm = SettingsViewModel(
+            settingsRepository = settingsRepository,
+            backupManager = mockBackupManager
+        )
+        vm.importPlaylistFromM3u("#EXTM3U\n#EXTINF:200,A - B\nurl", "Road Trip")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { mockBackupManager.importPlaylistFromM3u(any(), "Road Trip") }
+        assertTrue(vm.backupImportStatus.value?.contains("Imported playlist 'Road Trip' (4 tracks)") == true)
+    }
 }

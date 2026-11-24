@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 26 (v3.6.0 Audio Stream Quality & Adaptive Cellular Data Saver)
+- Active Phase: Post-v1.0 Improvement Loop 27 (v3.7.0 Standard M3U/M3U8 Playlist Export & Import Engine)
 - In Flight: Running test suites and ./scripts/gate.sh slice
 - Branches: `main`
 
@@ -207,13 +207,20 @@
   - [x] Smart Recent Search History & Quick Suggestion Chips (`SearchMusicUseCase`, `SearchScreen`)
   - [x] Final gate passed & tagged: `git tag v3.5-1`
 
-## Improvement Loop 26 (v3.6 Milestone - In Progress)
-- [ ] Audio Stream Quality & Adaptive Cellular Data Saver:
-  - Dynamic streaming bitrate selection (`AUTO`, `HIGH`, `MEDIUM`, `LOW`)
-  - Live metered network detection via `ConnectivityManager.isActiveNetworkMetered`
-  - Interactive preference chips and network status badge in `SettingsScreen`
+- [x] Improvement Loop 26 (v3.6 Milestone - Tagged `v3.6-1`)
+  - [x] Audio Stream Quality & Adaptive Cellular Data Saver:
+    - [x] Dynamic streaming bitrate selection (`AUTO`, `HIGH`, `MEDIUM`, `LOW`)
+    - [x] Live metered network detection via `ConnectivityManager.isActiveNetworkMetered`
+    - [x] Interactive preference chips and network status badge in `SettingsScreen`
+  - [x] Final gate passed & tagged: `git tag v3.6-1`
+
+## Improvement Loop 27 (v3.7 Milestone - In Progress)
+- [ ] Standard M3U / M3U8 Playlist Export & Import Engine:
+  - Extended `#EXTM3U` export generator with `#EXTINF` and `#PLAYLIST:` headers
+  - Resilient M3U/M3U8 parser handling YouTube watch URLs and custom stream paths
+  - Settings UI Export/Import M3U integration
 - [ ] Slice gate passed
-- [ ] Final gate passed & tagged: `git tag v3.6-1`
+- [ ] Final gate passed & tagged: `git tag v3.7-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

@@ -97,4 +97,47 @@ class BackupManagerTest {
             trackDao.insertOrUpdate(match { it.id == "dQw4w9WgXcQ" && it.artist == "Rick Astley" })
         }
     }
+
+    @Test
+    fun `exportPlaylistToM3u generates valid extended M3U8 string`() {
+        val tracks = listOf(
+            com.nexus.tune.core.model.Track(
+                id = "track_m3u_1",
+                title = "Starlight Velocity",
+                artist = "Nova Drift",
+                durationSeconds = 188,
+                artworkUrl = null
+            )
+        )
+        val m3u = backupManager.exportPlaylistToM3u("Retro Wave", tracks)
+        assertTrue(m3u.startsWith("#EXTM3U"))
+        assertTrue(m3u.contains("#PLAYLIST:Retro Wave"))
+        assertTrue(m3u.contains("#EXTINF:188,Nova Drift - Starlight Velocity"))
+        assertTrue(m3u.contains("https://www.youtube.com/watch?v=track_m3u_1"))
+    }
+
+    @Test
+    fun `importPlaylistFromM3u parses tracks and inserts playlist into database`() = runTest {
+        every { database.trackDao() } returns trackDao
+        every { database.playlistDao() } returns playlistDao
+
+        val m3uContent = """
+            #EXTM3U
+            #PLAYLIST:Cyber Chill
+            #EXTINF:245,Vector Void - Cybernetic Pulse
+            https://www.youtube.com/watch?v=vector_123
+            #EXTINF:195,Synthetix - Hyperdrive
+            https://youtu.be/synth_456
+        """.trimIndent()
+
+        val result = backupManager.importPlaylistFromM3u(m3uContent, "Fallback Title")
+        assertEquals("Cyber Chill", result.first)
+        assertEquals(2, result.second)
+
+        coVerify {
+            playlistDao.insert(match { it.title == "Cyber Chill" && it.trackCount == 2 })
+            trackDao.insertOrUpdate(match { it.id == "vector_123" && it.title == "Cybernetic Pulse" && it.artist == "Vector Void" })
+            trackDao.insertOrUpdate(match { it.id == "synth_456" && it.title == "Hyperdrive" && it.artist == "Synthetix" })
+        }
+    }
 }
