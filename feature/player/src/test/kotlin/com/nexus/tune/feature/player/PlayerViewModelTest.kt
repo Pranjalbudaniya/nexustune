@@ -267,5 +267,28 @@ class PlayerViewModelTest {
         vm.seekToBookmark(bookmark)
         verify { mockPlayerController.seekTo(60000L) }
     }
+
+    @Test
+    fun `jumpToQueueIndex, removeFromQueue, and clearUpcoming delegate to manageQueueUseCase`() = runTest {
+        val tracks = listOf(
+            Track(id = "1", title = "T1", artist = "A1"),
+            Track(id = "2", title = "T2", artist = "A2")
+        )
+        every { manageQueueUseCase.getQueue() } returns flowOf(tracks)
+        val vm = PlayerViewModel(musicRepository, manageQueueUseCase)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        vm.jumpToQueueIndex(1)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify { manageQueueUseCase.playPlaylist(tracks, 1) }
+
+        vm.removeFromQueue(0)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify { manageQueueUseCase.remove(0) }
+
+        vm.clearUpcoming()
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify { manageQueueUseCase.clearUpcoming() }
+    }
 }
 

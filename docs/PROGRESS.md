@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 41 (v5.1.0 In-Library Instant Search, Multi-Criteria Sort & Smart Filter Engine)
-- In Flight: Running test suites and ./scripts/gate.sh slice
+- Active Phase: Post-v1.0 Improvement Loop 42 (v5.2.0 Interactive Up Next Active Queue Sheet & In-Player Reordering Engine)
+- In Flight: Final release qualification gate and git tagging
 - Branches: `main`
 
 ## Phase Tracking
@@ -361,6 +361,16 @@
     - [x] Unit test suites in `LibraryFilterEngineTest` (`:core:domain`) and `LibraryViewModelTest` (`:feature:library`)
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v5.1-1`
+
+- [x] Improvement Loop 42 (v5.2 Milestone - Tagged `v5.2-1`)
+  - [x] Interactive Up Next Active Queue Sheet & In-Player Reordering Engine:
+    - [x] Reactive `activeQueue` and `activeQueueIndex` state flows in `PlayerViewModel`
+    - [x] `jumpToQueueIndex()`, `removeFromQueue()`, and `clearUpcoming()` controls in `PlayerViewModel`
+    - [x] Dedicated `ModalBottomSheet` in `PlayerScreen` triggered by top-bar `QueueMusic` icon button
+    - [x] Visual indicators for current playback item, tap-to-jump navigation, remaining duration estimates, and single-tap deletion
+    - [x] Dedicated unit tests in `PlayerViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v5.2-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

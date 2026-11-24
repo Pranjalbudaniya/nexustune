@@ -250,6 +250,8 @@ class MainActivity : ComponentActivity() {
                             val audioOutputDevice by app.audioOutputRouteManager.currentOutputDevice.collectAsState()
                             val visualizerData by com.nexus.tune.core.player.visualizer.VisualizerManager.instance.visualizerData.collectAsState()
                             val bookmarks by playerViewModel.bookmarks.collectAsState()
+                            val activeQueue by playerViewModel.activeQueue.collectAsState()
+                            val activeQueueIndex by playerViewModel.activeQueueIndex.collectAsState()
                             LaunchedEffect(playbackState.currentTrack) {
                                 playbackState.currentTrack?.let { playerViewModel.loadLyrics(it) }
                             }
@@ -308,7 +310,13 @@ class MainActivity : ComponentActivity() {
                                 bookmarks = bookmarks,
                                 onAddBookmark = { playerViewModel.addBookmark(it) },
                                 onDeleteBookmark = { playerViewModel.deleteBookmark(it) },
-                                onSeekToBookmark = { playerViewModel.seekToBookmark(it) }
+                                onSeekToBookmark = { playerViewModel.seekToBookmark(it) },
+                                queue = activeQueue,
+                                queueIndex = activeQueueIndex,
+                                onJumpToQueueIndex = { playerViewModel.jumpToQueueIndex(it) },
+                                onRemoveFromQueue = { playerViewModel.removeFromQueue(it) },
+                                onClearUpcoming = { playerViewModel.clearUpcoming() },
+                                onDeduplicateQueue = { playerViewModel.deduplicateQueue() }
                             )
                         }
                     }

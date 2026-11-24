@@ -5,6 +5,14 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.2.0] - 2026-11-24
+
+### Added
+- **Interactive "Up Next" Active Queue Sheet & In-Player Reordering Engine**: Implemented reactive active queue observation (`activeQueue`, `activeQueueIndex`) and queue controls (`jumpToQueueIndex`, `removeFromQueue`, `clearUpcoming`, `deduplicateQueue`) in `PlayerViewModel`.
+- **Player Screen Queue Bottom Sheet**: Added dedicated `ModalBottomSheet` accessible via top-bar queue button (`Icons.AutoMirrored.Rounded.QueueMusic`), displaying live upcoming track count, estimated remaining duration, and clear/deduplicate actions.
+- **In-Queue Item Interaction**: Visual indicators for currently playing track, tap-to-jump playback to any queue track, and one-tap removal of upcoming items.
+- **Expanded Test Coverage**: Added comprehensive unit tests in `PlayerViewModelTest` validating `jumpToQueueIndex`, `removeFromQueue`, and `clearUpcoming` delegation to `ManageQueueUseCase`.
+
 ## [5.1.0] - 2026-11-24
 
 ### Added

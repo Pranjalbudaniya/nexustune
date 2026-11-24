@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.QueueMusic
 import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
@@ -28,9 +29,11 @@ import coil.compose.AsyncImage
 import com.nexus.tune.core.model.PlaybackState
 import com.nexus.tune.core.model.PlaybackStatus
 import com.nexus.tune.core.model.PlayerLayout
+import com.nexus.tune.core.model.Track
 import com.nexus.tune.core.model.TrackBookmark
 import com.nexus.tune.core.model.TrackLyrics
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerScreen(
     playbackState: PlaybackState,
@@ -67,13 +70,20 @@ fun PlayerScreen(
     bookmarks: List<TrackBookmark> = emptyList(),
     onAddBookmark: (String) -> Unit = {},
     onDeleteBookmark: (Long) -> Unit = {},
-    onSeekToBookmark: (TrackBookmark) -> Unit = {}
+    onSeekToBookmark: (TrackBookmark) -> Unit = {},
+    queue: List<Track> = emptyList(),
+    queueIndex: Int = 0,
+    onJumpToQueueIndex: (Int) -> Unit = {},
+    onRemoveFromQueue: (Int) -> Unit = {},
+    onClearUpcoming: () -> Unit = {},
+    onDeduplicateQueue: () -> Unit = {}
 ) {
     val track = playbackState.currentTrack ?: return
     val isPlaying = playbackState.status == PlaybackStatus.PLAYING
     var showImportLrcDialog by remember { mutableStateOf(false) }
     var lrcInputText by remember { mutableStateOf("") }
     var showAddBookmarkDialog by remember { mutableStateOf(false) }
+    var showQueueSheet by remember { mutableStateOf(false) }
 
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -140,8 +150,13 @@ fun PlayerScreen(
                         }
                     }
                 }
-                IconButton(onClick = {}) {
-                    Icon(Icons.Rounded.MoreVert, contentDescription = "Options")
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = { showQueueSheet = true }) {
+                        Icon(Icons.AutoMirrored.Rounded.QueueMusic, contentDescription = "Up Next Queue")
+                    }
+                    IconButton(onClick = {}) {
+                        Icon(Icons.Rounded.MoreVert, contentDescription = "Options")
+                    }
                 }
             }
 
@@ -731,6 +746,156 @@ fun PlayerScreen(
                     }
                 }
             )
+        }
+
+        if (showQueueSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showQueueSheet = false }
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 8.dp)
+                ) {
+                    val upcomingCount = (queue.size - 1 - queueIndex).coerceAtLeast(0)
+                    val upcomingMinutes = queue.drop(queueIndex + 1).sumOf { it.durationSeconds } / 60
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                text = "Up Next Queue",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "$upcomingCount upcoming tracks • ~${upcomingMinutes} min remaining",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            TextButton(
+                                onClick = onDeduplicateQueue,
+                                enabled = queue.isNotEmpty()
+                            ) {
+                                Text("Deduplicate")
+                            }
+                            if (upcomingCount > 0) {
+                                TextButton(
+                                    onClick = onClearUpcoming
+                                ) {
+                                    Text("Clear", color = MaterialTheme.colorScheme.error)
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    if (queue.isEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Queue is empty",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(max = 420.dp),
+                            contentPadding = PaddingValues(bottom = 24.dp)
+                        ) {
+                            itemsIndexed(queue) { index, item ->
+                                val isCurrent = index == queueIndex
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(MaterialTheme.shapes.medium)
+                                        .background(
+                                            if (isCurrent) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                                            else Color.Transparent
+                                        )
+                                        .clickable { onJumpToQueueIndex(index) }
+                                        .padding(horizontal = 8.dp, vertical = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    if (isCurrent) {
+                                        Icon(
+                                            Icons.Rounded.PlayArrow,
+                                            contentDescription = "Currently playing",
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                    } else {
+                                        Text(
+                                            text = "${index + 1}",
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            modifier = Modifier.width(24.dp),
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.width(12.dp))
+
+                                    AsyncImage(
+                                        model = item.artworkUrl,
+                                        contentDescription = item.title,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .size(44.dp)
+                                            .clip(MaterialTheme.shapes.small)
+                                    )
+
+                                    Spacer(modifier = Modifier.width(12.dp))
+
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = item.title,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Normal,
+                                            color = if (isCurrent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                        Text(
+                                            text = "${item.artist} • ${formatTime(item.durationSeconds * 1000L)}",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+
+                                    IconButton(
+                                        onClick = { onRemoveFromQueue(index) },
+                                        modifier = Modifier.size(36.dp)
+                                    ) {
+                                        Icon(
+                                            Icons.Rounded.Close,
+                                            contentDescription = "Remove from queue",
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

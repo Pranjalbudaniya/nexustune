@@ -11,9 +11,11 @@ import com.nexus.tune.core.model.TrackBookmark
 import com.nexus.tune.core.model.TrackLyrics
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
@@ -49,6 +51,33 @@ class PlayerViewModel(
     val bookmarks: StateFlow<List<TrackBookmark>> = _bookmarks.asStateFlow()
 
     private var bookmarkCollectionJob: Job? = null
+
+    val activeQueue: StateFlow<List<Track>> = manageQueueUseCase.getQueue()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    val activeQueueIndex: StateFlow<Int> = manageQueueUseCase.getQueueIndex()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
+
+    fun jumpToQueueIndex(index: Int) {
+        val q = activeQueue.value
+        if (index in 0 until q.size) {
+            viewModelScope.launch {
+                manageQueueUseCase.playPlaylist(q, index)
+            }
+        }
+    }
+
+    fun removeFromQueue(index: Int) {
+        viewModelScope.launch {
+            manageQueueUseCase.remove(index)
+        }
+    }
+
+    fun clearUpcoming() {
+        viewModelScope.launch {
+            manageQueueUseCase.clearUpcoming()
+        }
+    }
 
     private val _lyricsOffsetMs = MutableStateFlow(0L)
     val lyricsOffsetMs: StateFlow<Long> = _lyricsOffsetMs.asStateFlow()
