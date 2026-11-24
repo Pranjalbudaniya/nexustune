@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.nexus.tune.core.model.*
+import com.nexus.tune.core.domain.audio.InfrasonicFilterEngine
 import com.nexus.tune.core.ui.EqCurveVisualizer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -1695,6 +1696,116 @@ fun SettingsScreen(
                                     text = "Spline: C¹ Cubic Hermite",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+                ListItem(
+                    headlineContent = { Text("Infrasonic Sub-Bass & Warp Guard") },
+                    supportingContent = { Text("Attenuates inaudible rumble below 20-30 Hz to protect drivers and reclaim dynamic amplifier headroom") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.infrasonicFilterConfig.isEnabled,
+                            onCheckedChange = { viewModel.setInfrasonicFilterEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.infrasonicFilterConfig.isEnabled) {
+                    val infrasonicMetrics = remember(themeConfig.infrasonicFilterConfig) {
+                        InfrasonicFilterEngine.calculateMetrics(themeConfig.infrasonicFilterConfig)
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "High-Pass Cutoff Frequency",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf(15.0f, 18.0f, 20.0f, 25.0f, 30.0f).forEach { hz ->
+                            FilterChip(
+                                selected = kotlin.math.abs(themeConfig.infrasonicFilterConfig.cutoffHz - hz) < 0.1f,
+                                onClick = { viewModel.setInfrasonicFilterCutoff(hz) },
+                                label = { Text("${hz.toInt()} Hz") }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "Filter Attenuation Slope",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        InfrasonicSlope.entries.forEach { slope ->
+                            FilterChip(
+                                selected = themeConfig.infrasonicFilterConfig.slope == slope,
+                                onClick = { viewModel.setInfrasonicFilterSlope(slope) },
+                                label = { Text(slope.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    ListItem(
+                        headlineContent = { Text("Recursive DC Offset Blocker") },
+                        supportingContent = { Text("Rejects 0 Hz DC bias drift with recursive single-pole high-pass (R = 0.9995)") },
+                        trailingContent = {
+                            Switch(
+                                checked = themeConfig.infrasonicFilterConfig.dcBlockerEnabled,
+                                onCheckedChange = { viewModel.setInfrasonicDcBlockerEnabled(it) }
+                            )
+                        }
+                    )
+
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Text(
+                                text = themeConfig.infrasonicFilterConfig.slope.description,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Rumble @ 10Hz: ${String.format(java.util.Locale.US, "%.1f", infrasonicMetrics.rumbleAttenuationAt10HzDb)} dB",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Headroom: +${String.format(java.util.Locale.US, "%.2f", infrasonicMetrics.preservedHeadroomDb)} dB",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                                Text(
+                                    text = infrasonicMetrics.protectionRating,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary
                                 )
                             }
                         }

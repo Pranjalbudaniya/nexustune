@@ -112,6 +112,10 @@ class SettingsDataStore(private val context: Context) {
         val XTC_MODE = stringPreferencesKey("xtc_mode")
         val XTC_DELAY_SAMPLES = intPreferencesKey("xtc_delay_samples")
         val XTC_INTENSITY_PERCENT = intPreferencesKey("xtc_intensity_percent")
+        val INFRASONIC_ENABLED = booleanPreferencesKey("infrasonic_enabled")
+        val INFRASONIC_CUTOFF_HZ = floatPreferencesKey("infrasonic_cutoff_hz")
+        val INFRASONIC_SLOPE = stringPreferencesKey("infrasonic_slope")
+        val INFRASONIC_DC_BLOCKER = booleanPreferencesKey("infrasonic_dc_blocker")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -280,6 +284,14 @@ class SettingsDataStore(private val context: Context) {
                 }.getOrDefault(CrosstalkCancellationMode.PHONE_STEREO_SPEAKERS),
                 delaySamples = prefs[PreferencesKeys.XTC_DELAY_SAMPLES] ?: 5,
                 cancellationIntensityPercent = prefs[PreferencesKeys.XTC_INTENSITY_PERCENT] ?: 70
+            ),
+            infrasonicFilterConfig = InfrasonicFilterConfig(
+                isEnabled = prefs[PreferencesKeys.INFRASONIC_ENABLED] ?: false,
+                cutoffHz = prefs[PreferencesKeys.INFRASONIC_CUTOFF_HZ] ?: 20.0f,
+                slope = runCatching {
+                    InfrasonicSlope.valueOf(prefs[PreferencesKeys.INFRASONIC_SLOPE] ?: InfrasonicSlope.SLOPE_18DB_OCTAVE.name)
+                }.getOrDefault(InfrasonicSlope.SLOPE_18DB_OCTAVE),
+                dcBlockerEnabled = prefs[PreferencesKeys.INFRASONIC_DC_BLOCKER] ?: true
             )
         )
     }
@@ -375,6 +387,10 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.XTC_MODE] = config.crosstalkCancellationConfig.mode.name
             prefs[PreferencesKeys.XTC_DELAY_SAMPLES] = config.crosstalkCancellationConfig.delaySamples
             prefs[PreferencesKeys.XTC_INTENSITY_PERCENT] = config.crosstalkCancellationConfig.cancellationIntensityPercent
+            prefs[PreferencesKeys.INFRASONIC_ENABLED] = config.infrasonicFilterConfig.isEnabled
+            prefs[PreferencesKeys.INFRASONIC_CUTOFF_HZ] = config.infrasonicFilterConfig.cutoffHz
+            prefs[PreferencesKeys.INFRASONIC_SLOPE] = config.infrasonicFilterConfig.slope.name
+            prefs[PreferencesKeys.INFRASONIC_DC_BLOCKER] = config.infrasonicFilterConfig.dcBlockerEnabled
         }
     }
 
@@ -457,6 +473,15 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.XTC_MODE] = config.mode.name
             prefs[PreferencesKeys.XTC_DELAY_SAMPLES] = config.delaySamples
             prefs[PreferencesKeys.XTC_INTENSITY_PERCENT] = config.cancellationIntensityPercent
+        }
+    }
+
+    suspend fun updateInfrasonicFilterConfig(config: InfrasonicFilterConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.INFRASONIC_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.INFRASONIC_CUTOFF_HZ] = config.cutoffHz
+            prefs[PreferencesKeys.INFRASONIC_SLOPE] = config.slope.name
+            prefs[PreferencesKeys.INFRASONIC_DC_BLOCKER] = config.dcBlockerEnabled
         }
     }
 

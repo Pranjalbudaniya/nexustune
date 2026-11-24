@@ -809,4 +809,24 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(crosstalkCancellationConfig = current.crosstalkCancellationConfig.copy(cancellationIntensityPercent = intensityPercent.coerceIn(10, 100))))
     }
+
+    fun setInfrasonicFilterEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(infrasonicFilterConfig = current.infrasonicFilterConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setInfrasonicFilterCutoff(cutoffHz: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(infrasonicFilterConfig = current.infrasonicFilterConfig.copy(cutoffHz = cutoffHz.coerceIn(10.0f, 40.0f))))
+    }
+
+    fun setInfrasonicFilterSlope(slope: InfrasonicSlope) {
+        val current = themeConfig.value
+        updateTheme(current.copy(infrasonicFilterConfig = current.infrasonicFilterConfig.copy(slope = slope)))
+    }
+
+    fun setInfrasonicDcBlockerEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(infrasonicFilterConfig = current.infrasonicFilterConfig.copy(dcBlockerEnabled = enabled)))
+    }
 }

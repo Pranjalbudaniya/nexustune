@@ -5,6 +5,16 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.19.0] - 2026-11-24
+
+### Added
+- **Infrasonic Sub-Bass High-Pass & Warp Guard Studio (`InfrasonicFilterEngine`)**: Added `InfrasonicSlope` (`SLOPE_12DB_OCTAVE`, `SLOPE_18DB_OCTAVE`, `SLOPE_24DB_OCTAVE`), `InfrasonicFilterConfig`, `InfrasonicMetrics`, and `InfrasonicBiquadCoefficients` in `:core:model`.
+- **Butterworth / Bessel Steep Sub-Bass High-Pass & DC Offset Blocker DSP**: Implemented `InfrasonicFilterEngine` in `:core:domain:audio` eliminating inaudible mechanical rumble, vinyl turntable warp, and sub-audible flutter below 15-30 Hz. Biquad high-pass coefficients guarantee exact zero transmission at DC ($H(0) = 0$), paired with a recursive single-pole DC offset blocker ($y[n] = x[n] - x[n-1] + R \cdot y[n-1]$, $R = 0.9995$), reclaiming 1.5 dB to 3.0 dB of clean dynamic amplifier headroom and protecting portable speaker / headphone voice coils from excessive excursion.
+- **DataStore Persistence**: Added `INFRASONIC_ENABLED`, `INFRASONIC_CUTOFF_HZ`, `INFRASONIC_SLOPE`, and `INFRASONIC_DC_BLOCKER` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Infrasonic Studio**: Added interactive "Infrasonic Sub-Bass & Warp Guard" card in `SettingsScreen` under the Hi-Res Audio section with cutoff chips (15, 18, 20, 25, 30 Hz), slope chips (12, 18, 24 dB/oct), DC offset blocker switch, and real-time rumble attenuation / headroom restoration badge.
+- **Unit Test Coverage**: Comprehensive test suites in `InfrasonicFilterEngineTest` in `:core:domain` and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.18.0] - 2026-11-24
 
 ### Added

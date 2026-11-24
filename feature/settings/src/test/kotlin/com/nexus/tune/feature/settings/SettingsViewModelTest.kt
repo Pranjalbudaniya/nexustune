@@ -1041,4 +1041,31 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.crosstalkCancellationConfig.cancellationIntensityPercent == 85 })
         }
     }
+
+    @Test
+    fun `infrasonic filter settings update theme config`() = runTest {
+        viewModel.setInfrasonicFilterEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.infrasonicFilterConfig.isEnabled })
+        }
+
+        viewModel.setInfrasonicFilterCutoff(25.0f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.infrasonicFilterConfig.cutoffHz == 25.0f })
+        }
+
+        viewModel.setInfrasonicFilterSlope(InfrasonicSlope.SLOPE_24DB_OCTAVE)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.infrasonicFilterConfig.slope == InfrasonicSlope.SLOPE_24DB_OCTAVE })
+        }
+
+        viewModel.setInfrasonicDcBlockerEnabled(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.infrasonicFilterConfig.dcBlockerEnabled })
+        }
+    }
 }

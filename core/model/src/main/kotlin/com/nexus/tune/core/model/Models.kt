@@ -234,7 +234,8 @@ data class ThemeConfig(
     val tiltEqualizerConfig: TiltEqualizerConfig = TiltEqualizerConfig(),
     val deClickerConfig: DeClickerConfig = DeClickerConfig(),
     val midBassClarityConfig: MidBassClarityConfig = MidBassClarityConfig(),
-    val crosstalkCancellationConfig: CrosstalkCancellationConfig = CrosstalkCancellationConfig()
+    val crosstalkCancellationConfig: CrosstalkCancellationConfig = CrosstalkCancellationConfig(),
+    val infrasonicFilterConfig: InfrasonicFilterConfig = InfrasonicFilterConfig()
 )
 
 data class SoundDoseInfo(
@@ -1058,6 +1059,34 @@ data class CrosstalkCancellationMetrics(
     val effectiveCancellationDb: Float,
     val virtualStageSpanDegrees: Int,
     val binauralRating: String
+)
+
+enum class InfrasonicSlope(val displayName: String, val order: Int, val description: String, val dbPerOctave: Int) {
+    SLOPE_12DB_OCTAVE("12 dB/oct (Gentle)", 2, "2nd-order high-pass preserving sub-bass tail", 12),
+    SLOPE_18DB_OCTAVE("18 dB/oct (Butterworth)", 3, "3rd-order maximally flat passband with steep cutoff", 18),
+    SLOPE_24DB_OCTAVE("24 dB/oct (Warp Brickwall)", 4, "4th-order steep high-pass eliminating vinyl warp", 24)
+}
+
+data class InfrasonicFilterConfig(
+    val isEnabled: Boolean = false,
+    val cutoffHz: Float = 20.0f,
+    val slope: InfrasonicSlope = InfrasonicSlope.SLOPE_18DB_OCTAVE,
+    val dcBlockerEnabled: Boolean = true
+)
+
+data class InfrasonicMetrics(
+    val cutoffHz: Float,
+    val preservedHeadroomDb: Float,
+    val rumbleAttenuationAt10HzDb: Float,
+    val protectionRating: String
+)
+
+data class InfrasonicBiquadCoefficients(
+    val b0: Float,
+    val b1: Float,
+    val b2: Float,
+    val a1: Float,
+    val a2: Float
 )
 
 
