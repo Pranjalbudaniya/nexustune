@@ -42,6 +42,7 @@ class SettingsDataStore(private val context: Context) {
         val BEDTIME_HANDOFF_DURATION = intPreferencesKey("bedtime_handoff_duration_minutes")
         val SEEKBAR_STYLE = stringPreferencesKey("theme_seekbar_style")
         val RESET_PITCH_ON_TRACK_CHANGE = booleanPreferencesKey("reset_pitch_on_track_change")
+        val SMART_SHUFFLE_ENABLED = booleanPreferencesKey("smart_shuffle_enabled")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -79,7 +80,8 @@ class SettingsDataStore(private val context: Context) {
             seekbarStyle = runCatching {
                 SeekbarStyle.valueOf(prefs[PreferencesKeys.SEEKBAR_STYLE] ?: SeekbarStyle.WAVEFORM.name)
             }.getOrDefault(SeekbarStyle.WAVEFORM),
-            resetPitchOnTrackChange = prefs[PreferencesKeys.RESET_PITCH_ON_TRACK_CHANGE] ?: true
+            resetPitchOnTrackChange = prefs[PreferencesKeys.RESET_PITCH_ON_TRACK_CHANGE] ?: true,
+            smartShuffleEnabled = prefs[PreferencesKeys.SMART_SHUFFLE_ENABLED] ?: true
         )
     }
 
@@ -109,6 +111,7 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.BEDTIME_HANDOFF_DURATION] = config.bedtimeHandoffDurationMinutes
             prefs[PreferencesKeys.SEEKBAR_STYLE] = config.seekbarStyle.name
             prefs[PreferencesKeys.RESET_PITCH_ON_TRACK_CHANGE] = config.resetPitchOnTrackChange
+            prefs[PreferencesKeys.SMART_SHUFFLE_ENABLED] = config.smartShuffleEnabled
         }
     }
 

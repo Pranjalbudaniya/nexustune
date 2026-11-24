@@ -5,6 +5,14 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.6.0] - 2026-11-24
+
+### Added
+- **Smart Artist-Spaced Diversity Shuffle Engine**: Implemented `SmartShuffleEngine` in `:core:domain:queue` dynamically interleaving tracks by artist to prevent artist clustering (e.g. playing duplicate artists consecutively) while keeping the currently playing track pinned at index 0.
+- **Repeat & Shuffle Media3 Integration**: Added `isShuffle`, `isRepeatOne`, and `isRepeatAll` state reporting in `PlaybackState`, with reactive listeners (`onShuffleModeEnabledChanged`, `onRepeatModeChanged`), `toggleShuffle()`, and `cycleRepeatMode()` in `PlayerController`.
+- **Interactive Player Transport Buttons**: Wired Shuffle and Repeat controls in `PlayerScreen` with dynamic primary tinting and mode-specific iconography (`Repeat` vs `RepeatOne`), and connected Skip Previous / Skip Next actions.
+- **Configurable Smart Shuffle Preference**: Added `smartShuffleEnabled` to `ThemeConfig` and `SettingsDataStore`, with a dedicated toggle in `SettingsScreen`.
+
 ## [4.5.0] - 2026-11-24
 
 ### Added

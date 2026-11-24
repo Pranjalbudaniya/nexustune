@@ -75,6 +75,14 @@ class PlayerController(private val context: Context) {
                 updateState()
             }
 
+            override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+                updateState()
+            }
+
+            override fun onRepeatModeChanged(repeatMode: Int) {
+                updateState()
+            }
+
             override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
                 _playbackState.value = _playbackState.value.copy(
                     status = PlaybackStatus.ERROR,
@@ -260,6 +268,31 @@ class PlayerController(private val context: Context) {
         setPlaybackPitch(1.0f)
     }
 
+    fun toggleShuffle(enabled: Boolean? = null) {
+        val c = controller ?: return
+        val target = enabled ?: !c.shuffleModeEnabled
+        c.shuffleModeEnabled = target
+        updateState()
+    }
+
+    fun cycleRepeatMode(): Int {
+        val c = controller ?: return Player.REPEAT_MODE_OFF
+        val nextMode = when (c.repeatMode) {
+            Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ALL
+            Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_ONE
+            else -> Player.REPEAT_MODE_OFF
+        }
+        c.repeatMode = nextMode
+        updateState()
+        return nextMode
+    }
+
+    fun setRepeatMode(mode: Int) {
+        val c = controller ?: return
+        c.repeatMode = mode
+        updateState()
+    }
+
     private fun updateState() {
         val c = controller ?: return
         val currentMediaId = c.currentMediaItem?.mediaId
@@ -278,6 +311,9 @@ class PlayerController(private val context: Context) {
             status = status,
             positionMs = c.currentPosition.coerceAtLeast(0L),
             durationMs = c.duration.coerceAtLeast(0L),
+            isShuffle = c.shuffleModeEnabled,
+            isRepeatOne = c.repeatMode == Player.REPEAT_MODE_ONE,
+            isRepeatAll = c.repeatMode == Player.REPEAT_MODE_ALL,
             playbackSpeed = params.speed,
             playbackPitch = params.pitch,
             playbackPitchSemitones = semitones

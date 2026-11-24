@@ -58,3 +58,4 @@ class PitchTransposerTest {
         assertEquals("1.12x", PitchTransposer.formatPitchMultiplier(1.1225f))
     }
 }
+

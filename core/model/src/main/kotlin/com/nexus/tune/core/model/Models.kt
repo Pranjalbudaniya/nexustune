@@ -170,7 +170,8 @@ data class ThemeConfig(
     val bedtimeHandoffVolume: Float = 0.3f,
     val bedtimeHandoffDurationMinutes: Int = 60,
     val seekbarStyle: SeekbarStyle = SeekbarStyle.WAVEFORM,
-    val resetPitchOnTrackChange: Boolean = true
+    val resetPitchOnTrackChange: Boolean = true,
+    val smartShuffleEnabled: Boolean = true
 )
 
 data class SoundDoseInfo(

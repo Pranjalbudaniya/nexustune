@@ -106,6 +106,27 @@ class ManageQueueUseCase(private val queueRepository: QueueRepository) {
         }
         return report.duplicateCount
     }
+
+    suspend fun shuffleQueue(
+        smartDiversity: Boolean = true,
+        random: kotlin.random.Random = kotlin.random.Random.Default
+    ) {
+        val current = queueRepository.getQueue().firstOrNull() ?: return
+        if (current.size <= 2) return
+        val currentIndex = queueRepository.getQueueIndex().firstOrNull() ?: 0
+        val currentTrack = current.getOrNull(currentIndex)
+        val shuffled = com.nexus.tune.core.domain.queue.SmartShuffleEngine.shuffle(
+            tracks = current,
+            currentTrack = currentTrack,
+            smartDiversity = smartDiversity,
+            random = random
+        )
+        val newIndex = if (currentTrack != null) {
+            val idx = shuffled.indexOfFirst { it.id == currentTrack.id }
+            if (idx >= 0) idx else 0
+        } else 0
+        queueRepository.setQueue(shuffled, newIndex)
+    }
 }
 
 class ManagePlaylistsUseCase(private val musicRepository: MusicRepository) {

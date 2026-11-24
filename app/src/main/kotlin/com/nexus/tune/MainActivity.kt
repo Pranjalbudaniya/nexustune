@@ -275,7 +275,16 @@ class MainActivity : ComponentActivity() {
                                 onSetSemitones = { app.playerController.setPlaybackSemitones(it) },
                                 onTransposeUp = { app.playerController.transposeUp() },
                                 onTransposeDown = { app.playerController.transposeDown() },
-                                onResetPitch = { app.playerController.resetPitch() }
+                                onResetPitch = { app.playerController.resetPitch() },
+                                onToggleShuffle = {
+                                    app.playerController.toggleShuffle()
+                                    if (themeConfig.smartShuffleEnabled && app.playerController.playbackState.value.isShuffle) {
+                                        playerViewModel.shuffleQueue(smartDiversity = true)
+                                    }
+                                },
+                                onCycleRepeatMode = { app.playerController.cycleRepeatMode() },
+                                onSkipPrevious = { app.playerController.seekToPrevious() },
+                                onSkipNext = { app.playerController.seekToNext() }
                             )
                         }
                     }

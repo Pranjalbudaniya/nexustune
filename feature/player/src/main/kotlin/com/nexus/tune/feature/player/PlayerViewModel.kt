@@ -151,6 +151,12 @@ class PlayerViewModel(
 
     val queueDedupStatus = MutableStateFlow<String?>(null)
 
+    fun shuffleQueue(smartDiversity: Boolean = true) {
+        viewModelScope.launch {
+            manageQueueUseCase.shuffleQueue(smartDiversity)
+        }
+    }
+
     fun deduplicateQueue() {
         viewModelScope.launch {
             val count = manageQueueUseCase.deduplicateQueue()

@@ -80,5 +80,21 @@ class ManageQueueUseCaseTest {
         useCase.clearUpcoming()
         coVerify { queueRepository.clearUpcoming() }
     }
+
+    @Test
+    fun `shuffleQueue shuffles and delegates to queueRepository`() = runTest {
+        val tracks = listOf(
+            Track(id = "1", title = "One", artist = "Artist A"),
+            Track(id = "2", title = "Two", artist = "Artist B"),
+            Track(id = "3", title = "Three", artist = "Artist A"),
+            Track(id = "4", title = "Four", artist = "Artist B")
+        )
+        every { queueRepository.getQueue() } returns flowOf(tracks)
+        every { queueRepository.getQueueIndex() } returns flowOf(1)
+
+        useCase.shuffleQueue(smartDiversity = true)
+
+        coVerify { queueRepository.setQueue(match { it.size == 4 && it.map { t -> t.id }.toSet() == setOf("1", "2", "3", "4") }, any()) }
+    }
 }
 

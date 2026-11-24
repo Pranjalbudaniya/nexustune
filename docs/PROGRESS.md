@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 35 (v4.5.0 Vocal Pitch Shift & Semitone Transposition DSP Engine)
+- Active Phase: Post-v1.0 Improvement Loop 36 (v4.6.0 Smart Artist-Spaced Diversity Shuffle & Repeat Mode Orchestration Engine)
 - In Flight: Running test suites and ./scripts/gate.sh slice
 - Branches: `main`
 
@@ -285,17 +285,29 @@
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v4.4-1`
 
-## Improvement Loop 35 (v4.5 Milestone - In Progress)
-- [x] Vocal Pitch Shift & Semitone Transposition DSP Engine:
-  - [x] `PitchTransposer` in `:core:player` with mathematical $2^{s/12}$ conversions and label formatting
-  - [x] `playbackPitchSemitones` in `PlaybackState` and `resetPitchOnTrackChange` in `ThemeConfig`
-  - [x] `PlayerController` semitone transposition methods, auto-reset on track change, and state reporting
-  - [x] `PlayerViewModel` pitch ratio / semitone flows and actions
-  - [x] Key & pitch transposition console with steppers, quick chips, and reset in `PlayerScreen`
-  - [x] Settings UI toggle for "Reset Key on Track Change" in `SettingsScreen`
-  - [x] Unit test suites across `:core:player`, `:feature:player`, and `:feature:settings`
+- [x] Improvement Loop 35 (v4.5 Milestone - Tagged `v4.5-1`)
+  - [x] Vocal Pitch Shift & Semitone Transposition DSP Engine:
+    - [x] `PitchTransposer` in `:core:player` with mathematical $2^{s/12}$ conversions and label formatting
+    - [x] `playbackPitchSemitones` in `PlaybackState` and `resetPitchOnTrackChange` in `ThemeConfig`
+    - [x] `PlayerController` semitone transposition methods, auto-reset on track change, and state reporting
+    - [x] `PlayerViewModel` pitch ratio / semitone flows and actions
+    - [x] Key & pitch transposition console with steppers, quick chips, and reset in `PlayerScreen`
+    - [x] Settings UI toggle for "Reset Key on Track Change" in `SettingsScreen`
+    - [x] Unit test suites across `:core:player`, `:feature:player`, and `:feature:settings`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v4.5-1`
+
+## Improvement Loop 36 (v4.6 Milestone - In Progress)
+- [x] Smart Artist-Spaced Diversity Shuffle & Repeat Mode Orchestration Engine:
+  - [x] `SmartShuffleEngine` in `:core:domain:queue` interleaving tracks to eliminate artist clustering
+  - [x] `shuffleQueue` method in `ManageQueueUseCase` and `PlayerViewModel`
+  - [x] `PlayerController` listeners and control methods (`toggleShuffle`, `cycleRepeatMode`, `setRepeatMode`)
+  - [x] `isShuffle`, `isRepeatOne`, `isRepeatAll` in `PlaybackState`
+  - [x] Interactive Shuffle, Repeat, and Skip buttons in `PlayerScreen`
+  - [x] Settings UI toggle for "Smart Artist-Spaced Shuffle" in `SettingsScreen`
+  - [x] Unit test suites across `:core:domain`, `:feature:player`, and `:feature:settings`
 - [x] Slice gate passed
-- [ ] Final gate passed & tagged: `git tag v4.5-1`
+- [ ] Final gate passed & tagged: `git tag v4.6-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

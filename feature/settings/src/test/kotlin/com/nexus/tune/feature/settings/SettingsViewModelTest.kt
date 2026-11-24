@@ -539,4 +539,14 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { !it.resetPitchOnTrackChange })
         }
     }
+
+    @Test
+    fun `toggleSmartShuffle updates theme config`() = runTest {
+        viewModel.toggleSmartShuffle(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.smartShuffleEnabled })
+        }
+    }
 }

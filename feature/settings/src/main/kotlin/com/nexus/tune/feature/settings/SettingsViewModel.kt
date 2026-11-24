@@ -273,6 +273,11 @@ class SettingsViewModel(
         updateTheme(current.copy(resetPitchOnTrackChange = enabled))
     }
 
+    fun toggleSmartShuffle(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(smartShuffleEnabled = enabled))
+    }
+
     fun toggleSafeListeningAlert(enabled: Boolean) {
         val current = themeConfig.value
         updateTheme(current.copy(safeListeningAlertEnabled = enabled))

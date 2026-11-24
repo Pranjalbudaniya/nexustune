@@ -53,7 +53,11 @@ fun PlayerScreen(
     onSetSemitones: (Int) -> Unit = {},
     onTransposeUp: () -> Unit = {},
     onTransposeDown: () -> Unit = {},
-    onResetPitch: () -> Unit = {}
+    onResetPitch: () -> Unit = {},
+    onToggleShuffle: () -> Unit = {},
+    onCycleRepeatMode: () -> Unit = {},
+    onSkipPrevious: () -> Unit = {},
+    onSkipNext: () -> Unit = {}
 ) {
     val track = playbackState.currentTrack ?: return
     val isPlaying = playbackState.status == PlaybackStatus.PLAYING
@@ -415,10 +419,14 @@ fun PlayerScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = {}) {
-                    Icon(Icons.Rounded.Shuffle, contentDescription = "Shuffle")
+                IconButton(onClick = onToggleShuffle) {
+                    Icon(
+                        Icons.Rounded.Shuffle,
+                        contentDescription = "Shuffle",
+                        tint = if (playbackState.isShuffle) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
-                IconButton(onClick = {}, modifier = Modifier.size(56.dp)) {
+                IconButton(onClick = onSkipPrevious, modifier = Modifier.size(56.dp)) {
                     Icon(Icons.Rounded.SkipPrevious, contentDescription = "Previous", modifier = Modifier.size(36.dp))
                 }
                 FilledIconButton(
@@ -431,11 +439,15 @@ fun PlayerScreen(
                         modifier = Modifier.size(40.dp)
                     )
                 }
-                IconButton(onClick = {}, modifier = Modifier.size(56.dp)) {
+                IconButton(onClick = onSkipNext, modifier = Modifier.size(56.dp)) {
                     Icon(Icons.Rounded.SkipNext, contentDescription = "Next", modifier = Modifier.size(36.dp))
                 }
-                IconButton(onClick = {}) {
-                    Icon(Icons.Rounded.Repeat, contentDescription = "Repeat")
+                IconButton(onClick = onCycleRepeatMode) {
+                    Icon(
+                        imageVector = if (playbackState.isRepeatOne) Icons.Rounded.RepeatOne else Icons.Rounded.Repeat,
+                        contentDescription = "Repeat",
+                        tint = if (playbackState.isRepeatOne || playbackState.isRepeatAll) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
 

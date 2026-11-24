@@ -197,5 +197,13 @@ class PlayerViewModelTest {
         assertEquals(1.0f, vm.playbackPitchRatio.value, 0.001f)
         verify { mockPlayerController.setPlaybackSemitones(0) }
     }
+
+    @Test
+    fun `shuffleQueue delegates to manageQueueUseCase`() = runTest {
+        viewModel.shuffleQueue(smartDiversity = true)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { manageQueueUseCase.shuffleQueue(smartDiversity = true) }
+    }
 }
 
