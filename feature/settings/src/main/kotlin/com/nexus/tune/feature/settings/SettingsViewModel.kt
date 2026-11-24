@@ -685,4 +685,23 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(beatCrossfadeConfig = current.beatCrossfadeConfig.copy(maxTempoBendPercent = maxBend.coerceIn(0, 15))))
     }
+
+    fun setSilenceTrimEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(silenceTrimConfig = current.silenceTrimConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setSilenceTrimMode(mode: SilenceTrimMode) {
+        val current = themeConfig.value
+        updateTheme(current.copy(silenceTrimConfig = current.silenceTrimConfig.copy(
+            mode = mode,
+            thresholdDb = mode.defaultThresholdDb,
+            minDurationMs = mode.defaultMinDurationMs
+        )))
+    }
+
+    fun setSilenceTrimThresholdDb(thresholdDb: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(silenceTrimConfig = current.silenceTrimConfig.copy(thresholdDb = thresholdDb.coerceIn(-60f, -20f))))
+    }
 }

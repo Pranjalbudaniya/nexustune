@@ -87,6 +87,10 @@ class SettingsDataStore(private val context: Context) {
         val BEAT_CROSSFADE_ENABLED = booleanPreferencesKey("beat_crossfade_enabled")
         val BEAT_CROSSFADE_MODE = stringPreferencesKey("beat_crossfade_mode")
         val BEAT_CROSSFADE_MAX_BEND = intPreferencesKey("beat_crossfade_max_bend")
+        val SILENCE_TRIM_ENABLED = booleanPreferencesKey("silence_trim_enabled")
+        val SILENCE_TRIM_MODE = stringPreferencesKey("silence_trim_mode")
+        val SILENCE_TRIM_THRESHOLD_DB = floatPreferencesKey("silence_trim_threshold_db")
+        val SILENCE_TRIM_MIN_MS = longPreferencesKey("silence_trim_min_ms")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -204,6 +208,14 @@ class SettingsDataStore(private val context: Context) {
                     BeatCrossfadeMode.valueOf(prefs[PreferencesKeys.BEAT_CROSSFADE_MODE] ?: BeatCrossfadeMode.SMART_BEAT_SYNC.name)
                 }.getOrDefault(BeatCrossfadeMode.SMART_BEAT_SYNC),
                 maxTempoBendPercent = prefs[PreferencesKeys.BEAT_CROSSFADE_MAX_BEND] ?: 6
+            ),
+            silenceTrimConfig = SilenceTrimConfig(
+                isEnabled = prefs[PreferencesKeys.SILENCE_TRIM_ENABLED] ?: false,
+                mode = runCatching {
+                    SilenceTrimMode.valueOf(prefs[PreferencesKeys.SILENCE_TRIM_MODE] ?: SilenceTrimMode.NATURAL_MUSIC.name)
+                }.getOrDefault(SilenceTrimMode.NATURAL_MUSIC),
+                thresholdDb = prefs[PreferencesKeys.SILENCE_TRIM_THRESHOLD_DB] ?: -45.0f,
+                minDurationMs = prefs[PreferencesKeys.SILENCE_TRIM_MIN_MS] ?: 1500L
             )
         )
     }
@@ -274,6 +286,10 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.BEAT_CROSSFADE_ENABLED] = config.beatCrossfadeConfig.isEnabled
             prefs[PreferencesKeys.BEAT_CROSSFADE_MODE] = config.beatCrossfadeConfig.mode.name
             prefs[PreferencesKeys.BEAT_CROSSFADE_MAX_BEND] = config.beatCrossfadeConfig.maxTempoBendPercent
+            prefs[PreferencesKeys.SILENCE_TRIM_ENABLED] = config.silenceTrimConfig.isEnabled
+            prefs[PreferencesKeys.SILENCE_TRIM_MODE] = config.silenceTrimConfig.mode.name
+            prefs[PreferencesKeys.SILENCE_TRIM_THRESHOLD_DB] = config.silenceTrimConfig.thresholdDb
+            prefs[PreferencesKeys.SILENCE_TRIM_MIN_MS] = config.silenceTrimConfig.minDurationMs
         }
     }
 
@@ -296,6 +312,15 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.BEAT_CROSSFADE_ENABLED] = config.isEnabled
             prefs[PreferencesKeys.BEAT_CROSSFADE_MODE] = config.mode.name
             prefs[PreferencesKeys.BEAT_CROSSFADE_MAX_BEND] = config.maxTempoBendPercent
+        }
+    }
+
+    suspend fun updateSilenceTrimConfig(config: SilenceTrimConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.SILENCE_TRIM_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.SILENCE_TRIM_MODE] = config.mode.name
+            prefs[PreferencesKeys.SILENCE_TRIM_THRESHOLD_DB] = config.thresholdDb
+            prefs[PreferencesKeys.SILENCE_TRIM_MIN_MS] = config.minDurationMs
         }
     }
 

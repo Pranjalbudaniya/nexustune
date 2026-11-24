@@ -2308,6 +2308,98 @@ fun SettingsScreen(
                     }
                 )
 
+                // --- Acoustic Silence & Outro Dead-Air Trimmer Studio ---
+                Spacer(modifier = Modifier.height(8.dp))
+                ListItem(
+                    headlineContent = { Text("Acoustic Silence & Dead-Air Trimmer") },
+                    supportingContent = { Text("Excise long dead air and outro silences with anti-click cosine smoothing") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.silenceTrimConfig.isEnabled,
+                            onCheckedChange = { viewModel.setSilenceTrimEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.silenceTrimConfig.isEnabled) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Trimmer Sensitivity Mode",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        SilenceTrimMode.entries.filter { it != SilenceTrimMode.OFF }.forEach { mode ->
+                            FilterChip(
+                                selected = themeConfig.silenceTrimConfig.mode == mode,
+                                onClick = { viewModel.setSilenceTrimMode(mode) },
+                                label = { Text(mode.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "RMS Silence Threshold",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "${themeConfig.silenceTrimConfig.thresholdDb.toInt()} dBFS",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.silenceTrimConfig.thresholdDb,
+                        onValueChange = { viewModel.setSilenceTrimThresholdDb(it) },
+                        valueRange = -60f..-25f,
+                        steps = 34
+                    )
+
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Text(
+                                text = themeConfig.silenceTrimConfig.mode.description,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Min Pause: ${(themeConfig.silenceTrimConfig.minDurationMs / 1000f)}s",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Anti-Click: ${themeConfig.silenceTrimConfig.smoothEnvelopeMs}ms Cos² Ramp",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                        }
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(8.dp))
 
                 ListItem(

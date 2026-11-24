@@ -5,6 +5,16 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.12.0] - 2026-11-24
+
+### Added
+- **Acoustic Silence & Outro Dead-Air Trimmer Studio (`SilenceTrimmerEngine`)**: Added `SilenceTrimMode` (`OFF`, `NATURAL_MUSIC`, `FAST_TALK`, `SMART_DYNAMIC`, `EXTENDED_OUTRO`), `SilenceTrimConfig`, and `SilenceDetectionResult` in `:core:model`.
+- **RMS Frame Energy Detection & Anti-Click Cosine-Squared Transient DSP**: Implemented `SilenceTrimmerEngine` in `:core:domain:audio` evaluating real-time root-mean-square amplitude in dBFS, discriminating true silence from quiet musical decay, smoothing excision boundaries with 15ms cosine-squared micro-envelope ramps ($w = \sin^2$), and tracking cumulative listening time savings.
+- **DataStore Persistence**: Added `SILENCE_TRIM_ENABLED`, `SILENCE_TRIM_MODE`, `SILENCE_TRIM_THRESHOLD_DB`, and `SILENCE_TRIM_MIN_MS` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Silence Trimmer Studio**: Added interactive "Acoustic Silence & Dead-Air Trimmer" studio card in `SettingsScreen` with sensitivity mode chips, RMS threshold slider (-60 to -25 dBFS), and real-time anti-click transient indicator.
+- **Unit Test Coverage**: Comprehensive test suites in `SilenceTrimmerEngineTest` in `:core:domain` and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.11.0] - 2026-11-24
 
 ### Added

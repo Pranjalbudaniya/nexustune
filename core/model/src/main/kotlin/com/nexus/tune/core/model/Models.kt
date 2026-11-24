@@ -227,7 +227,8 @@ data class ThemeConfig(
     val sleepDriftProfile: SleepDriftProfile = SleepDriftProfile.OFF,
     val ditherMode: DitherMode = DitherMode.TRIANGULAR_TPDF,
     val dynamicLoudnessConfig: DynamicLoudnessConfig = DynamicLoudnessConfig(),
-    val beatCrossfadeConfig: BeatCrossfadeConfig = BeatCrossfadeConfig()
+    val beatCrossfadeConfig: BeatCrossfadeConfig = BeatCrossfadeConfig(),
+    val silenceTrimConfig: SilenceTrimConfig = SilenceTrimConfig()
 )
 
 data class SoundDoseInfo(
@@ -875,6 +876,30 @@ data class BeatTransitionPlan(
     val requiresTempoBend: Boolean,
     val effectiveRampBpm: Int
 )
+
+enum class SilenceTrimMode(val displayName: String, val description: String, val defaultThresholdDb: Float, val defaultMinDurationMs: Long) {
+    OFF("Off (Passthrough)", "Preserve all silence and pauses unchanged", -60.0f, 2000L),
+    NATURAL_MUSIC("Natural Music", "Preserves musical pauses up to 1.5s; removes dead air at boundaries", -45.0f, 1500L),
+    FAST_TALK("Fast Talk & Podcast", "Aggressively trims silences >350ms for concise speech listening", -36.0f, 350L),
+    SMART_DYNAMIC("Smart Adaptive", "Dynamically adjusts threshold based on track background floor", -42.0f, 600L),
+    EXTENDED_OUTRO("Outro & Dead-Air", "Exclusively cuts long dead air and hidden track gaps >2s", -50.0f, 2000L)
+}
+
+data class SilenceTrimConfig(
+    val isEnabled: Boolean = false,
+    val mode: SilenceTrimMode = SilenceTrimMode.NATURAL_MUSIC,
+    val thresholdDb: Float = -45.0f,
+    val minDurationMs: Long = 1500L,
+    val smoothEnvelopeMs: Int = 15
+)
+
+data class SilenceDetectionResult(
+    val isSilent: Boolean,
+    val rmsDb: Float,
+    val silenceDurationMs: Long,
+    val shouldSkip: Boolean
+)
+
 
 
 

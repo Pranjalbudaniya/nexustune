@@ -876,4 +876,25 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.beatCrossfadeConfig.maxTempoBendPercent == 8 })
         }
     }
+
+    @Test
+    fun `silence trim settings update theme config`() = runTest {
+        viewModel.setSilenceTrimEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.silenceTrimConfig.isEnabled })
+        }
+
+        viewModel.setSilenceTrimMode(SilenceTrimMode.FAST_TALK)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.silenceTrimConfig.mode == SilenceTrimMode.FAST_TALK })
+        }
+
+        viewModel.setSilenceTrimThresholdDb(-38.0f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.silenceTrimConfig.thresholdDb == -38.0f })
+        }
+    }
 }
