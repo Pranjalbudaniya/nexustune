@@ -75,6 +75,7 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             app.playerController.playbackState.collect {
                 com.nexus.tune.widget.NexusTuneWidgetProvider.notifyPlaybackChanged(this@MainActivity)
+                com.nexus.tune.widget.NexusTuneQueueWidgetProvider.notifyPlaybackChanged(this@MainActivity)
             }
         }
 

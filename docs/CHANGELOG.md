@@ -5,6 +5,12 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.0] - 2026-11-24
+
+### Added
+- **Expanded 4x2 Interactive Queue Home Screen Widget**: Added `NexusTuneQueueWidgetProvider` presenting active track playback controls (Prev, Play/Pause, Next) alongside an up-next queue preview directly on Android home screen.
+- **Dynamic Queue Broadcast Architecture**: Synchronized widget state updates with `MainActivity` and `PlayerController` reactive playback state flows.
+
 ## [3.2.0] - 2026-11-24
 
 ### Added

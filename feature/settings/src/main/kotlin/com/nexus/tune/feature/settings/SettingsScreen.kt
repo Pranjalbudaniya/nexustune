@@ -809,8 +809,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v3.2.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Listening Habit Insights & Genre Distribution Analytics") }
+                    headlineContent = { Text("NexusTune v3.3.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Expanded 4x2 Interactive Queue Home Screen Widget") }
                 )
             }
         }

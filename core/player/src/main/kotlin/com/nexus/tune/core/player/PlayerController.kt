@@ -208,6 +208,16 @@ class PlayerController(private val context: Context) {
         updateState()
     }
 
+    fun seekToNext() {
+        controller?.seekToNextMediaItem()
+        updateState()
+    }
+
+    fun seekToPrevious() {
+        controller?.seekToPreviousMediaItem()
+        updateState()
+    }
+
     fun setPlaybackSpeed(speed: Float) {
         val c = controller ?: return
         val currentPitch = c.playbackParameters.pitch

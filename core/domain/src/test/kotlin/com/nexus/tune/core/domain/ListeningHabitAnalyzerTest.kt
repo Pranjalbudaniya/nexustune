@@ -39,3 +39,4 @@ class ListeningHabitAnalyzerTest {
         assertTrue(genres.isEmpty())
     }
 }
+
