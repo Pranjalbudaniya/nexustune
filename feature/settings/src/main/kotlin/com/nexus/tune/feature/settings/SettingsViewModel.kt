@@ -460,6 +460,33 @@ class SettingsViewModel(
         }
     }
 
+    val customEqProfiles: StateFlow<List<CustomEqProfile>> = settingsRepository.getCustomEqProfiles()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    val closestPresetMatch: StateFlow<Pair<EqualizerPreset, Int>> = themeConfig.map { config ->
+        com.nexus.tune.core.domain.audio.EqCurveCalculator.findClosestPreset(config.customEqBands)
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, EqualizerPreset.FLAT to 100)
+
+    fun saveCustomEqProfile(name: String, bands: List<Int>) {
+        if (name.isBlank()) return
+        val profile = CustomEqProfile(name = name.trim(), bands = bands)
+        viewModelScope.launch {
+            settingsRepository.saveCustomEqProfile(profile)
+        }
+    }
+
+    fun deleteCustomEqProfile(profileId: String) {
+        viewModelScope.launch {
+            settingsRepository.deleteCustomEqProfile(profileId)
+        }
+    }
+
+    fun applyCustomEqProfile(profile: CustomEqProfile) {
+        _equalizerPreset.value = EqualizerPreset.CUSTOM
+        updateTheme(themeConfig.value.copy(customEqBands = profile.bands))
+        NexusAudioEffects.instance.setCustomBands(profile.bands)
+    }
+
     fun toggleEqualizer(enabled: Boolean) {
         _equalizerEnabled.value = enabled
         NexusAudioEffects.instance.setEqualizerEnabled(enabled)

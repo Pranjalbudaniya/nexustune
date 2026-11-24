@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 44 (v5.4.0 Listening Milestones, Daily Streaks & Time-Capsule Recap Engine)
+- Active Phase: Post-v1.0 Improvement Loop 45 (v5.5.0 Custom User EQ Presets & Bézier Frequency Curve Engine)
 - In Flight: Final release qualification gate and git tagging
 - Branches: `main`
 
@@ -392,6 +392,17 @@
     - [x] Unit test suites in `MilestoneCalculatorTest` and `SettingsViewModelTest`
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v5.4-1`
+
+- [x] Improvement Loop 45 (v5.5 Milestone - Tagged `v5.5-1`)
+  - [x] Custom User EQ Presets & Bézier Frequency Curve Engine:
+    - [x] `CustomEqProfile` domain model in `:core:model`
+    - [x] `EqCurveCalculator` in `:core:domain:audio` with cubic Bézier curve calculation and Euclidean preset matching
+    - [x] `EqCurveVisualizer` in `:core:ui` with gradient fills, grid guidelines, and interactive frequency nodes
+    - [x] Serialized profile persistence in `SettingsDataStore` and `SettingsRepositoryImpl`
+    - [x] Interactive preset selector, closest match indicator, and preset creation dialog in `SettingsScreen`
+    - [x] Comprehensive test suites in `EqCurveCalculatorTest` and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v5.5-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

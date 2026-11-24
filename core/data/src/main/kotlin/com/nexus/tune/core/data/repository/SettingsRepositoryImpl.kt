@@ -4,6 +4,8 @@ import com.nexus.tune.core.datastore.SettingsDataStore
 import com.nexus.tune.core.domain.repository.SettingsRepository
 import com.nexus.tune.core.model.ThemeConfig
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 class SettingsRepositoryImpl(
     private val dataStore: SettingsDataStore
@@ -43,6 +45,26 @@ class SettingsRepositoryImpl(
 
     override suspend fun recordActiveDay(epochDay: Long) {
         dataStore.recordActiveDay(epochDay)
+    }
+
+    override fun getCustomEqProfiles(): Flow<List<com.nexus.tune.core.model.CustomEqProfile>> =
+        dataStore.customEqProfilesRaw.map { raw ->
+            com.nexus.tune.core.domain.audio.EqCurveCalculator.deserializeProfilesList(raw)
+        }
+
+    override suspend fun saveCustomEqProfile(profile: com.nexus.tune.core.model.CustomEqProfile) {
+        val raw = dataStore.customEqProfilesRaw.first()
+        val existing = com.nexus.tune.core.domain.audio.EqCurveCalculator.deserializeProfilesList(raw)
+            .filter { it.id != profile.id }
+        val updated = listOf(profile) + existing
+        dataStore.saveCustomEqProfilesRaw(com.nexus.tune.core.domain.audio.EqCurveCalculator.serializeProfilesList(updated))
+    }
+
+    override suspend fun deleteCustomEqProfile(profileId: String) {
+        val raw = dataStore.customEqProfilesRaw.first()
+        val existing = com.nexus.tune.core.domain.audio.EqCurveCalculator.deserializeProfilesList(raw)
+            .filter { it.id != profileId }
+        dataStore.saveCustomEqProfilesRaw(com.nexus.tune.core.domain.audio.EqCurveCalculator.serializeProfilesList(existing))
     }
 }
 

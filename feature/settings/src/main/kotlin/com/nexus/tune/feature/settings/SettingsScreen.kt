@@ -1,5 +1,6 @@
 package com.nexus.tune.feature.settings
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.nexus.tune.core.model.*
+import com.nexus.tune.core.ui.EqCurveVisualizer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,6 +37,10 @@ fun SettingsScreen(
     val listeningStreak by viewModel.listeningStreak.collectAsState()
     val milestones by viewModel.milestones.collectAsState()
     val timeCapsuleRecap by viewModel.timeCapsuleRecap.collectAsState()
+    val customEqProfiles by viewModel.customEqProfiles.collectAsState()
+    val closestPresetMatch by viewModel.closestPresetMatch.collectAsState()
+    var showSaveProfileDialog by remember { mutableStateOf(false) }
+    var newProfileName by remember { mutableStateOf("") }
 
     Scaffold(
         modifier = modifier,
@@ -210,11 +216,77 @@ fun SettingsScreen(
                                 Text(
                                     text = "5-Band Frequency Tuning",
                                     style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary
                                 )
-                                TextButton(onClick = { viewModel.resetCustomEqBands() }) {
-                                    Text("Reset Flat")
+                                Text(
+                                    text = "${closestPresetMatch.first.name} (${closestPresetMatch.second}%)",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+
+                            // Interactive Bézier Frequency Curve
+                            EqCurveVisualizer(
+                                bands = themeConfig.customEqBands,
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = com.nexus.tune.core.domain.audio.EqCurveCalculator.formatBandsSummary(themeConfig.customEqBands),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Row {
+                                    TextButton(onClick = { showSaveProfileDialog = true }) {
+                                        Text("Save Curve")
+                                    }
+                                    TextButton(onClick = { viewModel.resetCustomEqBands() }) {
+                                        Text("Reset Flat")
+                                    }
                                 }
+                            }
+
+                            // Custom Saved Profiles Row
+                            if (customEqProfiles.isNotEmpty()) {
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    text = "Custom Profiles",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Medium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .horizontalScroll(rememberScrollState()),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    customEqProfiles.forEach { profile ->
+                                        InputChip(
+                                            selected = themeConfig.customEqBands == profile.bands,
+                                            onClick = { viewModel.applyCustomEqProfile(profile) },
+                                            label = { Text(profile.name, style = MaterialTheme.typography.labelSmall) },
+                                            trailingIcon = {
+                                                Icon(
+                                                    Icons.Rounded.Close,
+                                                    contentDescription = "Delete profile",
+                                                    modifier = Modifier
+                                                        .size(14.dp)
+                                                        .clickable { viewModel.deleteCustomEqProfile(profile.id) }
+                                                )
+                                            }
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
                             }
 
                             val bandFrequencies = listOf("60 Hz", "230 Hz", "910 Hz", "3.6 kHz", "14 kHz")
@@ -1795,6 +1867,49 @@ fun SettingsScreen(
                     supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Smart Playlist & Queue Deduplication Engine") }
                 )
             }
+        }
+
+        if (showSaveProfileDialog) {
+            AlertDialog(
+                onDismissRequest = { showSaveProfileDialog = false },
+                title = { Text("Save Custom EQ Profile") },
+                text = {
+                    Column {
+                        Text(
+                            text = "Current Bands: ${com.nexus.tune.core.domain.audio.EqCurveCalculator.formatBandsSummary(themeConfig.customEqBands)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedTextField(
+                            value = newProfileName,
+                            onValueChange = { newProfileName = it },
+                            label = { Text("Profile Name") },
+                            placeholder = { Text("e.g. Sony WH-1000XM5, Car Bass") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            if (newProfileName.isNotBlank()) {
+                                viewModel.saveCustomEqProfile(newProfileName, themeConfig.customEqBands)
+                                newProfileName = ""
+                            }
+                            showSaveProfileDialog = false
+                        }
+                    ) {
+                        Text("Save")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showSaveProfileDialog = false }) {
+                        Text("Cancel")
+                    }
+                }
+            )
         }
     }
 }

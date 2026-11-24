@@ -65,6 +65,9 @@ interface SettingsRepository {
     suspend fun setEqualizerPreset(preset: Int)
     fun getListeningStreak(): Flow<ListeningStreak> = kotlinx.coroutines.flow.flowOf(ListeningStreak())
     suspend fun recordActiveDay(epochDay: Long) {}
+    fun getCustomEqProfiles(): Flow<List<com.nexus.tune.core.model.CustomEqProfile>> = kotlinx.coroutines.flow.flowOf(emptyList())
+    suspend fun saveCustomEqProfile(profile: com.nexus.tune.core.model.CustomEqProfile) {}
+    suspend fun deleteCustomEqProfile(profileId: String) {}
 }
 
 

@@ -109,3 +109,4 @@ class MilestoneCalculatorTest {
         assertEquals(5, recap.streakDays)
     }
 }
+

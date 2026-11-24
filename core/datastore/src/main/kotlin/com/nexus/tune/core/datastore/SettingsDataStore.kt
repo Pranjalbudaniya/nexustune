@@ -55,6 +55,7 @@ class SettingsDataStore(private val context: Context) {
         val STREAK_CURRENT_DAYS = intPreferencesKey("streak_current_days")
         val STREAK_LONGEST_DAYS = intPreferencesKey("streak_longest_days")
         val STREAK_LAST_ACTIVE_EPOCH_DAY = longPreferencesKey("streak_last_active_epoch_day")
+        val CUSTOM_EQ_PROFILES = stringPreferencesKey("custom_eq_profiles_serialized")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -245,6 +246,16 @@ class SettingsDataStore(private val context: Context) {
     suspend fun clearRecentSearches() {
         context.dataStore.edit { prefs ->
             prefs.remove(PreferencesKeys.RECENT_SEARCHES)
+        }
+    }
+
+    val customEqProfilesRaw: Flow<String> = context.dataStore.data.map { prefs ->
+        prefs[PreferencesKeys.CUSTOM_EQ_PROFILES] ?: ""
+    }
+
+    suspend fun saveCustomEqProfilesRaw(raw: String) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.CUSTOM_EQ_PROFILES] = raw
         }
     }
 }

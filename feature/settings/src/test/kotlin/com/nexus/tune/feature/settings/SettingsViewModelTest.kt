@@ -645,4 +645,35 @@ class SettingsViewModelTest {
         assertEquals(42, vm.timeCapsuleRecap.value.totalPlays)
         assertEquals(5, vm.timeCapsuleRecap.value.streakDays)
     }
+
+    @Test
+    fun `saveCustomEqProfile and deleteCustomEqProfile delegate to repository`() = runTest {
+        viewModel.saveCustomEqProfile("My Sony XM5", listOf(300, 200, 0, 100, 400))
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.saveCustomEqProfile(match {
+                it.name == "My Sony XM5" && it.bands == listOf(300, 200, 0, 100, 400)
+            })
+        }
+
+        viewModel.deleteCustomEqProfile("test-id-123")
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.deleteCustomEqProfile("test-id-123")
+        }
+    }
+
+    @Test
+    fun `applyCustomEqProfile updates themeConfig customEqBands and preset`() = runTest {
+        val profile = CustomEqProfile(id = "p1", name = "Warm Bass", bands = listOf(500, 300, 0, 0, 200))
+        viewModel.applyCustomEqProfile(profile)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match {
+                it.customEqBands == listOf(500, 300, 0, 0, 200)
+            })
+        }
+        assertEquals(EqualizerPreset.CUSTOM, viewModel.equalizerPreset.value)
+    }
 }

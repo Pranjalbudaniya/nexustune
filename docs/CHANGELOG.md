@@ -5,6 +5,16 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.5.0] - 2026-11-24
+
+### Added
+- **Custom User Equalizer Presets & Bézier Frequency Curve Engine**: Added `CustomEqProfile` domain model to `:core:model` allowing users to save, manage, and switch custom 5-band parametric equalizer profiles.
+- **Bézier Frequency Curve & Distance Engine**: Implemented `EqCurveCalculator` in `:core:domain:audio` with smooth cubic Bézier spline coordinate generation, Euclidean distance signature matching against standard presets (`Bass Boost`, `Vocal`, `Rock`, `Electronic`, `Treble Boost`, `Flat`), and human-readable dB band summaries.
+- **Interactive Equalizer Curve Visualizer**: Created `EqCurveVisualizer` in `:core:ui` rendering dynamic frequency response curves, vertical gradient energy fills, interactive frequency band control nodes, and dB grid guidelines.
+- **Custom Profile Management Console in Settings**: Integrated custom profiles list, closest signature match badge, custom profile selector chips, deletion controls, and a "Save Custom EQ Profile" creation dialog into `SettingsScreen`.
+- **Persistent DataStore Storage**: Persisted custom EQ profiles in `SettingsDataStore` with JSON serialization handled seamlessly through `SettingsRepositoryImpl`.
+- **Comprehensive Unit Tests**: Created `EqCurveCalculatorTest` in `:core:domain` and expanded `SettingsViewModelTest` in `:feature:settings`.
+
 ## [5.4.0] - 2026-11-24
 
 ### Added

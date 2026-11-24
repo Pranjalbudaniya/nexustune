@@ -246,6 +246,13 @@ enum class EqualizerPreset {
     FLAT, BASS_BOOST, TREBLE_BOOST, VOCAL, ELECTRONIC, ROCK, CLASSICAL, JAZZ, HIP_HOP, ACOUSTIC, CUSTOM
 }
 
+data class CustomEqProfile(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val name: String,
+    val bands: List<Int> = listOf(0, 0, 0, 0, 0),
+    val createdAtTimestamp: Long = System.currentTimeMillis()
+)
+
 data class GenreShare(
     val genre: String,
     val playCount: Int,
