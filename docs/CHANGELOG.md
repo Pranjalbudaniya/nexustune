@@ -5,6 +5,16 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.8.0] - 2026-11-24
+
+### Added
+- **Dynamic Sleep Drift & Psychoacoustic Bedtime Induction Engine (`SleepDriftEngine`)**: Added `SleepDriftProfile` (`OFF`, `WARM_MELLOW`, `DEEP_DRIFT`, `BINAURAL_THETA`, `BINAURAL_DELTA`) and `SleepDriftConfig` in `:core:model`.
+- **Acoustic Frequency Roll-Off & Tempo Deceleration DSP**: Implemented `SleepDriftEngine` in `:core:domain:audio` with progressive high-frequency roll-off (-4dB to -12dB across 3.6kHz and 14kHz) to suppress cortical vigilance, gradual micro-tempo deceleration (1.0x to 0.90x across the final half of extended sessions), and Theta (6Hz) / Delta (3Hz) binaural carrier frequency calculations.
+- **Sleep Timer Engine & Dynamic Audio Effects Layering**: Integrated sleep drift into `SleepTimerManager` with live progress evaluation, dynamic `applySleepDriftOffsets` in `NexusAudioEffects` maintaining user EQ isolation, and playback speed restoration upon completion or cancellation.
+- **DataStore Persistence**: Added `SLEEP_DRIFT_PROFILE` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Sleep Drift Studio**: Added interactive "Acoustic Sleep Drift & Induction Profile" chip carousel in `SettingsScreen` with real-time profile descriptions.
+- **Unit Test Coverage**: Comprehensive test suites in `SleepDriftEngineTest` in `:core:domain`, `SleepTimerManagerTest` and `NexusAudioEffectsTest` in `:core:player`, and `SettingsViewModelTest` in `:feature:settings`.
+
 ## [6.7.0] - 2026-11-24
 
 ### Added

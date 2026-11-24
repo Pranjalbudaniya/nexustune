@@ -91,5 +91,15 @@ class NexusAudioEffectsTest {
         audioEffects.setVirtualizerStrength(650.toShort())
         audioEffects.setVirtualizerStrength(0.toShort())
     }
+
+    @Test
+    fun `sleep drift frequency roll off offsets can be applied and cleared`() {
+        val rollOff = listOf(0, 0, -200, -600, -1200)
+        audioEffects.applySleepDriftOffsets(rollOff)
+        assertEquals(rollOff, audioEffects.getSleepDriftOffsets())
+
+        audioEffects.clearSleepDriftOffsets()
+        assertEquals(listOf(0, 0, 0, 0, 0), audioEffects.getSleepDriftOffsets())
+    }
 }
 

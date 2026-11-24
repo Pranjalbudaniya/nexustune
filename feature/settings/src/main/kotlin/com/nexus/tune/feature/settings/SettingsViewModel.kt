@@ -143,6 +143,7 @@ class SettingsViewModel(
                     val strength = com.nexus.tune.core.domain.audio.StereoWidenerEngine.mapWidthToVirtualizerStrength(config.stereoWidthConfig.customWidthPercent)
                     NexusAudioEffects.instance.setVirtualizerStrength(strength)
                 }
+                sleepTimerManager?.setSleepDriftProfile(config.sleepDriftProfile)
             }
         }
     }
@@ -634,5 +635,10 @@ class SettingsViewModel(
             midLevelDb = midDb.coerceIn(-12f, 6f),
             sideLevelDb = sideDb.coerceIn(-12f, 6f)
         )))
+    }
+
+    fun setSleepDriftProfile(profile: SleepDriftProfile) {
+        updateTheme(themeConfig.value.copy(sleepDriftProfile = profile))
+        sleepTimerManager?.setSleepDriftProfile(profile)
     }
 }

@@ -811,4 +811,17 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.stereoWidthConfig.midLevelDb == 2.0f && it.stereoWidthConfig.sideLevelDb == -4.0f })
         }
     }
+
+    @Test
+    fun `setSleepDriftProfile updates theme and delegates to sleepTimerManager`() = runTest {
+        viewModel.setSleepDriftProfile(SleepDriftProfile.WARM_MELLOW)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.sleepDriftProfile == SleepDriftProfile.WARM_MELLOW })
+        }
+        verify {
+            sleepTimerManager.setSleepDriftProfile(SleepDriftProfile.WARM_MELLOW)
+        }
+    }
 }

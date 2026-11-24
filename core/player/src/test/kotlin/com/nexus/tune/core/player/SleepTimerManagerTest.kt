@@ -144,4 +144,22 @@ class SleepTimerManagerTest {
         assertEquals(0.4f, state.handoffVolume, 0.001f)
         assertEquals(90, state.handoffDurationMinutes)
     }
+
+    @Test
+    fun `setSleepDriftProfile updates drift profile and advances drift progress during session`() = runTest {
+        val sleepTimerManager = SleepTimerManager(playerController, this)
+        assertEquals(com.nexus.tune.core.model.SleepDriftProfile.OFF, sleepTimerManager.timerState.value.driftProfile)
+
+        sleepTimerManager.setSleepDriftProfile(com.nexus.tune.core.model.SleepDriftProfile.DEEP_DRIFT)
+        assertEquals(com.nexus.tune.core.model.SleepDriftProfile.DEEP_DRIFT, sleepTimerManager.timerState.value.driftProfile)
+
+        sleepTimerManager.startTimer(1) // 60 seconds
+        advanceTimeBy(30_000L) // 30 seconds elapsed -> 50% drift progress
+
+        val midState = sleepTimerManager.timerState.value
+        assertTrue(midState.driftProgress >= 0.45f)
+
+        sleepTimerManager.cancelTimer()
+        assertEquals(0f, sleepTimerManager.timerState.value.driftProgress)
+    }
 }

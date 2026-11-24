@@ -21,6 +21,7 @@ class NexusAudioEffects {
     private var customBandLevels: IntArray = IntArray(5) { 0 }
     private var karaokeOffsets: List<Int> = List(5) { 0 }
     private var headphoneOffsets: List<Int> = List(5) { 0 }
+    private var sleepDriftOffsets: List<Int> = List(5) { 0 }
 
     fun attachToAudioSession(sessionId: Int) {
         if (sessionId == 0 || sessionId == currentSessionId) return
@@ -199,7 +200,8 @@ class NexusAudioEffects {
             if (band in 0 until eq.numberOfBands.toInt()) {
                 val kOffset = karaokeOffsets.getOrElse(band) { 0 }
                 val hOffset = headphoneOffsets.getOrElse(band) { 0 }
-                val combined = (clamped + kOffset + hOffset).coerceIn(-1500, 1500)
+                val sOffset = sleepDriftOffsets.getOrElse(band) { 0 }
+                val combined = (clamped + kOffset + hOffset + sOffset).coerceIn(-1500, 1500)
                 eq.setBandLevel(band.toShort(), combined.toShort())
             }
         } catch (e: Exception) {
@@ -231,6 +233,18 @@ class NexusAudioEffects {
 
     fun getHeadphoneOffsets(): List<Int> = headphoneOffsets
 
+    fun applySleepDriftOffsets(offsets: List<Int>) {
+        sleepDriftOffsets = offsets
+        refreshBands()
+    }
+
+    fun clearSleepDriftOffsets() {
+        sleepDriftOffsets = List(5) { 0 }
+        refreshBands()
+    }
+
+    fun getSleepDriftOffsets(): List<Int> = sleepDriftOffsets
+
     fun setBassBoostStrength(strength: Short) {
         try {
             bassBoost?.setStrength(strength)
@@ -247,7 +261,8 @@ class NexusAudioEffects {
                 val base = customBandLevels.getOrElse(i) { 0 }
                 val kOffset = karaokeOffsets.getOrElse(i) { 0 }
                 val hOffset = headphoneOffsets.getOrElse(i) { 0 }
-                val combined = (base + kOffset + hOffset).coerceIn(-1500, 1500)
+                val sOffset = sleepDriftOffsets.getOrElse(i) { 0 }
+                val combined = (base + kOffset + hOffset + sOffset).coerceIn(-1500, 1500)
                 eq.setBandLevel(i.toShort(), combined.toShort())
             }
         } catch (e: Exception) {

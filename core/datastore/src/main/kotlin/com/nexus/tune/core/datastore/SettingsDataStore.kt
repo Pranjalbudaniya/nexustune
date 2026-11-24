@@ -79,6 +79,7 @@ class SettingsDataStore(private val context: Context) {
         val STEREO_HAAS_DELAY_MS = floatPreferencesKey("stereo_haas_delay_ms")
         val STEREO_MID_LEVEL_DB = floatPreferencesKey("stereo_mid_level_db")
         val STEREO_SIDE_LEVEL_DB = floatPreferencesKey("stereo_side_level_db")
+        val SLEEP_DRIFT_PROFILE = stringPreferencesKey("sleep_drift_profile")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -176,7 +177,10 @@ class SettingsDataStore(private val context: Context) {
                 haasDelayMs = prefs[PreferencesKeys.STEREO_HAAS_DELAY_MS] ?: 0.0f,
                 midLevelDb = prefs[PreferencesKeys.STEREO_MID_LEVEL_DB] ?: 0.0f,
                 sideLevelDb = prefs[PreferencesKeys.STEREO_SIDE_LEVEL_DB] ?: 0.0f
-            )
+            ),
+            sleepDriftProfile = runCatching {
+                SleepDriftProfile.valueOf(prefs[PreferencesKeys.SLEEP_DRIFT_PROFILE] ?: SleepDriftProfile.OFF.name)
+            }.getOrDefault(SleepDriftProfile.OFF)
         )
     }
 
@@ -238,6 +242,7 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.STEREO_HAAS_DELAY_MS] = config.stereoWidthConfig.haasDelayMs
             prefs[PreferencesKeys.STEREO_MID_LEVEL_DB] = config.stereoWidthConfig.midLevelDb
             prefs[PreferencesKeys.STEREO_SIDE_LEVEL_DB] = config.stereoWidthConfig.sideLevelDb
+            prefs[PreferencesKeys.SLEEP_DRIFT_PROFILE] = config.sleepDriftProfile.name
         }
     }
 

@@ -1144,6 +1144,43 @@ fun SettingsScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+                Text(
+                    text = "Acoustic Sleep Drift & Induction Profile",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+                Text(
+                    text = "Progressively rolls off stimulating high frequencies and decelerates tempo during the session",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    SleepDriftProfile.entries.forEach { profile ->
+                        FilterChip(
+                            selected = themeConfig.sleepDriftProfile == profile,
+                            onClick = { viewModel.setSleepDriftProfile(profile) },
+                            label = { Text(profile.displayName) }
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = themeConfig.sleepDriftProfile.description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 ListItem(
                     headlineContent = { Text("Bedtime Sound Handoff") },
                     supportingContent = { Text("Transition to ambient soundscapes when music timer expires") },

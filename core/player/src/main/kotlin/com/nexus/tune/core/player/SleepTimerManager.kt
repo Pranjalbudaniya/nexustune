@@ -19,7 +19,9 @@ data class SleepTimerState(
     val bedtimeHandoffEnabled: Boolean = false,
     val handoffSoundType: com.nexus.tune.core.model.AmbientSoundType = com.nexus.tune.core.model.AmbientSoundType.BROWN_NOISE,
     val handoffVolume: Float = 0.3f,
-    val handoffDurationMinutes: Int = 60
+    val handoffDurationMinutes: Int = 60,
+    val driftProfile: com.nexus.tune.core.model.SleepDriftProfile = com.nexus.tune.core.model.SleepDriftProfile.OFF,
+    val driftProgress: Float = 0f
 )
 
 class SleepTimerManager(
@@ -33,6 +35,15 @@ class SleepTimerManager(
     private var timerJob: Job? = null
     private var fadeSeconds: Int = 30
     private var shakeListenerRegistered = false
+    private var initialDurationSeconds: Long = 0L
+
+    fun setSleepDriftProfile(profile: com.nexus.tune.core.model.SleepDriftProfile) {
+        _timerState.value = _timerState.value.copy(driftProfile = profile)
+        if (profile == com.nexus.tune.core.model.SleepDriftProfile.OFF) {
+            com.nexus.tune.core.player.effects.NexusAudioEffects.instance.clearSleepDriftOffsets()
+            playerController.setPlaybackSpeed(1.0f)
+        }
+    }
 
     private val accelerometerListener = object : android.hardware.SensorEventListener {
         private var lastShakeTimestamp = 0L
@@ -105,12 +116,14 @@ class SleepTimerManager(
         }
 
         val totalSeconds = minutes * 60L
+        initialDurationSeconds = totalSeconds
         _timerState.value = _timerState.value.copy(
             isActive = true,
             remainingSeconds = totalSeconds,
             isEndOfTrack = false,
             isFadingOut = false,
-            fadeVolumeMultiplier = 1.0f
+            fadeVolumeMultiplier = 1.0f,
+            driftProgress = 0f
         )
 
         if (_timerState.value.shakeToExtendEnabled) {
@@ -136,10 +149,23 @@ class SleepTimerManager(
                     playerController.setVolume(multiplier)
                 }
 
+                val elapsed = (initialDurationSeconds - remaining).coerceAtLeast(0L)
+                val driftProg = com.nexus.tune.core.domain.audio.SleepDriftEngine.calculateDriftProgress(elapsed, initialDurationSeconds)
+                val driftProfile = _timerState.value.driftProfile
+                if (driftProfile != com.nexus.tune.core.model.SleepDriftProfile.OFF) {
+                    val rollOff = com.nexus.tune.core.domain.audio.SleepDriftEngine.calculateEqRollOffBands(driftProfile, driftProg)
+                    com.nexus.tune.core.player.effects.NexusAudioEffects.instance.applySleepDriftOffsets(rollOff)
+                    val speed = com.nexus.tune.core.domain.audio.SleepDriftEngine.calculateDriftSpeed(driftProfile, driftProg)
+                    if (speed < 1.0f) {
+                        playerController.setPlaybackSpeed(speed)
+                    }
+                }
+
                 _timerState.value = _timerState.value.copy(
                     remainingSeconds = remaining,
                     isFadingOut = isFading,
-                    fadeVolumeMultiplier = multiplier
+                    fadeVolumeMultiplier = multiplier,
+                    driftProgress = driftProg
                 )
             }
             if (isActive) {
@@ -168,12 +194,17 @@ class SleepTimerManager(
         timerJob?.cancel()
         timerJob = null
         playerController.setVolume(1.0f)
+        com.nexus.tune.core.player.effects.NexusAudioEffects.instance.clearSleepDriftOffsets()
+        if (_timerState.value.driftProfile != com.nexus.tune.core.model.SleepDriftProfile.OFF) {
+            playerController.setPlaybackSpeed(1.0f)
+        }
         _timerState.value = _timerState.value.copy(
             isActive = false,
             remainingSeconds = 0L,
             isEndOfTrack = false,
             isFadingOut = false,
-            fadeVolumeMultiplier = 1.0f
+            fadeVolumeMultiplier = 1.0f,
+            driftProgress = 0f
         )
     }
 
@@ -181,6 +212,10 @@ class SleepTimerManager(
         unregisterShakeListener()
         playerController.togglePlayPause()
         playerController.setVolume(1.0f)
+        com.nexus.tune.core.player.effects.NexusAudioEffects.instance.clearSleepDriftOffsets()
+        if (_timerState.value.driftProfile != com.nexus.tune.core.model.SleepDriftProfile.OFF) {
+            playerController.setPlaybackSpeed(1.0f)
+        }
         val state = _timerState.value
         if (state.bedtimeHandoffEnabled && state.handoffSoundType != com.nexus.tune.core.model.AmbientSoundType.OFF) {
             runCatching {

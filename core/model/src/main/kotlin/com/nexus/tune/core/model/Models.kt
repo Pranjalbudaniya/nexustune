@@ -223,7 +223,8 @@ data class ThemeConfig(
     val visualizerPalette: VisualizerPalette = VisualizerPalette.DYNAMIC,
     val autoStashConfig: AutoStashConfig = AutoStashConfig(),
     val headphoneCorrectionConfig: HeadphoneCorrectionConfig = HeadphoneCorrectionConfig(),
-    val stereoWidthConfig: StereoWidthConfig = StereoWidthConfig()
+    val stereoWidthConfig: StereoWidthConfig = StereoWidthConfig(),
+    val sleepDriftProfile: SleepDriftProfile = SleepDriftProfile.OFF
 )
 
 data class SoundDoseInfo(
@@ -785,6 +786,21 @@ data class ChapterProgress(
     val elapsedFormatted: String = "00:00",
     val remainingFormatted: String = "00:00"
 )
+
+enum class SleepDriftProfile(val displayName: String, val description: String) {
+    OFF("Off (Standard)", "Standard volume fade without frequency or tempo modulation"),
+    WARM_MELLOW("Warm Mellow", "Progressive high-frequency roll-off (-8dB) for a cozy, non-stimulating tone"),
+    DEEP_DRIFT("Deep Drift", "Deep high-cut filter (-12dB) with subtle 10% tempo deceleration"),
+    BINAURAL_THETA("Theta Binaural", "Warm acoustics with 6Hz Theta frequency differential for dream induction"),
+    BINAURAL_DELTA("Delta Binaural", "Deep acoustic roll-off with 3Hz Delta wave differential for deep restorative sleep")
+}
+
+data class SleepDriftConfig(
+    val profile: SleepDriftProfile = SleepDriftProfile.OFF,
+    val tempoDecelerationEnabled: Boolean = true,
+    val maxHighCutDbmB: Int = -1000
+)
+
 
 
 

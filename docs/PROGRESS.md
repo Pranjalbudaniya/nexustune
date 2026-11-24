@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 57 (v6.7.0 Intelligent Audio Track Chapters & DJ Cue Navigation Studio)
+- Active Phase: Post-v1.0 Improvement Loop 58 (v6.8.0 Dynamic Sleep Drift & Psychoacoustic Bedtime Induction Engine)
 - In Flight: Quality gate execution and release qualification
 - Branches: `main`
 
@@ -532,6 +532,18 @@
     - [x] Comprehensive test suites in `TrackChapterParserTest` and `PlayerViewModelTest`
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.7-1`
+
+- [x] Improvement Loop 58 (v6.8 Milestone - Tagged `v6.8-1`)
+  - [x] Dynamic Sleep Drift & Psychoacoustic Bedtime Induction Engine (`SleepDriftEngine`):
+    - [x] `SleepDriftProfile` and `SleepDriftConfig` in `:core:model`
+    - [x] `SleepDriftEngine` in `:core:domain:audio` with progressive high-frequency roll-off, tempo deceleration, and Theta/Delta binaural carrier calculations
+    - [x] `SleepTimerManager` session progress tracking, live drift roll-off, and tempo decrescendo
+    - [x] `NexusAudioEffects` `applySleepDriftOffsets` & `clearSleepDriftOffsets`
+    - [x] DataStore persistence for `sleepDriftProfile` in `SettingsDataStore`
+    - [x] `SettingsViewModel` sleep drift methods and `SettingsScreen` chip selector card
+    - [x] Comprehensive test suites in `SleepDriftEngineTest`, `SleepTimerManagerTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v6.8-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.
