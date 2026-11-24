@@ -228,7 +228,8 @@ data class ThemeConfig(
     val ditherMode: DitherMode = DitherMode.TRIANGULAR_TPDF,
     val dynamicLoudnessConfig: DynamicLoudnessConfig = DynamicLoudnessConfig(),
     val beatCrossfadeConfig: BeatCrossfadeConfig = BeatCrossfadeConfig(),
-    val silenceTrimConfig: SilenceTrimConfig = SilenceTrimConfig()
+    val silenceTrimConfig: SilenceTrimConfig = SilenceTrimConfig(),
+    val resamplingFilterConfig: ResamplingFilterConfig = ResamplingFilterConfig()
 )
 
 data class SoundDoseInfo(
@@ -899,6 +900,27 @@ data class SilenceDetectionResult(
     val silenceDurationMs: Long,
     val shouldSkip: Boolean
 )
+
+enum class ResamplingFilterMode(val displayName: String, val description: String, val stopbandRejectionDb: Float, val preRingingPercent: Int) {
+    STANDARD_SHARP("Sharp Linear", "Steep cutoff brickwall filter with symmetric impulse response", 120.0f, 50),
+    MINIMUM_PHASE_PUNCH("Minimum Phase", "Zero pre-ringing filter with immediate transient attack and natural decay", 110.0f, 0),
+    LINEAR_PHASE_REFERENCE("Linear Phase", "Reference filter with linear group delay and perfect soundstage imaging", 130.0f, 50),
+    SLOW_ROLL_OFF_WARM("Slow Roll-Off", "Gentle high-frequency roll-off with tube-like warm analog timbre", 90.0f, 15),
+    APODIZING_ULTRASONIC("Apodizing Filter", "Rejection filter eliminating ADC pre-echo from compressed master recordings", 125.0f, 25)
+}
+
+data class ResamplingFilterConfig(
+    val mode: ResamplingFilterMode = ResamplingFilterMode.MINIMUM_PHASE_PUNCH,
+    val cutoffRatio: Float = 0.95f
+)
+
+data class FilterImpulseMetrics(
+    val preRingingPercent: Int,
+    val postRingingPercent: Int,
+    val stopbandRejectionDb: Float,
+    val phaseLinearityRating: String
+)
+
 
 
 

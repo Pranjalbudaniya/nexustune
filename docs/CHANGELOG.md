@@ -5,6 +5,16 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.13.0] - 2026-11-24
+
+### Added
+- **Audiophile Resampling & Polyphase Sinc Reconstruction Filter Studio (`ResamplingFilterEngine`)**: Added `ResamplingFilterMode` (`STANDARD_SHARP`, `MINIMUM_PHASE_PUNCH`, `LINEAR_PHASE_REFERENCE`, `SLOW_ROLL_OFF_WARM`, `APODIZING_ULTRASONIC`), `ResamplingFilterConfig`, and `FilterImpulseMetrics` in `:core:model`.
+- **Anti-Aliasing Sinc Kernel & Phase Topology Synthesis**: Implemented `ResamplingFilterEngine` in `:core:domain:audio` generating normalized windowed sinc kernels with Blackman-Harris windowing, causal exponential decay zero-pre-ringing minimum-phase transformation, and empirical Kaiser Beta filter calculations ($>120\text{ dB}$ stopband attenuation).
+- **DataStore Persistence**: Added `RESAMPLING_FILTER_MODE` and `RESAMPLING_FILTER_CUTOFF` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Reconstruction Filter Studio**: Added interactive "DAC Reconstruction Filter Topology" card in `SettingsScreen` under the Hi-Res Audio section with filter mode chips, stopband attenuation ratings, and pre/post-ringing impulse response metrics.
+- **Unit Test Coverage**: Comprehensive test suites in `ResamplingFilterEngineTest` in `:core:domain` and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.12.0] - 2026-11-24
 
 ### Added

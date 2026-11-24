@@ -1135,6 +1135,66 @@ fun SettingsScreen(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = "DAC Reconstruction Filter Topology",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+                Text(
+                    text = "Configures anti-aliasing sinc reconstruction filter phase and ringing characteristics. Minimum-phase removes pre-ringing for crisp percussive punch.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.padding(bottom = 6.dp)
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ResamplingFilterMode.entries.forEach { mode ->
+                        FilterChip(
+                            selected = themeConfig.resamplingFilterConfig.mode == mode,
+                            onClick = { viewModel.setResamplingFilterMode(mode) },
+                            label = { Text(mode.displayName) }
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                val impulseMetrics = com.nexus.tune.core.domain.audio.ResamplingFilterEngine.calculateImpulseMetrics(themeConfig.resamplingFilterConfig.mode)
+                Surface(
+                    shape = MaterialTheme.shapes.small,
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                ) {
+                    Column(modifier = Modifier.padding(8.dp)) {
+                        Text(
+                            text = themeConfig.resamplingFilterConfig.mode.description,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Pre-Ring: ${impulseMetrics.preRingingPercent}% • Post: ${impulseMetrics.postRingingPercent}%",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = "Stopband: ${impulseMetrics.stopbandRejectionDb.toInt()} dB",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.tertiary
+                            )
+                        }
+                    }
+                }
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
                 // --- Gapless Buffer Pre-Loading ---

@@ -704,4 +704,14 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(silenceTrimConfig = current.silenceTrimConfig.copy(thresholdDb = thresholdDb.coerceIn(-60f, -20f))))
     }
+
+    fun setResamplingFilterMode(mode: ResamplingFilterMode) {
+        val current = themeConfig.value
+        updateTheme(current.copy(resamplingFilterConfig = current.resamplingFilterConfig.copy(mode = mode)))
+    }
+
+    fun setResamplingFilterCutoff(cutoff: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(resamplingFilterConfig = current.resamplingFilterConfig.copy(cutoffRatio = cutoff.coerceIn(0.80f, 0.99f))))
+    }
 }

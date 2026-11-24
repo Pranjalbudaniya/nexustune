@@ -897,4 +897,19 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.silenceTrimConfig.thresholdDb == -38.0f })
         }
     }
+
+    @Test
+    fun `resampling filter settings update theme config`() = runTest {
+        viewModel.setResamplingFilterMode(ResamplingFilterMode.SLOW_ROLL_OFF_WARM)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.resamplingFilterConfig.mode == ResamplingFilterMode.SLOW_ROLL_OFF_WARM })
+        }
+
+        viewModel.setResamplingFilterCutoff(0.92f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.resamplingFilterConfig.cutoffRatio == 0.92f })
+        }
+    }
 }

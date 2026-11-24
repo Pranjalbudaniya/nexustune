@@ -91,6 +91,8 @@ class SettingsDataStore(private val context: Context) {
         val SILENCE_TRIM_MODE = stringPreferencesKey("silence_trim_mode")
         val SILENCE_TRIM_THRESHOLD_DB = floatPreferencesKey("silence_trim_threshold_db")
         val SILENCE_TRIM_MIN_MS = longPreferencesKey("silence_trim_min_ms")
+        val RESAMPLING_FILTER_MODE = stringPreferencesKey("resampling_filter_mode")
+        val RESAMPLING_FILTER_CUTOFF = floatPreferencesKey("resampling_filter_cutoff")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -216,6 +218,12 @@ class SettingsDataStore(private val context: Context) {
                 }.getOrDefault(SilenceTrimMode.NATURAL_MUSIC),
                 thresholdDb = prefs[PreferencesKeys.SILENCE_TRIM_THRESHOLD_DB] ?: -45.0f,
                 minDurationMs = prefs[PreferencesKeys.SILENCE_TRIM_MIN_MS] ?: 1500L
+            ),
+            resamplingFilterConfig = ResamplingFilterConfig(
+                mode = runCatching {
+                    ResamplingFilterMode.valueOf(prefs[PreferencesKeys.RESAMPLING_FILTER_MODE] ?: ResamplingFilterMode.MINIMUM_PHASE_PUNCH.name)
+                }.getOrDefault(ResamplingFilterMode.MINIMUM_PHASE_PUNCH),
+                cutoffRatio = prefs[PreferencesKeys.RESAMPLING_FILTER_CUTOFF] ?: 0.95f
             )
         )
     }
@@ -290,6 +298,8 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.SILENCE_TRIM_MODE] = config.silenceTrimConfig.mode.name
             prefs[PreferencesKeys.SILENCE_TRIM_THRESHOLD_DB] = config.silenceTrimConfig.thresholdDb
             prefs[PreferencesKeys.SILENCE_TRIM_MIN_MS] = config.silenceTrimConfig.minDurationMs
+            prefs[PreferencesKeys.RESAMPLING_FILTER_MODE] = config.resamplingFilterConfig.mode.name
+            prefs[PreferencesKeys.RESAMPLING_FILTER_CUTOFF] = config.resamplingFilterConfig.cutoffRatio
         }
     }
 
@@ -321,6 +331,13 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.SILENCE_TRIM_MODE] = config.mode.name
             prefs[PreferencesKeys.SILENCE_TRIM_THRESHOLD_DB] = config.thresholdDb
             prefs[PreferencesKeys.SILENCE_TRIM_MIN_MS] = config.minDurationMs
+        }
+    }
+
+    suspend fun updateResamplingFilterConfig(config: ResamplingFilterConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.RESAMPLING_FILTER_MODE] = config.mode.name
+            prefs[PreferencesKeys.RESAMPLING_FILTER_CUTOFF] = config.cutoffRatio
         }
     }
 
