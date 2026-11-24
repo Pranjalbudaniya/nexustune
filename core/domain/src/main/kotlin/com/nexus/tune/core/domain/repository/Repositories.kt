@@ -20,6 +20,9 @@ interface MusicRepository {
     suspend fun createPlaylist(title: String, artworkUrl: String? = null): String
     suspend fun updatePlaylistArtwork(playlistId: String, artworkUrl: String?)
     suspend fun deletePlaylist(playlistId: String)
+    suspend fun saveLyricsOffset(trackId: String, offsetMs: Long)
+    suspend fun getLyricsOffset(trackId: String): Long
+    suspend fun clearLyricsCache()
 }
 
 interface QueueRepository {

@@ -16,7 +16,8 @@ import com.nexus.tune.core.database.entity.*
         QueueEntity::class,
         HistoryEntity::class,
         PlaylistEntity::class,
-        PlaylistTrackCrossRef::class
+        PlaylistTrackCrossRef::class,
+        LyricsEntity::class
     ],
     version = 1,
     exportSchema = false
@@ -26,6 +27,7 @@ abstract class NexusTuneDatabase : RoomDatabase() {
     abstract fun queueDao(): QueueDao
     abstract fun historyDao(): HistoryDao
     abstract fun playlistDao(): PlaylistDao
+    abstract fun lyricsDao(): com.nexus.tune.core.database.dao.LyricsDao
 
     companion object {
         @Volatile

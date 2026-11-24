@@ -44,3 +44,14 @@ data class PlaylistTrackCrossRef(
     val trackOrder: Int
 )
 
+@Entity(tableName = "lyrics_cache")
+data class LyricsEntity(
+    @PrimaryKey val trackId: String,
+    val title: String,
+    val artist: String,
+    val plainLyrics: String? = null,
+    val syncedLyricsRaw: String? = null,
+    val userOffsetMs: Long = 0L,
+    val cachedAtTimestamp: Long = System.currentTimeMillis()
+)
+

@@ -603,6 +603,16 @@ fun SettingsScreen(
                     }
                 )
 
+                ListItem(
+                    headlineContent = { Text("Clear Lyrics Cache") },
+                    supportingContent = { Text("Reclaim space used by offline cached song lyrics") },
+                    trailingContent = {
+                        OutlinedButton(onClick = { viewModel.clearLyricsCache() }) {
+                            Text("Clear")
+                        }
+                    }
+                )
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
             }
 
@@ -643,8 +653,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v2.6.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Gapless Buffer Pipeline Warm-Up") }
+                    headlineContent = { Text("NexusTune v2.7.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Offline Lyrics Cache & Calibration Memory") }
                 )
             }
         }

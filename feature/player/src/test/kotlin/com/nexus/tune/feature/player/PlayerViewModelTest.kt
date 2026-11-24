@@ -85,6 +85,29 @@ class PlayerViewModelTest {
     }
 
     @Test
+    fun `loadLyrics restores saved lyrics offset from repository`() = runTest {
+        val sampleTrack = Track(id = "t1", title = "Star", artist = "Moon", durationSeconds = 180)
+        coEvery { musicRepository.getLyricsOffset("t1") } returns 250L
+
+        viewModel.loadLyrics(sampleTrack)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(250L, viewModel.lyricsOffsetMs.value)
+    }
+
+    @Test
+    fun `adjustLyricsOffset persists new offset to repository`() = runTest {
+        val sampleTrack = Track(id = "t1", title = "Star", artist = "Moon", durationSeconds = 180)
+        viewModel.loadLyrics(sampleTrack)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.adjustLyricsOffset(100L)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { musicRepository.saveLyricsOffset("t1", 100L) }
+    }
+
+    @Test
     fun `setPlaybackSpeed updates speed state flow`() {
         assertEquals(1.0f, viewModel.playbackSpeed.value)
         viewModel.setPlaybackSpeed(1.5f)

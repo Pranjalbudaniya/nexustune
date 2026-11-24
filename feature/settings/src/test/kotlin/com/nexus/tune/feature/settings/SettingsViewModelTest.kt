@@ -253,4 +253,17 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.gaplessPreloadSeconds == 10 })
         }
     }
+
+    @Test
+    fun `clearLyricsCache invokes repository clear`() = runTest {
+        val mockRepo = mockk<com.nexus.tune.core.domain.repository.MusicRepository>(relaxed = true)
+        val vm = SettingsViewModel(
+            settingsRepository = settingsRepository,
+            musicRepository = mockRepo
+        )
+        vm.clearLyricsCache()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { mockRepo.clearLyricsCache() }
+    }
 }

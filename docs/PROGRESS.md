@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 16 (v2.6.0 Released)
-- In Flight: Preparing Improvement Loop 17 (Synced Lyrics Offline Caching & Calibration Persistence)
+- Active Phase: Post-v1.0 Improvement Loop 17 (v2.7.0 Released)
+- In Flight: Preparing Improvement Loop 18 (Parametric EQ Engine & Per-Genre Audio Profiles)
 - Branches: `main`
 
 ## Phase Tracking
@@ -159,12 +159,20 @@
   - [x] Slice & perf gates passed on physical hardware
   - [x] Final gate passed & tagged: `git tag v2.6-1`
 
-## Improvement Loop 17 (v2.7 Features - Planned)
-- [ ] Synced Lyrics Offline Caching & Calibration Persistence:
-  - Cache downloaded LRC lyrics locally to Room database
-  - Persist user manual offset calibrations per track ID across restarts
-- [ ] Slice & perf gates passed on physical hardware
-- [ ] Final gate passed & tagged: `git tag v2.7-1`
+- [x] Improvement Loop 17 (v2.7 Features - Tagged `v2.7-1`)
+  - [x] Synced Lyrics Offline Caching & Calibration Persistence:
+    - [x] Room database `lyrics_cache` table & `LyricsDao`
+    - [x] Persistent per-track calibration offset restoration in `PlayerViewModel`
+    - [x] Clear lyrics cache action in Settings
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `git tag v2.7-1`
+
+## Improvement Loop 18 (v2.8 Features - Planned)
+- [ ] Parametric EQ Engine & Per-Genre Audio Profiles:
+  - 10-band fine-grained frequency equalizer with adjustable Q factor
+  - Automatic EQ profile switching based on detected music genre
+- [ ] Slice gate passed
+- [ ] Final gate passed & tagged: `git tag v2.8-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

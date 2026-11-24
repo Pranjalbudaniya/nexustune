@@ -42,7 +42,67 @@ class MusicRepositoryImpl(
         artist: String,
         durationSeconds: Long
     ): MusicResult<TrackLyrics> {
-        return musicSource.getLyrics(trackId, title, artist, durationSeconds)
+        val cached = database.lyricsDao().getLyrics(trackId)
+        if (cached != null && (!cached.plainLyrics.isNullOrBlank() || !cached.syncedLyricsRaw.isNullOrBlank())) {
+            val lines = cached.syncedLyricsRaw?.split("\n")?.mapNotNull { line ->
+                val parts = line.split(":", limit = 2)
+                if (parts.size == 2) {
+                    val ts = parts[0].toLongOrNull()
+                    if (ts != null) LyricsLine(ts, parts[1]) else null
+                } else null
+            } ?: emptyList()
+            return MusicResult.Success(
+                TrackLyrics(
+                    trackId = trackId,
+                    lines = lines,
+                    isSynced = lines.isNotEmpty()
+                )
+            )
+        }
+
+        val remoteResult = musicSource.getLyrics(trackId, title, artist, durationSeconds)
+        if (remoteResult is MusicResult.Success) {
+            val lyrics = remoteResult.data
+            val rawSynced = if (lyrics.lines.isNotEmpty()) {
+                lyrics.lines.joinToString("\n") { "${it.startTimeMs}:${it.text}" }
+            } else null
+            val plain = if (lyrics.lines.isNotEmpty()) lyrics.lines.joinToString("\n") { it.text } else null
+            database.lyricsDao().insertOrUpdate(
+                com.nexus.tune.core.database.entity.LyricsEntity(
+                    trackId = trackId,
+                    title = title,
+                    artist = artist,
+                    plainLyrics = plain,
+                    syncedLyricsRaw = rawSynced,
+                    userOffsetMs = cached?.userOffsetMs ?: 0L
+                )
+            )
+        }
+        return remoteResult
+    }
+
+    override suspend fun saveLyricsOffset(trackId: String, offsetMs: Long) {
+        val existing = database.lyricsDao().getLyrics(trackId)
+        if (existing != null) {
+            database.lyricsDao().updateOffset(trackId, offsetMs)
+        } else {
+            database.lyricsDao().insertOrUpdate(
+                com.nexus.tune.core.database.entity.LyricsEntity(
+                    trackId = trackId,
+                    title = "",
+                    artist = "",
+                    userOffsetMs = offsetMs
+                )
+            )
+        }
+    }
+
+    override suspend fun getLyricsOffset(trackId: String): Long {
+        return database.lyricsDao().getOffset(trackId) ?: 0L
+    }
+
+    override suspend fun clearLyricsCache() {
+        database.lyricsDao().clearAll()
     }
 
     override fun getLikedTracks(): Flow<List<Track>> {

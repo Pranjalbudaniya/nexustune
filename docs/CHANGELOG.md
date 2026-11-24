@@ -5,6 +5,13 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.0] - 2026-11-24
+
+### Added
+- **Synced Lyrics Offline Caching & Room Persistence**: Implemented persistent local caching of downloaded plain and synced LRC lyrics in Room database (`LyricsEntity` and `LyricsDao`), enabling instant zero-network offline lyric display.
+- **Per-Track Lyrics Offset Calibration Memory**: Automatically saves user manual timing calibration offsets per track ID, persisting custom synchronizations across app restarts.
+- **Storage Management Controls**: Added "Clear Lyrics Cache" option in Settings Storage & Cache Management card.
+
 ## [2.6.0] - 2026-11-24
 
 ### Added

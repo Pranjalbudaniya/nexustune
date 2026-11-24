@@ -64,3 +64,24 @@ interface PlaylistDao {
     suspend fun updateArtwork(id: String, artworkUrl: String?)
 }
 
+@Dao
+interface LyricsDao {
+    @Query("SELECT * FROM lyrics_cache WHERE trackId = :trackId LIMIT 1")
+    suspend fun getLyrics(trackId: String): com.nexus.tune.core.database.entity.LyricsEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdate(entity: com.nexus.tune.core.database.entity.LyricsEntity)
+
+    @Query("UPDATE lyrics_cache SET userOffsetMs = :offsetMs WHERE trackId = :trackId")
+    suspend fun updateOffset(trackId: String, offsetMs: Long)
+
+    @Query("SELECT userOffsetMs FROM lyrics_cache WHERE trackId = :trackId LIMIT 1")
+    suspend fun getOffset(trackId: String): Long?
+
+    @Query("DELETE FROM lyrics_cache")
+    suspend fun clearAll()
+
+    @Query("SELECT COUNT(*) FROM lyrics_cache")
+    suspend fun getCachedCount(): Int
+}
+

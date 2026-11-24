@@ -36,6 +36,8 @@ class PlayerViewModel(
     private val _visualizerMode = MutableStateFlow(com.nexus.tune.core.model.VisualizerMode.SPECTRUM_BARS)
     val visualizerMode: StateFlow<com.nexus.tune.core.model.VisualizerMode> = _visualizerMode.asStateFlow()
 
+    private var activeTrackId: String? = null
+
     fun updateVisualizerData(data: com.nexus.tune.core.model.VisualizerData) {
         _visualizerData.value = data
     }
@@ -53,15 +55,28 @@ class PlayerViewModel(
     }
 
     fun adjustLyricsOffset(deltaMs: Long) {
-        _lyricsOffsetMs.value += deltaMs
+        val newOffset = _lyricsOffsetMs.value + deltaMs
+        _lyricsOffsetMs.value = newOffset
+        activeTrackId?.let { trackId ->
+            viewModelScope.launch {
+                musicRepository.saveLyricsOffset(trackId, newOffset)
+            }
+        }
     }
 
     fun resetLyricsOffset() {
         _lyricsOffsetMs.value = 0L
+        activeTrackId?.let { trackId ->
+            viewModelScope.launch {
+                musicRepository.saveLyricsOffset(trackId, 0L)
+            }
+        }
     }
 
     fun loadLyrics(track: Track) {
+        activeTrackId = track.id
         viewModelScope.launch {
+            _lyricsOffsetMs.value = musicRepository.getLyricsOffset(track.id)
             when (val result = musicRepository.getLyrics(track.id, track.title, track.artist, track.durationSeconds)) {
                 is MusicResult.Success -> _lyrics.value = result.data
                 is MusicResult.Failure -> _lyrics.value = null

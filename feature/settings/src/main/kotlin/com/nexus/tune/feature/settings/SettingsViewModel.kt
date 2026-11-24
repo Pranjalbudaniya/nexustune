@@ -17,7 +17,8 @@ class SettingsViewModel(
     private val getListeningStatsUseCase: GetListeningStatsUseCase? = null,
     private val sleepTimerManager: SleepTimerManager? = null,
     private val storageManager: StorageManager? = null,
-    private val audioOutputRouteManager: com.nexus.tune.core.player.routing.AudioOutputRouteManager? = null
+    private val audioOutputRouteManager: com.nexus.tune.core.player.routing.AudioOutputRouteManager? = null,
+    private val musicRepository: com.nexus.tune.core.domain.repository.MusicRepository? = null
 ) : ViewModel() {
 
     init {
@@ -172,5 +173,11 @@ class SettingsViewModel(
 
     fun clearCache(): Long {
         return storageManager?.clearCache() ?: 0L
+    }
+
+    fun clearLyricsCache() {
+        viewModelScope.launch {
+            musicRepository?.clearLyricsCache()
+        }
     }
 }
