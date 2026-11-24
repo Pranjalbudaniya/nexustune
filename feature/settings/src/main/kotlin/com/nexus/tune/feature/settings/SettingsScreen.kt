@@ -25,6 +25,7 @@ import com.nexus.tune.core.domain.audio.TubeSaturationEngine
 import com.nexus.tune.core.domain.audio.TransientShaperEngine
 import com.nexus.tune.core.domain.audio.DynamicStereoImagerEngine
 import com.nexus.tune.core.domain.audio.TapeHysteresisEngine
+import com.nexus.tune.core.domain.audio.MainsHumIsolatorEngine
 import com.nexus.tune.core.ui.EqCurveVisualizer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -704,7 +705,9 @@ fun SettingsScreen(
                 }
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+            }
 
+            item {
                 // --- Stereo Field & Soundstage Studio ---
                 Text(
                     text = "Stereo Field & Soundstage Studio",
@@ -1453,7 +1456,9 @@ fun SettingsScreen(
                 }
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            }
 
+            item {
                 // --- Hi-Res Audio & Bit-Perfect Mode ---
                 Text(
                     text = "Hi-Res Audio & Bit-Perfect Mode",
@@ -1959,6 +1964,9 @@ fun SettingsScreen(
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
+            }
+
+            item {
                 ListItem(
                     headlineContent = { Text("Psychoacoustic Sub-Harmonic Bass Studio") },
                     supportingContent = { Text("Synthesizes missing fundamental harmonics (MaxxBass) for compact drivers or sub-octave rumble (30-60 Hz) for subwoofers") },
@@ -2464,6 +2472,9 @@ fun SettingsScreen(
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
+            }
+
+            item {
                 ListItem(
                     headlineContent = { Text("Analog Vacuum Tube Saturation & Warmth Studio") },
                     supportingContent = { Text("Physical triode/pentode tube modeling injecting euphonic 2nd/3rd harmonics, dynamic analog warmth, and tape glue") },
@@ -2937,6 +2948,9 @@ fun SettingsScreen(
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
+            }
+
+            item {
                 ListItem(
                     headlineContent = { Text("Analog Tape Flutter, Wow & Hysteresis Warmer Studio") },
                     supportingContent = { Text("Reel-to-reel magnetic tape modeling with Langevin hysteresis saturation, physical head bump bass resonance, and capstan wow/flutter") },
@@ -3125,7 +3139,219 @@ fun SettingsScreen(
                 }
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            }
 
+            item {
+                // --- Audiophile Mains Ground Loop & Hum Isolator Studio ---
+                ListItem(
+                    headlineContent = { Text("Mains Ground Loop & 50/60Hz Hum Isolator Studio") },
+                    supportingContent = { Text("Surgical multi-order notch filter cascade targeting 50/60 Hz powerline hum, charging buzz, and ground loops with adaptive masking") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.mainsHumIsolatorConfig.isEnabled,
+                            onCheckedChange = { viewModel.setMainsHumIsolatorEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.mainsHumIsolatorConfig.isEnabled) {
+                    val humMetrics = remember(themeConfig.mainsHumIsolatorConfig) {
+                        MainsHumIsolatorEngine.calculateMetrics(themeConfig.mainsHumIsolatorConfig)
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Hum Isolator Preset",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(bottom = 6.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        HumIsolatorPreset.entries.forEach { preset ->
+                            FilterChip(
+                                selected = themeConfig.mainsHumIsolatorConfig.preset == preset,
+                                onClick = { viewModel.setMainsHumIsolatorPreset(preset) },
+                                label = { Text(preset.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "AC Grid Base Frequency",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(bottom = 6.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        MainsFrequency.entries.forEach { freq ->
+                            FilterChip(
+                                selected = themeConfig.mainsHumIsolatorConfig.frequency == freq,
+                                onClick = { viewModel.setMainsHumIsolatorFrequency(freq) },
+                                label = { Text(freq.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "Harmonic Notch Order",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(bottom = 6.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        HumHarmonicDepth.entries.forEach { depth ->
+                            FilterChip(
+                                selected = themeConfig.mainsHumIsolatorConfig.harmonicDepth == depth,
+                                onClick = { viewModel.setMainsHumIsolatorHarmonicDepth(depth) },
+                                label = { Text(depth.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Notch Q Factor (Filter Sharpness): ${String.format(java.util.Locale.US, "Q = %.1f", themeConfig.mainsHumIsolatorConfig.notchQ)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Pass-Band: ${String.format(java.util.Locale.US, "%.1f%%", humMetrics.subBassPreservationRatio * 100)}",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.mainsHumIsolatorConfig.notchQ,
+                        onValueChange = { viewModel.setMainsHumIsolatorNotchQ(it) },
+                        valueRange = 10.0f..45.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Notch Attenuation Depth: ${String.format(java.util.Locale.US, "%.0f dB", themeConfig.mainsHumIsolatorConfig.notchDepthDb)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Target f₀: ${humMetrics.detectedGridFrequencyHz.toInt()} Hz",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.mainsHumIsolatorConfig.notchDepthDb,
+                        onValueChange = { viewModel.setMainsHumIsolatorNotchDepth(it) },
+                        valueRange = -48.0f..-6.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Adaptive Psychoacoustic Masking",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Switch(
+                            checked = themeConfig.mainsHumIsolatorConfig.adaptiveMasking,
+                            onCheckedChange = { viewModel.setMainsHumIsolatorAdaptiveMasking(it) }
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Recursive DC Offset Bias Blocker",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Switch(
+                            checked = themeConfig.mainsHumIsolatorConfig.dcBlockerEnabled,
+                            onCheckedChange = { viewModel.setMainsHumIsolatorDcBlocker(it) }
+                        )
+                    }
+
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = "GROUND LOOP DIAGNOSTICS & NOISE HUD",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Isolation: ${humMetrics.isolationRating}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Floor: ${String.format(java.util.Locale.US, "%.1f dB", humMetrics.estimatedHumLevelDb)}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                                Text(
+                                    text = "DC: ${String.format(java.util.Locale.US, "%.1f mV", humMetrics.dcOffsetMv)}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            }
+
+            item {
                 // --- Gapless Buffer Pre-Loading ---
                 Text(
                     text = "Gapless Buffer Pre-Loading",

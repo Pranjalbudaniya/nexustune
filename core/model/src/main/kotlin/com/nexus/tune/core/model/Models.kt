@@ -244,7 +244,8 @@ data class ThemeConfig(
     val tubeSaturationConfig: TubeSaturationConfig = TubeSaturationConfig(),
     val transientShaperConfig: TransientShaperConfig = TransientShaperConfig(),
     val dynamicStereoImagerConfig: DynamicStereoImagerConfig = DynamicStereoImagerConfig(),
-    val tapeHysteresisConfig: TapeHysteresisConfig = TapeHysteresisConfig()
+    val tapeHysteresisConfig: TapeHysteresisConfig = TapeHysteresisConfig(),
+    val mainsHumIsolatorConfig: MainsHumIsolatorConfig = MainsHumIsolatorConfig()
 )
 
 data class SoundDoseInfo(
@@ -1435,6 +1436,56 @@ data class TapeHysteresisMetrics(
     val wowFlutterPpm: Int,
     val analogWarmthScore: Int,
     val tapeCharacterRating: String
+)
+
+enum class MainsFrequency(val fundamentalHz: Float, val displayName: String, val regionDescription: String) {
+    HZ_50(50.0f, "50 Hz Mains (EU / Asia / UK)", "Standard AC grid frequency across Europe, Asia, Africa, and Australia"),
+    HZ_60(60.0f, "60 Hz Mains (US / Canada / Japan)", "Standard AC grid frequency across North America, parts of Japan, and Brazil"),
+    AUTO_DETECT(0.0f, "Auto-Detect Harmonic Signature", "Real-time spectral analysis probes 50 Hz vs 60 Hz electrical interference")
+}
+
+enum class HumHarmonicDepth(val maxHarmonicOrder: Int, val displayName: String, val description: String) {
+    FUNDAMENTAL_ONLY(1, "Fundamental Only (f₀)", "Notches only the primary 50/60 Hz powerline hum, leaving overtones intact"),
+    LOW_HARMONICS(3, "Low Harmonics (f₀ + 2f₀ + 3f₀)", "Suppresses fundamental plus 2nd (100/120Hz) and 3rd (150/180Hz) rectification harmonics"),
+    FULL_SPECTRUM(6, "Full Harmonic Series (up to 6f₀)", "Deep multi-order notch cascade suppressing up to the 6th harmonic (300/360Hz) buzz")
+}
+
+enum class HumIsolatorPreset(
+    val displayName: String,
+    val frequency: MainsFrequency,
+    val harmonicDepth: HumHarmonicDepth,
+    val notchQ: Float,
+    val notchDepthDb: Float,
+    val adaptiveMasking: Boolean,
+    val dcBlocker: Boolean,
+    val description: String
+) {
+    OFF("Off (Bypassed)", MainsFrequency.AUTO_DETECT, HumHarmonicDepth.LOW_HARMONICS, 25.0f, 0.0f, false, false, "Direct pristine signal with zero ground loop notch filtering"),
+    STUDIO_CLEAN_AUTO("Studio Clean (Auto-Detect)", MainsFrequency.AUTO_DETECT, HumHarmonicDepth.LOW_HARMONICS, 30.0f, -24.0f, true, true, "Narrow precision surgical notch bank auto-locking onto grid interference"),
+    USB_DAC_GROUND_LIFT("USB-C DAC Ground Lift", MainsFrequency.AUTO_DETECT, HumHarmonicDepth.FULL_SPECTRUM, 28.0f, -32.0f, true, true, "High-suppression harmonic de-buzzer targeting switch-mode charger ground loops"),
+    VINTAGE_VINYL_RESTORE("Vintage Turntable 50 Hz Restore", MainsFrequency.HZ_50, HumHarmonicDepth.LOW_HARMONICS, 25.0f, -20.0f, true, true, "Gentle phono preamp ground hum elimination preserving vinyl bass weight"),
+    NORTH_AMERICA_60_HZ("North America 60 Hz Purifier", MainsFrequency.HZ_60, HumHarmonicDepth.FULL_SPECTRUM, 32.0f, -30.0f, true, true, "Surgical suppression of 60 Hz powerline buzz and its 120/180/240 Hz multiples"),
+    HIGH_SENSITIVITY_IEM("High-Sensitivity IEM Noise Shield", MainsFrequency.AUTO_DETECT, HumHarmonicDepth.FULL_SPECTRUM, 35.0f, -36.0f, false, true, "Maximum continuous attenuation for ultra-sensitive low-impedance in-ear monitors")
+}
+
+data class MainsHumIsolatorConfig(
+    val isEnabled: Boolean = false,
+    val preset: HumIsolatorPreset = HumIsolatorPreset.OFF,
+    val frequency: MainsFrequency = MainsFrequency.AUTO_DETECT,
+    val harmonicDepth: HumHarmonicDepth = HumHarmonicDepth.LOW_HARMONICS,
+    val notchQ: Float = 25.0f,
+    val notchDepthDb: Float = -24.0f,
+    val adaptiveMasking: Boolean = true,
+    val dcBlockerEnabled: Boolean = true
+)
+
+data class MainsHumMetrics(
+    val estimatedHumLevelDb: Float,
+    val attenuationAtF0Db: Float,
+    val subBassPreservationRatio: Float,
+    val detectedGridFrequencyHz: Float,
+    val dcOffsetMv: Float,
+    val isolationRating: String
 )
 
 

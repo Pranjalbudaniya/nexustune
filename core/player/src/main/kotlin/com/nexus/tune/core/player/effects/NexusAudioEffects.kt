@@ -32,6 +32,7 @@ class NexusAudioEffects {
     private var transientPunchOffset: Int = 0
     private var spatialSpreadOffset: Int = 0
     private var tapeWarmthOffset: Int = 0
+    private var mainsHumOffset: Int = 0
 
     fun attachToAudioSession(sessionId: Int) {
         if (sessionId == 0 || sessionId == currentSessionId) return
@@ -376,6 +377,18 @@ class NexusAudioEffects {
 
     fun getTapeWarmthOffset(): Int = tapeWarmthOffset
 
+    fun applyMainsHumOffset(offset: Int) {
+        mainsHumOffset = offset
+        refreshBands()
+    }
+
+    fun clearMainsHumOffset() {
+        mainsHumOffset = 0
+        refreshBands()
+    }
+
+    fun getMainsHumOffset(): Int = mainsHumOffset
+
     fun setBassBoostStrength(strength: Short) {
         try {
             bassBoost?.setStrength(strength)
@@ -403,7 +416,8 @@ class NexusAudioEffects {
                 val transientOffset = if (i == 0 || i == 4) (transientPunchOffset * (if (i == 0) 1.0f else 0.7f)).toInt() else 0
                 val spatialOffset = if (i == 4) (spatialSpreadOffset * 0.8f).toInt() else 0
                 val tapeOffset = if (i == 0 || i == 1) (tapeWarmthOffset * (if (i == 0) 1.0f else 0.7f)).toInt() else 0
-                val combined = (base + kOffset + hOffset + sOffset + dOffset + tOffset + mOffset + aOffset + sHarmonicOffset + deEssOffset + tubeOffset + transientOffset + spatialOffset + tapeOffset).coerceIn(-1500, 1500)
+                val humOffset = if (i == 0) mainsHumOffset else 0
+                val combined = (base + kOffset + hOffset + sOffset + dOffset + tOffset + mOffset + aOffset + sHarmonicOffset + deEssOffset + tubeOffset + transientOffset + spatialOffset + tapeOffset + humOffset).coerceIn(-1500, 1500)
                 eq.setBandLevel(i.toShort(), combined.toShort())
             }
         } catch (e: Exception) {

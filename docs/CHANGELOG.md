@@ -5,6 +5,17 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.29.0] - 2026-11-24
+
+### Added
+- **Audiophile Dynamic Spectral De-Hummer & 50/60Hz Mains Ground Loop Isolator Studio (`MainsHumIsolatorEngine`)**: Added `MainsFrequency` (`HZ_50`, `HZ_60`, `AUTO_DETECT`), `HumHarmonicDepth` (`FUNDAMENTAL_ONLY`, `LOW_HARMONICS`, `FULL_SPECTRUM`), `HumIsolatorPreset` (`OFF`, `STUDIO_CLEAN_AUTO`, `USB_DAC_GROUND_LIFT`, `VINTAGE_VINYL_RESTORE`, `NORTH_AMERICA_60_HZ`, `HIGH_SENSITIVITY_IEM`), `MainsHumIsolatorConfig`, and `MainsHumMetrics` in `:core:model`.
+- **Cascaded High-Q Notch Filter Bank & Psychoacoustic Masking DSP**: Implemented `MainsHumIsolatorEngine` in `:core:domain:audio`. Features surgical high-Q ($Q=10\dots 45$) biquad notch filters targeting 50 Hz and 60 Hz electrical grid hum along with up to 6 rectification overtones (100/120 Hz, 150/180 Hz, 200/240 Hz, up to 360 Hz). Includes automatic grid frequency detection via discrete Fourier probing, single-pole recursive DC offset rejection ($<5\text{ Hz}$), and adaptive psychoacoustic masking that automatically relaxes notch depth during loud sub-bass musical passages while engaging deep attenuation ($>30\text{ dB}$) during quiet passages to preserve 100% of kick drum and bass transients.
+- **Hardware Equalizer Integration**: Added `applyMainsHumOffset`, `clearMainsHumOffset`, and `getMainsHumOffset` targeting Band 0 in `NexusAudioEffects` in `:core:player` for sub-bass insertion loss compensation.
+- **DataStore Persistence**: Added `MAINS_HUM_ISOLATOR_ENABLED`, `MAINS_HUM_ISOLATOR_PRESET`, `MAINS_HUM_ISOLATOR_FREQUENCY`, `MAINS_HUM_ISOLATOR_HARMONIC_DEPTH`, `MAINS_HUM_ISOLATOR_NOTCH_Q`, `MAINS_HUM_ISOLATOR_NOTCH_DEPTH`, `MAINS_HUM_ISOLATOR_ADAPTIVE_MASKING`, and `MAINS_HUM_ISOLATOR_DC_BLOCKER` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Hum Isolator Studio**: Added interactive "Mains Ground Loop & 50/60Hz Hum Isolator Studio" card in `SettingsScreen` with isolator presets, grid frequency selector chips (50 Hz, 60 Hz, Auto), harmonic notch order chips, notch Q slider, notch depth slider, adaptive masking and DC blocker switches, and real-time noise rejection / DC residual HUD.
+- **Unit Test Coverage**: Comprehensive test suites in `MainsHumIsolatorEngineTest` in `:core:domain`, `NexusAudioEffectsTest` in `:core:player`, and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.28.0] - 2026-11-24
 
 ### Added

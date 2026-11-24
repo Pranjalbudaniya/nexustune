@@ -1383,4 +1383,55 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { !it.tapeHysteresisConfig.tapeHissReduction })
         }
     }
+
+    @Test
+    fun `mains hum isolator settings update theme config`() = runTest {
+        viewModel.setMainsHumIsolatorEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.mainsHumIsolatorConfig.isEnabled })
+        }
+
+        viewModel.setMainsHumIsolatorPreset(HumIsolatorPreset.STUDIO_CLEAN_AUTO)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.mainsHumIsolatorConfig.preset == HumIsolatorPreset.STUDIO_CLEAN_AUTO })
+        }
+
+        viewModel.setMainsHumIsolatorFrequency(MainsFrequency.HZ_60)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.mainsHumIsolatorConfig.frequency == MainsFrequency.HZ_60 })
+        }
+
+        viewModel.setMainsHumIsolatorHarmonicDepth(HumHarmonicDepth.FULL_SPECTRUM)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.mainsHumIsolatorConfig.harmonicDepth == HumHarmonicDepth.FULL_SPECTRUM })
+        }
+
+        viewModel.setMainsHumIsolatorNotchQ(32.0f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.mainsHumIsolatorConfig.notchQ == 32.0f })
+        }
+
+        viewModel.setMainsHumIsolatorNotchDepth(-30.0f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.mainsHumIsolatorConfig.notchDepthDb == -30.0f })
+        }
+
+        viewModel.setMainsHumIsolatorAdaptiveMasking(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.mainsHumIsolatorConfig.adaptiveMasking })
+        }
+
+        viewModel.setMainsHumIsolatorDcBlocker(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.mainsHumIsolatorConfig.dcBlockerEnabled })
+        }
+    }
 }

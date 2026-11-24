@@ -193,5 +193,14 @@ class NexusAudioEffectsTest {
         audioEffects.clearTapeWarmthOffset()
         assertEquals(0, audioEffects.getTapeWarmthOffset())
     }
+
+    @Test
+    fun `mains hum offset can be applied and cleared`() {
+        audioEffects.applyMainsHumOffset(60)
+        assertEquals(60, audioEffects.getMainsHumOffset())
+
+        audioEffects.clearMainsHumOffset()
+        assertEquals(0, audioEffects.getMainsHumOffset())
+    }
 }
 

@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 78 (v6.28.0 Audiophile Analog Tape Flutter, Wow & Hysteresis Warmer Studio - Completed)
-- In Flight: Advancing to Loop 79 (v6.29.0 Audiophile Dynamic Spectral De-Hummer & 50/60Hz Mains Ground Loop Isolator Studio)
+- Active Phase: Post-v1.0 Improvement Loop 79 (v6.29.0 Audiophile Dynamic Spectral De-Hummer & 50/60Hz Mains Ground Loop Isolator Studio - Completed)
+- In Flight: Advancing to Loop 80 (v6.30.0 Audiophile Dynamic Acoustic Feedback & Larsen Ringing Suppressor Studio)
 - Branches: `main`
 
 ## Phase Tracking
@@ -774,6 +774,18 @@
     - [x] Comprehensive test suites in `TapeHysteresisEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.28-1`
+
+- [x] Improvement Loop 79 (v6.29 Milestone - Tagged `v6.29-1`)
+  - [x] Audiophile Dynamic Spectral De-Hummer & 50/60Hz Mains Ground Loop Isolator Studio (`MainsHumIsolatorEngine`):
+    - [x] `MainsFrequency`, `HumHarmonicDepth`, `HumIsolatorPreset`, `MainsHumIsolatorConfig`, and `MainsHumMetrics` in `:core:model`
+    - [x] `MainsHumIsolatorEngine` in `:core:domain:audio` with cascaded high-Q biquad notch filter bank (up to 6 harmonics), grid auto-detection, single-pole recursive DC offset rejection (<5 Hz), and adaptive psychoacoustic masking
+    - [x] Hardware equalizer integration in `NexusAudioEffects` (`applyMainsHumOffset`, `clearMainsHumOffset`, `getMainsHumOffset`) targeting Band 0
+    - [x] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
+    - [x] `SettingsViewModel` hum isolator control methods
+    - [x] Interactive "Mains Ground Loop & 50/60Hz Hum Isolator Studio" card in `SettingsScreen` with isolator presets, grid frequency selector chips (50 Hz, 60 Hz, Auto), harmonic notch order chips, notch Q slider, notch depth slider, adaptive masking and DC blocker switches, and real-time noise rejection / DC residual HUD
+    - [x] Comprehensive test suites in `MainsHumIsolatorEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v6.29-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

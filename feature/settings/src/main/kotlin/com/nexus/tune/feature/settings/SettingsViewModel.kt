@@ -1227,4 +1227,58 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(tapeHysteresisConfig = current.tapeHysteresisConfig.copy(tapeHissReduction = enabled)))
     }
+
+    fun setMainsHumIsolatorEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(mainsHumIsolatorConfig = current.mainsHumIsolatorConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setMainsHumIsolatorPreset(preset: HumIsolatorPreset) {
+        val current = themeConfig.value
+        val isEnabled = preset != HumIsolatorPreset.OFF
+        updateTheme(
+            current.copy(
+                mainsHumIsolatorConfig = current.mainsHumIsolatorConfig.copy(
+                    isEnabled = isEnabled,
+                    preset = preset,
+                    frequency = if (preset != HumIsolatorPreset.OFF) preset.frequency else current.mainsHumIsolatorConfig.frequency,
+                    harmonicDepth = if (preset != HumIsolatorPreset.OFF) preset.harmonicDepth else current.mainsHumIsolatorConfig.harmonicDepth,
+                    notchQ = if (preset != HumIsolatorPreset.OFF) preset.notchQ else current.mainsHumIsolatorConfig.notchQ,
+                    notchDepthDb = if (preset != HumIsolatorPreset.OFF) preset.notchDepthDb else current.mainsHumIsolatorConfig.notchDepthDb,
+                    adaptiveMasking = if (preset != HumIsolatorPreset.OFF) preset.adaptiveMasking else current.mainsHumIsolatorConfig.adaptiveMasking,
+                    dcBlockerEnabled = if (preset != HumIsolatorPreset.OFF) preset.dcBlocker else current.mainsHumIsolatorConfig.dcBlockerEnabled
+                )
+            )
+        )
+    }
+
+    fun setMainsHumIsolatorFrequency(frequency: MainsFrequency) {
+        val current = themeConfig.value
+        updateTheme(current.copy(mainsHumIsolatorConfig = current.mainsHumIsolatorConfig.copy(frequency = frequency)))
+    }
+
+    fun setMainsHumIsolatorHarmonicDepth(depth: HumHarmonicDepth) {
+        val current = themeConfig.value
+        updateTheme(current.copy(mainsHumIsolatorConfig = current.mainsHumIsolatorConfig.copy(harmonicDepth = depth)))
+    }
+
+    fun setMainsHumIsolatorNotchQ(q: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(mainsHumIsolatorConfig = current.mainsHumIsolatorConfig.copy(notchQ = q.coerceIn(5.0f, 50.0f))))
+    }
+
+    fun setMainsHumIsolatorNotchDepth(depthDb: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(mainsHumIsolatorConfig = current.mainsHumIsolatorConfig.copy(notchDepthDb = depthDb.coerceIn(-48.0f, 0.0f))))
+    }
+
+    fun setMainsHumIsolatorAdaptiveMasking(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(mainsHumIsolatorConfig = current.mainsHumIsolatorConfig.copy(adaptiveMasking = enabled)))
+    }
+
+    fun setMainsHumIsolatorDcBlocker(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(mainsHumIsolatorConfig = current.mainsHumIsolatorConfig.copy(dcBlockerEnabled = enabled)))
+    }
 }

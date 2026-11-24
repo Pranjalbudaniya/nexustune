@@ -164,6 +164,14 @@ class SettingsDataStore(private val context: Context) {
         val TAPE_HYSTERESIS_HEAD_BUMP = floatPreferencesKey("tape_hysteresis_head_bump")
         val TAPE_HYSTERESIS_WOW_FLUTTER = floatPreferencesKey("tape_hysteresis_wow_flutter")
         val TAPE_HYSTERESIS_NOISE_REDUCTION = booleanPreferencesKey("tape_hysteresis_noise_reduction")
+        val MAINS_HUM_ISOLATOR_ENABLED = booleanPreferencesKey("mains_hum_isolator_enabled")
+        val MAINS_HUM_ISOLATOR_PRESET = stringPreferencesKey("mains_hum_isolator_preset")
+        val MAINS_HUM_ISOLATOR_FREQUENCY = stringPreferencesKey("mains_hum_isolator_frequency")
+        val MAINS_HUM_ISOLATOR_HARMONIC_DEPTH = stringPreferencesKey("mains_hum_isolator_harmonic_depth")
+        val MAINS_HUM_ISOLATOR_NOTCH_Q = floatPreferencesKey("mains_hum_isolator_notch_q")
+        val MAINS_HUM_ISOLATOR_NOTCH_DEPTH = floatPreferencesKey("mains_hum_isolator_notch_depth")
+        val MAINS_HUM_ISOLATOR_ADAPTIVE_MASKING = booleanPreferencesKey("mains_hum_isolator_adaptive_masking")
+        val MAINS_HUM_ISOLATOR_DC_BLOCKER = booleanPreferencesKey("mains_hum_isolator_dc_blocker")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -438,6 +446,22 @@ class SettingsDataStore(private val context: Context) {
                 headBumpGainDb = prefs[PreferencesKeys.TAPE_HYSTERESIS_HEAD_BUMP] ?: 2.0f,
                 wowFlutterDepth = prefs[PreferencesKeys.TAPE_HYSTERESIS_WOW_FLUTTER] ?: 0.20f,
                 tapeHissReduction = prefs[PreferencesKeys.TAPE_HYSTERESIS_NOISE_REDUCTION] ?: true
+            ),
+            mainsHumIsolatorConfig = MainsHumIsolatorConfig(
+                isEnabled = prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_ENABLED] ?: false,
+                preset = runCatching {
+                    HumIsolatorPreset.valueOf(prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_PRESET] ?: HumIsolatorPreset.OFF.name)
+                }.getOrDefault(HumIsolatorPreset.OFF),
+                frequency = runCatching {
+                    MainsFrequency.valueOf(prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_FREQUENCY] ?: MainsFrequency.AUTO_DETECT.name)
+                }.getOrDefault(MainsFrequency.AUTO_DETECT),
+                harmonicDepth = runCatching {
+                    HumHarmonicDepth.valueOf(prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_HARMONIC_DEPTH] ?: HumHarmonicDepth.LOW_HARMONICS.name)
+                }.getOrDefault(HumHarmonicDepth.LOW_HARMONICS),
+                notchQ = prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_NOTCH_Q] ?: 25.0f,
+                notchDepthDb = prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_NOTCH_DEPTH] ?: -24.0f,
+                adaptiveMasking = prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_ADAPTIVE_MASKING] ?: true,
+                dcBlockerEnabled = prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_DC_BLOCKER] ?: true
             )
         )
     }
@@ -585,6 +609,14 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.TAPE_HYSTERESIS_HEAD_BUMP] = config.tapeHysteresisConfig.headBumpGainDb
             prefs[PreferencesKeys.TAPE_HYSTERESIS_WOW_FLUTTER] = config.tapeHysteresisConfig.wowFlutterDepth
             prefs[PreferencesKeys.TAPE_HYSTERESIS_NOISE_REDUCTION] = config.tapeHysteresisConfig.tapeHissReduction
+            prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_ENABLED] = config.mainsHumIsolatorConfig.isEnabled
+            prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_PRESET] = config.mainsHumIsolatorConfig.preset.name
+            prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_FREQUENCY] = config.mainsHumIsolatorConfig.frequency.name
+            prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_HARMONIC_DEPTH] = config.mainsHumIsolatorConfig.harmonicDepth.name
+            prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_NOTCH_Q] = config.mainsHumIsolatorConfig.notchQ
+            prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_NOTCH_DEPTH] = config.mainsHumIsolatorConfig.notchDepthDb
+            prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_ADAPTIVE_MASKING] = config.mainsHumIsolatorConfig.adaptiveMasking
+            prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_DC_BLOCKER] = config.mainsHumIsolatorConfig.dcBlockerEnabled
         }
     }
 
@@ -769,6 +801,19 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.TAPE_HYSTERESIS_HEAD_BUMP] = config.headBumpGainDb
             prefs[PreferencesKeys.TAPE_HYSTERESIS_WOW_FLUTTER] = config.wowFlutterDepth
             prefs[PreferencesKeys.TAPE_HYSTERESIS_NOISE_REDUCTION] = config.tapeHissReduction
+        }
+    }
+
+    suspend fun updateMainsHumIsolatorConfig(config: MainsHumIsolatorConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_PRESET] = config.preset.name
+            prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_FREQUENCY] = config.frequency.name
+            prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_HARMONIC_DEPTH] = config.harmonicDepth.name
+            prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_NOTCH_Q] = config.notchQ
+            prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_NOTCH_DEPTH] = config.notchDepthDb
+            prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_ADAPTIVE_MASKING] = config.adaptiveMasking
+            prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_DC_BLOCKER] = config.dcBlockerEnabled
         }
     }
 
