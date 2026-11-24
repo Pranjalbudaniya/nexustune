@@ -33,6 +33,8 @@ class SettingsDataStore(private val context: Context) {
         val RECENT_SEARCHES = stringPreferencesKey("recent_searches_csv")
         val SHAKE_TO_EXTEND = booleanPreferencesKey("sleep_timer_shake_to_extend")
         val SHAKE_EXTEND_MINUTES = intPreferencesKey("sleep_timer_shake_extend_minutes")
+        val AMBIENT_SOUND_TYPE = stringPreferencesKey("ambient_sound_type")
+        val AMBIENT_SOUND_VOLUME = floatPreferencesKey("ambient_sound_volume")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -55,7 +57,11 @@ class SettingsDataStore(private val context: Context) {
                 CrossfadeCurve.valueOf(prefs[PreferencesKeys.CROSSFADE_CURVE] ?: CrossfadeCurve.EQUAL_POWER.name)
             }.getOrDefault(CrossfadeCurve.EQUAL_POWER),
             shakeToExtendSleepTimerEnabled = prefs[PreferencesKeys.SHAKE_TO_EXTEND] ?: false,
-            shakeExtendMinutes = prefs[PreferencesKeys.SHAKE_EXTEND_MINUTES] ?: 10
+            shakeExtendMinutes = prefs[PreferencesKeys.SHAKE_EXTEND_MINUTES] ?: 10,
+            ambientSoundType = runCatching {
+                AmbientSoundType.valueOf(prefs[PreferencesKeys.AMBIENT_SOUND_TYPE] ?: AmbientSoundType.OFF.name)
+            }.getOrDefault(AmbientSoundType.OFF),
+            ambientSoundVolume = prefs[PreferencesKeys.AMBIENT_SOUND_VOLUME] ?: 0.5f
         )
     }
 
@@ -76,6 +82,8 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.CROSSFADE_CURVE] = config.crossfadeCurve.name
             prefs[PreferencesKeys.SHAKE_TO_EXTEND] = config.shakeToExtendSleepTimerEnabled
             prefs[PreferencesKeys.SHAKE_EXTEND_MINUTES] = config.shakeExtendMinutes
+            prefs[PreferencesKeys.AMBIENT_SOUND_TYPE] = config.ambientSoundType.name
+            prefs[PreferencesKeys.AMBIENT_SOUND_VOLUME] = config.ambientSoundVolume
         }
     }
 

@@ -155,7 +155,9 @@ data class ThemeConfig(
     val spatialAudioStrength: Int = 500,
     val crossfadeCurve: CrossfadeCurve = CrossfadeCurve.EQUAL_POWER,
     val shakeToExtendSleepTimerEnabled: Boolean = false,
-    val shakeExtendMinutes: Int = 10
+    val shakeExtendMinutes: Int = 10,
+    val ambientSoundType: AmbientSoundType = AmbientSoundType.OFF,
+    val ambientSoundVolume: Float = 0.5f
 )
 
 data class SoundDoseInfo(
@@ -250,5 +252,17 @@ data class AudioOutputDevice(
             "Standard Audio"
         }
     }
+}
+
+enum class AmbientSoundType(val displayName: String, val description: String) {
+    OFF("Off", "Ambient generator disabled"),
+    BROWN_NOISE("Brown Noise", "Deep low-frequency rumble ideal for sleep & ADHD masking"),
+    PINK_NOISE("Pink Noise", "Gentle natural frequency decay like soothing rainfall"),
+    WHITE_NOISE("White Noise", "Crisp full-spectrum sound to mask ambient disturbances"),
+    BINAURAL_ALPHA("Alpha Waves (10Hz)", "Binaural beat for relaxed focus and flow (use headphones)"),
+    BINAURAL_THETA("Theta Waves (6Hz)", "Binaural beat for meditation and REM sleep (use headphones)"),
+    BINAURAL_DELTA("Delta Sleep (2.5Hz)", "Binaural beat for deep restorative sleep (use headphones)"),
+    SOLFEGGIO_432HZ("432Hz Harmony", "Natural harmonic resonance frequency"),
+    SOLFEGGIO_528HZ("528Hz Miracle", "Transformation and clarity tone")
 }
 

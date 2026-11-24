@@ -434,4 +434,26 @@ class SettingsViewModelTest {
         }
         verify { sleepTimerManager.setShakeToExtend(any(), 15) }
     }
+
+    @Test
+    fun `setAmbientSound updates themeConfig and synthesizer sound type`() = runTest {
+        viewModel.setAmbientSound(AmbientSoundType.BROWN_NOISE)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.ambientSoundType == AmbientSoundType.BROWN_NOISE })
+        }
+        assertEquals(AmbientSoundType.BROWN_NOISE, viewModel.ambientState.value.soundType)
+    }
+
+    @Test
+    fun `setAmbientVolume clamps and updates themeConfig`() = runTest {
+        viewModel.setAmbientVolume(0.85f)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { kotlin.math.abs(it.ambientSoundVolume - 0.85f) < 0.001f })
+        }
+        assertEquals(0.85f, viewModel.ambientState.value.volume, 0.001f)
+    }
 }

@@ -163,6 +163,9 @@ class SleepTimerManager(
         unregisterShakeListener()
         playerController.togglePlayPause()
         playerController.setVolume(1.0f)
+        runCatching {
+            com.nexus.tune.core.player.ambient.AmbientSoundSynthesizer.instance.stop()
+        }
         _timerState.value = _timerState.value.copy(
             isActive = false,
             remainingSeconds = 0L,

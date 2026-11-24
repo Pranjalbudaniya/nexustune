@@ -21,8 +21,38 @@ class SettingsViewModel(
     private val musicRepository: com.nexus.tune.core.domain.repository.MusicRepository? = null,
     private val safeListeningManager: com.nexus.tune.core.player.hearing.SafeListeningManager? = null,
     private val backupManager: com.nexus.tune.core.data.backup.BackupManager? = null,
-    private val isMeteredConnectionProvider: (() -> Boolean)? = null
+    private val isMeteredConnectionProvider: (() -> Boolean)? = null,
+    private val ambientSoundSynthesizer: com.nexus.tune.core.player.ambient.AmbientSoundSynthesizer? = null
 ) : ViewModel() {
+
+    private val activeAmbientSynthesizer: com.nexus.tune.core.player.ambient.AmbientSoundSynthesizer by lazy {
+        ambientSoundSynthesizer ?: com.nexus.tune.core.player.ambient.AmbientSoundSynthesizer.instance
+    }
+
+    val ambientState: StateFlow<com.nexus.tune.core.player.ambient.AmbientSynthesizerState> =
+        activeAmbientSynthesizer.state
+
+    fun setAmbientSound(type: AmbientSoundType) {
+        activeAmbientSynthesizer.setSoundType(type)
+        val current = themeConfig.value
+        updateTheme(current.copy(ambientSoundType = type))
+        if (type != AmbientSoundType.OFF && !activeAmbientSynthesizer.state.value.isPlaying) {
+            activeAmbientSynthesizer.start(type, current.ambientSoundVolume)
+        }
+    }
+
+    fun toggleAmbientPlay() {
+        val current = themeConfig.value
+        val soundType = if (current.ambientSoundType != AmbientSoundType.OFF) current.ambientSoundType else AmbientSoundType.BROWN_NOISE
+        activeAmbientSynthesizer.togglePlay(soundType)
+    }
+
+    fun setAmbientVolume(volume: Float) {
+        val clamped = volume.coerceIn(0f, 1f)
+        activeAmbientSynthesizer.setVolume(clamped)
+        val current = themeConfig.value
+        updateTheme(current.copy(ambientSoundVolume = clamped))
+    }
 
     val preferredQuality: StateFlow<String> = settingsRepository.getPreferredQuality()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "AUTO")

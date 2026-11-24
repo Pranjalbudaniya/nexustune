@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -27,6 +28,7 @@ fun SettingsScreen(
     val soundDoseInfo by viewModel.soundDoseInfo.collectAsState()
     val preferredQuality by viewModel.preferredQuality.collectAsState()
     val isMeteredConnection by viewModel.isMeteredConnection.collectAsState()
+    val ambientState by viewModel.ambientState.collectAsState()
 
     Scaffold(
         modifier = modifier,
@@ -634,6 +636,131 @@ fun SettingsScreen(
                                 onClick = { viewModel.setShakeExtendMinutes(mins) },
                                 label = { Text(label) }
                             )
+                        }
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            }
+
+            // --- Bedtime Ambient Soundscapes & Binaural Waves ---
+            item {
+                Text(
+                    text = "Bedtime Ambient Soundscapes & Binaural Waves",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (ambientState.isPlaying)
+                            MaterialTheme.colorScheme.secondaryContainer
+                        else
+                            MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = if (ambientState.isPlaying) "Ambient Sound Active" else "Ambient Sound Generator",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = if (ambientState.isPlaying)
+                                        MaterialTheme.colorScheme.onSecondaryContainer
+                                    else
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Text(
+                                    text = ambientState.soundType.displayName,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = if (ambientState.isPlaying)
+                                        MaterialTheme.colorScheme.onSecondaryContainer
+                                    else
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+
+                            FilledTonalIconButton(
+                                onClick = { viewModel.toggleAmbientPlay() },
+                                colors = IconButtonDefaults.filledTonalIconButtonColors(
+                                    containerColor = if (ambientState.isPlaying)
+                                        MaterialTheme.colorScheme.primary
+                                    else
+                                        MaterialTheme.colorScheme.surfaceContainerHighest,
+                                    contentColor = if (ambientState.isPlaying)
+                                        MaterialTheme.colorScheme.onPrimary
+                                    else
+                                        MaterialTheme.colorScheme.onSurface
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = if (ambientState.isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+                                    contentDescription = if (ambientState.isPlaying) "Pause Ambient" else "Play Ambient"
+                                )
+                            }
+                        }
+
+                        Text(
+                            text = ambientState.soundType.description,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 8.dp, bottom = 12.dp)
+                        )
+
+                        // Ambient Volume Slider
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Rounded.VolumeUp,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Slider(
+                                value = ambientState.volume,
+                                onValueChange = { viewModel.setAmbientVolume(it) },
+                                valueRange = 0f..1f,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Text(
+                                text = "${(ambientState.volume * 100).toInt()}%",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Sound Profile Chips
+                        Text(
+                            text = "Sound Profile",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(bottom = 6.dp)
+                        )
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState()),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            AmbientSoundType.values().filter { it != AmbientSoundType.OFF }.forEach { soundType ->
+                                FilterChip(
+                                    selected = ambientState.soundType == soundType,
+                                    onClick = { viewModel.setAmbientSound(soundType) },
+                                    label = { Text(soundType.displayName) }
+                                )
+                            }
                         }
                     }
                 }

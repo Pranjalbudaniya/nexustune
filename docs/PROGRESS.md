@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 28 (v3.8.0 Sleep Timer Accelerometer Shake-to-Extend)
+- Active Phase: Post-v1.0 Improvement Loop 30 (v4.0.0 Bedtime Ambient Soundscapes & Binaural Brainwave Synthesizer Milestone)
 - In Flight: Running test suites and ./scripts/gate.sh slice
 - Branches: `main`
 
@@ -221,13 +221,32 @@
     - [x] Settings UI Export/Import M3U integration
   - [x] Final gate passed & tagged: `git tag v3.7-1`
 
-## Improvement Loop 28 (v3.8 Milestone - In Progress)
-- [ ] Sleep Timer Accelerometer Shake-to-Extend:
-  - Hardware `SensorManager.TYPE_ACCELEROMETER` motion detection with debouncing
-  - Dynamic fade-out volume recovery on motion trigger
-  - Settings UI toggle and extension duration chips (+5m, +10m, +15m)
+- [x] Improvement Loop 28 (v3.8 Milestone - Tagged `v3.8-1`)
+  - [x] Sleep Timer Accelerometer Shake-to-Extend:
+    - [x] Hardware `SensorManager.TYPE_ACCELEROMETER` motion detection with debouncing
+    - [x] Dynamic fade-out volume recovery on motion trigger
+    - [x] Settings UI toggle and extension duration chips (+5m, +10m, +15m)
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `git tag v3.8-1`
+
+- [x] Improvement Loop 29 (v3.9 Milestone - Tagged `v3.9-1`)
+  - [x] Smart Playlist & Queue Deduplication Engine:
+    - [x] `PlaylistDeduplicator` detecting exact and semantic duplicate tracks
+    - [x] Noise pattern normalization (`(Official Audio)`, `[Audio]`, `(Lyric Video)`, etc.)
+    - [x] `ManageQueueUseCase.deduplicateQueue()` and `MusicRepository.deduplicateLikedTracks()`
+    - [x] UI deduplication actions in `LibraryScreen` and `SettingsScreen`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `git tag v3.9-1`
+
+## Improvement Loop 30 (v4.0 Milestone - In Progress)
+- [ ] Bedtime Ambient Soundscapes & Binaural Brainwave Synthesizer:
+  - Procedural DSP math engine `AmbientSoundGenerator` in `:core:domain` (Brown, Pink, White noise, Alpha, Theta, Delta binaural waves, 432Hz/528Hz Solfeggio tones)
+  - Streaming `AmbientSoundSynthesizer` in `:core:player` using native low-latency `AudioTrack`
+  - DataStore preference persistence for ambient sound profile and volume
+  - Material 3 Expressive UI card in `SettingsScreen` with play/stop, volume slider, and profile selector chips
+  - Auto-shutoff coordination with `SleepTimerManager`
 - [ ] Slice gate passed
-- [ ] Final gate passed & tagged: `git tag v3.8-1`
+- [ ] Final gate passed & tagged: `git tag v4.0-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

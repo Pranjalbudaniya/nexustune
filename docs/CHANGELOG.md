@@ -5,6 +5,27 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0] - 2026-11-24
+
+### Added
+- **Bedtime Ambient Soundscapes & Binaural Brainwave Synthesizer**: Implemented procedural 16-bit PCM audio math engine in `AmbientSoundGenerator` generating 44.1kHz stereo soundscapes across 8 distinct profiles:
+  - `Brown Noise`: Brownian random walk with leak factor for deep low-frequency ADHD masking and restorative sleep.
+  - `Pink Noise`: Paul Kellet 3-pole IIR filter (1/f spectral density) simulating natural rainfall and rustling leaves.
+  - `White Noise`: Uniform flat spectral density for high-power ambient environmental sound masking.
+  - `Binaural Alpha Waves (10Hz)`: 216Hz/226Hz stereo carrier separation promoting calm alertness and focus.
+  - `Binaural Theta Waves (6Hz)`: 197Hz/203Hz stereo carrier separation for meditation and REM dream states.
+  - `Binaural Delta Sleep (2.5Hz)`: 148.75Hz/151.25Hz carrier separation designed for deep slow-wave restorative sleep.
+  - `Solfeggio 432Hz & 528Hz`: Harmonic natural resonance tones.
+- **Low-Latency AudioTrack Streaming Player**: Built `AmbientSoundSynthesizer` in `:core:player` with coroutine synthesis streaming, volume attenuation, and auto-shutoff coordination with `SleepTimerManager`.
+- **Material 3 Expressive UI & DataStore Persistence**: Added Bedtime & Ambient Soundscapes card in `SettingsScreen` with live playback controls, volume slider, sound profile carousel, and persistent preferences in `SettingsDataStore`.
+
+## [3.9.0] - 2026-11-24
+
+### Added
+- **Smart Playlist & Queue Deduplication Engine**: Added `PlaylistDeduplicator` in `:core:domain` detecting exact and semantic duplicate tracks by normalizing titles (removing noise tags like `(Official Audio)`, `[Audio]`, `(Official Music Video)`, etc.) and matching artist metadata.
+- **Queue and Library Deduplication**: Integrated `deduplicateQueue()` in `ManageQueueUseCase` and `PlayerViewModel`, and `deduplicateLikedTracks()` in `MusicRepository` and `SettingsViewModel`.
+- **UI Integration**: Added "Clean Duplicates" action button in `LibraryScreen` and "Clean Library Duplicates" option in `SettingsScreen`.
+
 ## [3.8.0] - 2026-11-24
 
 ### Added
