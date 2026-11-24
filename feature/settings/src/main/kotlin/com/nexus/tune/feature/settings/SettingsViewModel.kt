@@ -714,4 +714,19 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(resamplingFilterConfig = current.resamplingFilterConfig.copy(cutoffRatio = cutoff.coerceIn(0.80f, 0.99f))))
     }
+
+    fun setPhaseGuardEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(phaseMeterConfig = current.phaseMeterConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setMonoGuardMode(mode: MonoGuardMode) {
+        val current = themeConfig.value
+        updateTheme(current.copy(phaseMeterConfig = current.phaseMeterConfig.copy(guardMode = mode, minCorrelationThreshold = mode.threshold)))
+    }
+
+    fun setPhaseGuardThreshold(threshold: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(phaseMeterConfig = current.phaseMeterConfig.copy(minCorrelationThreshold = threshold.coerceIn(-0.5f, 0.8f))))
+    }
 }

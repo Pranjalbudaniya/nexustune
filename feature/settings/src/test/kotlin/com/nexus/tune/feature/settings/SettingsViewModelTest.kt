@@ -912,4 +912,25 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.resamplingFilterConfig.cutoffRatio == 0.92f })
         }
     }
+
+    @Test
+    fun `phase guard settings update theme config`() = runTest {
+        viewModel.setPhaseGuardEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.phaseMeterConfig.isEnabled })
+        }
+
+        viewModel.setMonoGuardMode(MonoGuardMode.STRICT_MONO_COMPLIANCE)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.phaseMeterConfig.guardMode == MonoGuardMode.STRICT_MONO_COMPLIANCE })
+        }
+
+        viewModel.setPhaseGuardThreshold(0.35f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.phaseMeterConfig.minCorrelationThreshold == 0.35f })
+        }
+    }
 }

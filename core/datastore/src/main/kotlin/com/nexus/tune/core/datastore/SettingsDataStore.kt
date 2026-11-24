@@ -93,6 +93,9 @@ class SettingsDataStore(private val context: Context) {
         val SILENCE_TRIM_MIN_MS = longPreferencesKey("silence_trim_min_ms")
         val RESAMPLING_FILTER_MODE = stringPreferencesKey("resampling_filter_mode")
         val RESAMPLING_FILTER_CUTOFF = floatPreferencesKey("resampling_filter_cutoff")
+        val PHASE_GUARD_ENABLED = booleanPreferencesKey("phase_guard_enabled")
+        val PHASE_GUARD_MODE = stringPreferencesKey("phase_guard_mode")
+        val PHASE_GUARD_THRESHOLD = floatPreferencesKey("phase_guard_threshold")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -224,6 +227,13 @@ class SettingsDataStore(private val context: Context) {
                     ResamplingFilterMode.valueOf(prefs[PreferencesKeys.RESAMPLING_FILTER_MODE] ?: ResamplingFilterMode.MINIMUM_PHASE_PUNCH.name)
                 }.getOrDefault(ResamplingFilterMode.MINIMUM_PHASE_PUNCH),
                 cutoffRatio = prefs[PreferencesKeys.RESAMPLING_FILTER_CUTOFF] ?: 0.95f
+            ),
+            phaseMeterConfig = PhaseMeterConfig(
+                isEnabled = prefs[PreferencesKeys.PHASE_GUARD_ENABLED] ?: false,
+                guardMode = runCatching {
+                    MonoGuardMode.valueOf(prefs[PreferencesKeys.PHASE_GUARD_MODE] ?: MonoGuardMode.INTELLIGENT_SAFEGUARD.name)
+                }.getOrDefault(MonoGuardMode.INTELLIGENT_SAFEGUARD),
+                minCorrelationThreshold = prefs[PreferencesKeys.PHASE_GUARD_THRESHOLD] ?: 0.20f
             )
         )
     }
@@ -300,6 +310,9 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.SILENCE_TRIM_MIN_MS] = config.silenceTrimConfig.minDurationMs
             prefs[PreferencesKeys.RESAMPLING_FILTER_MODE] = config.resamplingFilterConfig.mode.name
             prefs[PreferencesKeys.RESAMPLING_FILTER_CUTOFF] = config.resamplingFilterConfig.cutoffRatio
+            prefs[PreferencesKeys.PHASE_GUARD_ENABLED] = config.phaseMeterConfig.isEnabled
+            prefs[PreferencesKeys.PHASE_GUARD_MODE] = config.phaseMeterConfig.guardMode.name
+            prefs[PreferencesKeys.PHASE_GUARD_THRESHOLD] = config.phaseMeterConfig.minCorrelationThreshold
         }
     }
 
@@ -338,6 +351,14 @@ class SettingsDataStore(private val context: Context) {
         context.dataStore.edit { prefs ->
             prefs[PreferencesKeys.RESAMPLING_FILTER_MODE] = config.mode.name
             prefs[PreferencesKeys.RESAMPLING_FILTER_CUTOFF] = config.cutoffRatio
+        }
+    }
+
+    suspend fun updatePhaseMeterConfig(config: PhaseMeterConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.PHASE_GUARD_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.PHASE_GUARD_MODE] = config.guardMode.name
+            prefs[PreferencesKeys.PHASE_GUARD_THRESHOLD] = config.minCorrelationThreshold
         }
     }
 

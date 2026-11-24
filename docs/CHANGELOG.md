@@ -5,6 +5,16 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.14.0] - 2026-11-24
+
+### Added
+- **Stereo Phase Correlation & Mono Compatibility Guard Studio (`PhaseMeterEngine`)**: Added `PhaseCorrelationRating` (`PERFECT_MONO`, `EXCELLENT_STEREO`, `ACCEPTABLE_WIDE`, `PHASE_WARNING`, `CRITICAL_CANCELLATION`), `MonoGuardMode` (`OFF`, `INTELLIGENT_SAFEGUARD`, `STRICT_MONO_COMPLIANCE`), `PhaseMeterConfig`, and `PhaseCorrelationMetrics` in `:core:model`.
+- **Pearson Cross-Correlation & Dynamic Mono-Guard Anti-Cancellation DSP**: Implemented `PhaseMeterEngine` in `:core:domain:audio` computing real-time Pearson cross-channel correlation ($r \in [-1.0, +1.0]$) to protect against destructive phase inversion on mono speakers, dynamically attenuating side-channel ($S = \frac{L-R}{2}$) energy when correlation falls below safe thresholds to preserve vocal and punch clarity.
+- **DataStore Persistence**: Added `PHASE_GUARD_ENABLED`, `PHASE_GUARD_MODE`, and `PHASE_GUARD_THRESHOLD` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Mono-Guard Studio**: Added interactive "Mono-Guard Anti-Cancellation" card in `SettingsScreen` within the soundstage section, complete with protection mode chips, live correlation coefficient, and mono safety indicator.
+- **Unit Test Coverage**: Comprehensive test suites in `PhaseMeterEngineTest` in `:core:domain` and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.13.0] - 2026-11-24
 
 ### Added

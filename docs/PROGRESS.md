@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 63 (v6.13.0 Audiophile Resampling & Polyphase Sinc Reconstruction Filter Studio)
+- Active Phase: Post-v1.0 Improvement Loop 64 (v6.14.0 Stereo Phase Correlation & Mono Compatibility Guard Studio)
 - In Flight: Quality gate execution and release qualification
 - Branches: `main`
 
@@ -600,6 +600,17 @@
     - [x] Comprehensive test suites in `ResamplingFilterEngineTest` and `SettingsViewModelTest`
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.13-1`
+
+- [x] Improvement Loop 64 (v6.14 Milestone - Tagged `v6.14-1`)
+  - [x] Stereo Phase Correlation & Mono Compatibility Guard Studio (`PhaseMeterEngine`):
+    - [x] `PhaseCorrelationRating`, `MonoGuardMode`, `PhaseMeterConfig`, and `PhaseCorrelationMetrics` in `:core:model`
+    - [x] `PhaseMeterEngine` in `:core:domain:audio` with Pearson correlation calculation, rating evaluation, and Mono-Guard side-channel attenuation
+    - [x] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
+    - [x] `SettingsViewModel` phase guard control methods
+    - [x] Interactive "Mono-Guard Anti-Cancellation" card in `SettingsScreen`
+    - [x] Comprehensive test suites in `PhaseMeterEngineTest` and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v6.14-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

@@ -229,7 +229,8 @@ data class ThemeConfig(
     val dynamicLoudnessConfig: DynamicLoudnessConfig = DynamicLoudnessConfig(),
     val beatCrossfadeConfig: BeatCrossfadeConfig = BeatCrossfadeConfig(),
     val silenceTrimConfig: SilenceTrimConfig = SilenceTrimConfig(),
-    val resamplingFilterConfig: ResamplingFilterConfig = ResamplingFilterConfig()
+    val resamplingFilterConfig: ResamplingFilterConfig = ResamplingFilterConfig(),
+    val phaseMeterConfig: PhaseMeterConfig = PhaseMeterConfig()
 )
 
 data class SoundDoseInfo(
@@ -920,6 +921,34 @@ data class FilterImpulseMetrics(
     val stopbandRejectionDb: Float,
     val phaseLinearityRating: String
 )
+
+enum class PhaseCorrelationRating(val displayName: String, val description: String, val isMonoSafe: Boolean) {
+    PERFECT_MONO("Pure Mono (+1.0)", "Identical left and right channels; 100% mono compliant", true),
+    EXCELLENT_STEREO("Excellent Stereo (+0.6 to +0.9)", "Balanced stereo field with healthy mono acoustic power", true),
+    ACCEPTABLE_WIDE("Wide Stereo (+0.2 to +0.5)", "Spacious soundstage; minor volume loss on mono speakers", true),
+    PHASE_WARNING("Phase Warning (-0.2 to +0.2)", "Significant out-of-phase ambiance; noticeable mono cancellation", false),
+    CRITICAL_CANCELLATION("Critical Inversion (-1.0 to -0.2)", "Opposite phase channels; core audio disappears when summed to mono", false)
+}
+
+enum class MonoGuardMode(val displayName: String, val description: String, val threshold: Float) {
+    OFF("Off (Unrestricted)", "No automatic phase correction or mono guard", -1.0f),
+    INTELLIGENT_SAFEGUARD("Smart Safeguard", "Progressive side-channel compression when correlation drops below +0.2", 0.20f),
+    STRICT_MONO_COMPLIANCE("Strict Broadcast", "Maintains minimum +0.50 correlation for flawless speaker fidelity", 0.50f)
+}
+
+data class PhaseMeterConfig(
+    val isEnabled: Boolean = false,
+    val guardMode: MonoGuardMode = MonoGuardMode.INTELLIGENT_SAFEGUARD,
+    val minCorrelationThreshold: Float = 0.20f
+)
+
+data class PhaseCorrelationMetrics(
+    val correlationCoeff: Float,
+    val rating: PhaseCorrelationRating,
+    val sideAttenuationDb: Float,
+    val isMonoSafe: Boolean
+)
+
 
 
 

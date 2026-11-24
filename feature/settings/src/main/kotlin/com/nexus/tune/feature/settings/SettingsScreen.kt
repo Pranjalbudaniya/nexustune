@@ -790,6 +790,78 @@ fun SettingsScreen(
                             )
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+                    ListItem(
+                        headlineContent = { Text("Mono-Guard Anti-Cancellation") },
+                        supportingContent = { Text("Safeguards vocals and punch from phase cancellation on phone/Bluetooth speakers") },
+                        trailingContent = {
+                            Switch(
+                                checked = themeConfig.phaseMeterConfig.isEnabled,
+                                onCheckedChange = { viewModel.setPhaseGuardEnabled(it) }
+                            )
+                        }
+                    )
+
+                    if (themeConfig.phaseMeterConfig.isEnabled) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Mono-Guard Protection Mode",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState()),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            MonoGuardMode.entries.forEach { mode ->
+                                FilterChip(
+                                    selected = themeConfig.phaseMeterConfig.guardMode == mode,
+                                    onClick = { viewModel.setMonoGuardMode(mode) },
+                                    label = { Text(mode.displayName) }
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(4.dp))
+                        val demoMetrics = com.nexus.tune.core.domain.audio.PhaseMeterEngine.calculatePhaseMetrics(
+                            left = floatArrayOf(0.7f, 0.4f, 0.9f, 0.6f),
+                            right = floatArrayOf(0.65f, 0.45f, 0.85f, 0.55f),
+                            guardMode = themeConfig.phaseMeterConfig.guardMode
+                        )
+                        Surface(
+                            shape = MaterialTheme.shapes.small,
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(8.dp)) {
+                                Text(
+                                    text = themeConfig.phaseMeterConfig.guardMode.description,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Coeff: +${String.format(java.util.Locale.US, "%.2f", demoMetrics.correlationCoeff)}",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                    Text(
+                                        text = demoMetrics.rating.displayName,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.tertiary
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
