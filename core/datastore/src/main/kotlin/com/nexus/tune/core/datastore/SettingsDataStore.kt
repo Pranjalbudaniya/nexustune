@@ -31,6 +31,8 @@ class SettingsDataStore(private val context: Context) {
         val SPATIAL_AUDIO_STRENGTH = intPreferencesKey("spatial_audio_strength")
         val CROSSFADE_CURVE = stringPreferencesKey("crossfade_curve")
         val RECENT_SEARCHES = stringPreferencesKey("recent_searches_csv")
+        val SHAKE_TO_EXTEND = booleanPreferencesKey("sleep_timer_shake_to_extend")
+        val SHAKE_EXTEND_MINUTES = intPreferencesKey("sleep_timer_shake_extend_minutes")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -51,7 +53,9 @@ class SettingsDataStore(private val context: Context) {
             spatialAudioStrength = prefs[PreferencesKeys.SPATIAL_AUDIO_STRENGTH] ?: 500,
             crossfadeCurve = runCatching {
                 CrossfadeCurve.valueOf(prefs[PreferencesKeys.CROSSFADE_CURVE] ?: CrossfadeCurve.EQUAL_POWER.name)
-            }.getOrDefault(CrossfadeCurve.EQUAL_POWER)
+            }.getOrDefault(CrossfadeCurve.EQUAL_POWER),
+            shakeToExtendSleepTimerEnabled = prefs[PreferencesKeys.SHAKE_TO_EXTEND] ?: false,
+            shakeExtendMinutes = prefs[PreferencesKeys.SHAKE_EXTEND_MINUTES] ?: 10
         )
     }
 
@@ -70,6 +74,8 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.SPATIAL_AUDIO_STAGE] = config.spatialAudioStage.name
             prefs[PreferencesKeys.SPATIAL_AUDIO_STRENGTH] = config.spatialAudioStrength
             prefs[PreferencesKeys.CROSSFADE_CURVE] = config.crossfadeCurve.name
+            prefs[PreferencesKeys.SHAKE_TO_EXTEND] = config.shakeToExtendSleepTimerEnabled
+            prefs[PreferencesKeys.SHAKE_EXTEND_MINUTES] = config.shakeExtendMinutes
         }
     }
 

@@ -100,7 +100,11 @@ class NexusTuneApplication : Application() {
         autoPlayQueueManager = com.nexus.tune.core.domain.queue.AutoPlayQueueManager(getAutoPlayRecommendationsUseCase, queueRepository)
 
         playerController = PlayerController(this)
-        sleepTimerManager = com.nexus.tune.core.player.SleepTimerManager(playerController)
+        val sensorManager = getSystemService(android.content.Context.SENSOR_SERVICE) as? android.hardware.SensorManager
+        sleepTimerManager = com.nexus.tune.core.player.SleepTimerManager(
+            playerController = playerController,
+            sensorManager = sensorManager
+        )
         skipSegmentManager = com.nexus.tune.core.player.SkipSegmentManager(playerController)
         audioOutputRouteManager = com.nexus.tune.core.player.routing.AudioOutputRouteManager(this)
 

@@ -96,6 +96,7 @@ class SettingsViewModel(
                 audioOutputRouteManager?.setForcedSampleRate(config.forceHiResSamplingRate)
                 NexusAudioEffects.instance.setSpatialAudioEnabled(config.spatialAudioEnabled)
                 NexusAudioEffects.instance.setSpatialAudioStage(config.spatialAudioStage)
+                sleepTimerManager?.setShakeToExtend(config.shakeToExtendSleepTimerEnabled, config.shakeExtendMinutes)
             }
         }
     }
@@ -268,6 +269,22 @@ class SettingsViewModel(
 
     fun cancelSleepTimer() {
         sleepTimerManager?.cancelTimer()
+    }
+
+    fun extendSleepTimer(minutes: Int) {
+        sleepTimerManager?.extendTimer(minutes)
+    }
+
+    fun toggleShakeToExtend(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(shakeToExtendSleepTimerEnabled = enabled))
+        sleepTimerManager?.setShakeToExtend(enabled, current.shakeExtendMinutes)
+    }
+
+    fun setShakeExtendMinutes(minutes: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(shakeExtendMinutes = minutes))
+        sleepTimerManager?.setShakeToExtend(current.shakeToExtendSleepTimerEnabled, minutes)
     }
 
     fun setEqualizerPreset(preset: EqualizerPreset) {

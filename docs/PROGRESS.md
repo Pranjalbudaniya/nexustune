@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 27 (v3.7.0 Standard M3U/M3U8 Playlist Export & Import Engine)
+- Active Phase: Post-v1.0 Improvement Loop 28 (v3.8.0 Sleep Timer Accelerometer Shake-to-Extend)
 - In Flight: Running test suites and ./scripts/gate.sh slice
 - Branches: `main`
 
@@ -214,13 +214,20 @@
     - [x] Interactive preference chips and network status badge in `SettingsScreen`
   - [x] Final gate passed & tagged: `git tag v3.6-1`
 
-## Improvement Loop 27 (v3.7 Milestone - In Progress)
-- [ ] Standard M3U / M3U8 Playlist Export & Import Engine:
-  - Extended `#EXTM3U` export generator with `#EXTINF` and `#PLAYLIST:` headers
-  - Resilient M3U/M3U8 parser handling YouTube watch URLs and custom stream paths
-  - Settings UI Export/Import M3U integration
+- [x] Improvement Loop 27 (v3.7 Milestone - Tagged `v3.7-1`)
+  - [x] Standard M3U / M3U8 Playlist Export & Import Engine:
+    - [x] Extended `#EXTM3U` export generator with `#EXTINF` and `#PLAYLIST:` headers
+    - [x] Resilient M3U/M3U8 parser handling YouTube watch URLs and custom stream paths
+    - [x] Settings UI Export/Import M3U integration
+  - [x] Final gate passed & tagged: `git tag v3.7-1`
+
+## Improvement Loop 28 (v3.8 Milestone - In Progress)
+- [ ] Sleep Timer Accelerometer Shake-to-Extend:
+  - Hardware `SensorManager.TYPE_ACCELEROMETER` motion detection with debouncing
+  - Dynamic fade-out volume recovery on motion trigger
+  - Settings UI toggle and extension duration chips (+5m, +10m, +15m)
 - [ ] Slice gate passed
-- [ ] Final gate passed & tagged: `git tag v3.7-1`
+- [ ] Final gate passed & tagged: `git tag v3.8-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

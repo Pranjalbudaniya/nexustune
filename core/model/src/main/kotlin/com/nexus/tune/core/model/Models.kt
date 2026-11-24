@@ -153,7 +153,9 @@ data class ThemeConfig(
     val spatialAudioEnabled: Boolean = false,
     val spatialAudioStage: SpatialAudioStage = SpatialAudioStage.OFF,
     val spatialAudioStrength: Int = 500,
-    val crossfadeCurve: CrossfadeCurve = CrossfadeCurve.EQUAL_POWER
+    val crossfadeCurve: CrossfadeCurve = CrossfadeCurve.EQUAL_POWER,
+    val shakeToExtendSleepTimerEnabled: Boolean = false,
+    val shakeExtendMinutes: Int = 10
 )
 
 data class SoundDoseInfo(

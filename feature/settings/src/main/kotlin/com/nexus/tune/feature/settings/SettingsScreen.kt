@@ -604,6 +604,40 @@ fun SettingsScreen(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(8.dp))
+
+                ListItem(
+                    headlineContent = { Text("Shake to Extend") },
+                    supportingContent = { Text("Gently shake phone to add +${themeConfig.shakeExtendMinutes}m when falling asleep") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.shakeToExtendSleepTimerEnabled,
+                            onCheckedChange = { viewModel.toggleShakeToExtend(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.shakeToExtendSleepTimerEnabled) {
+                    Text(
+                        text = "Shake Extension Duration",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf(5 to "+5 min", 10 to "+10 min", 15 to "+15 min", 20 to "+20 min").forEach { (mins, label) ->
+                            FilterChip(
+                                selected = themeConfig.shakeExtendMinutes == mins,
+                                onClick = { viewModel.setShakeExtendMinutes(mins) },
+                                label = { Text(label) }
+                            )
+                        }
+                    }
+                }
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
             }
 
@@ -942,8 +976,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v3.7.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Standard M3U/M3U8 Playlist Export & Import Engine") }
+                    headlineContent = { Text("NexusTune v3.8.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Sleep Timer Accelerometer Shake-to-Extend") }
                 )
             }
         }

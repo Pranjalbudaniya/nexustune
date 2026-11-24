@@ -95,4 +95,34 @@ class SleepTimerManagerTest {
         assertFalse(sleepTimerManager.timerState.value.isActive)
         verify(atLeast = 1) { playerController.togglePlayPause() }
     }
+
+    @Test
+    fun `extendTimer adds extra seconds and restores volume when fading`() = runTest {
+        val sleepTimerManager = SleepTimerManager(playerController, this)
+
+        sleepTimerManager.startTimer(1, fadeDurationSec = 30)
+        advanceTimeBy(40_000L) // Remaining is inside fade window
+        assertTrue(sleepTimerManager.timerState.value.isFadingOut)
+        val remainingBefore = sleepTimerManager.timerState.value.remainingSeconds
+
+        // Extend by 10 minutes (600s)
+        sleepTimerManager.extendTimer(10)
+
+        val extendedState = sleepTimerManager.timerState.value
+        assertEquals(remainingBefore + 600L, extendedState.remainingSeconds)
+        assertFalse(extendedState.isFadingOut)
+        assertEquals(1.0f, extendedState.fadeVolumeMultiplier, 0.001f)
+        verify(atLeast = 1) { playerController.setVolume(1.0f) }
+    }
+
+    @Test
+    fun `setShakeToExtend updates configuration in timerState`() = runTest {
+        val sleepTimerManager = SleepTimerManager(playerController, this)
+        assertFalse(sleepTimerManager.timerState.value.shakeToExtendEnabled)
+
+        sleepTimerManager.setShakeToExtend(true, 15)
+        val state = sleepTimerManager.timerState.value
+        assertTrue(state.shakeToExtendEnabled)
+        assertEquals(15, state.extensionMinutes)
+    }
 }

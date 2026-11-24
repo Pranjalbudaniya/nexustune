@@ -5,6 +5,13 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.8.0] - 2026-11-24
+
+### Added
+- **Sleep Timer Accelerometer Shake-to-Extend**: Integrated `SensorManager.TYPE_ACCELEROMETER` motion detection with debouncing in `SleepTimerManager` to dynamically add extra minutes (+5m, +10m, +15m) when the user gently shakes their device.
+- **Dynamic Fade Cancellation**: Automatically resets volume attenuation and restores 100% volume upon motion extension when falling asleep.
+- **Settings UI & Configuration**: Added "Shake to Extend" toggle and extension duration chip carousel in `SettingsScreen` under Sleep Timer.
+
 ## [3.7.0] - 2026-11-24
 
 ### Added

@@ -412,4 +412,26 @@ class SettingsViewModelTest {
         coVerify { mockBackupManager.importPlaylistFromM3u(any(), "Road Trip") }
         assertTrue(vm.backupImportStatus.value?.contains("Imported playlist 'Road Trip' (4 tracks)") == true)
     }
+
+    @Test
+    fun `toggleShakeToExtend updates themeConfig and sleepTimerManager`() = runTest {
+        viewModel.toggleShakeToExtend(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.shakeToExtendSleepTimerEnabled })
+        }
+        verify { sleepTimerManager.setShakeToExtend(true, any()) }
+    }
+
+    @Test
+    fun `setShakeExtendMinutes updates themeConfig and sleepTimerManager`() = runTest {
+        viewModel.setShakeExtendMinutes(15)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.shakeExtendMinutes == 15 })
+        }
+        verify { sleepTimerManager.setShakeToExtend(any(), 15) }
+    }
 }
