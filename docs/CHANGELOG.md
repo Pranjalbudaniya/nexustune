@@ -5,6 +5,13 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.8.0] - 2026-11-24
+
+### Added
+- **Parametric Equalizer Expansion**: Expanded `EqualizerPreset` with `CLASSICAL`, `JAZZ`, `HIP_HOP`, `ACOUSTIC`, and `CUSTOM` hardware audio DSP frequency profiles in `NexusAudioEffects`.
+- **Auto-Genre Profile Adaptation**: Created `GenreAdaptiveEqManager` in `core:player` inspecting track title, artist, and album keywords to automatically calibrate equalizer curves to the music style in real time.
+- **Settings UI Controls**: Added "Auto-Genre EQ Adaptation" toggle in Settings under Equalizer & Sound FX.
+
 ## [2.7.0] - 2026-11-24
 
 ### Added

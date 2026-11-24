@@ -42,3 +42,4 @@ Implement **Synced Lyrics Offline Caching & Calibration Persistence**:
    - Unit tests in `SettingsViewModelTest`.
    - Run `./scripts/gate.sh slice`.
    - Run `./scripts/gate.sh final` and tag `v2.7-1`.
+

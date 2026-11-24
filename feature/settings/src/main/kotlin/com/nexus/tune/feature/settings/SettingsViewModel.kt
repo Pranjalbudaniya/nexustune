@@ -126,6 +126,11 @@ class SettingsViewModel(
         updateTheme(current.copy(gaplessPreloadEnabled = enabled))
     }
 
+    fun toggleAutoGenreEq(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(autoGenreEqEnabled = enabled))
+    }
+
     fun setGaplessPreloadSeconds(seconds: Int) {
         val current = themeConfig.value
         updateTheme(current.copy(gaplessPreloadSeconds = seconds))

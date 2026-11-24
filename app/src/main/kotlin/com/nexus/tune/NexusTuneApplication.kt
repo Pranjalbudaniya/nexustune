@@ -59,6 +59,8 @@ class NexusTuneApplication : Application() {
         private set
     lateinit var gaplessPreloadManager: com.nexus.tune.core.domain.preload.GaplessPreloadManager
         private set
+    lateinit var genreAdaptiveEqManager: com.nexus.tune.core.player.effects.GenreAdaptiveEqManager
+        private set
 
     override fun onCreate() {
         super.onCreate()
@@ -104,6 +106,7 @@ class NexusTuneApplication : Application() {
             queueRepository = queueRepository,
             resolveStreamUseCase = resolveStreamUseCase
         )
+        genreAdaptiveEqManager = com.nexus.tune.core.player.effects.GenreAdaptiveEqManager()
     }
 
     companion object {

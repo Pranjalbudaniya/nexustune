@@ -125,6 +125,49 @@ class NexusAudioEffects {
                     }
                     bassBoost?.setStrength(500.toShort())
                 }
+                EqualizerPreset.CLASSICAL -> {
+                    if (numBands >= 5) {
+                        eq.setBandLevel(0.toShort(), 300.toShort())
+                        eq.setBandLevel(1.toShort(), 200.toShort())
+                        eq.setBandLevel(2.toShort(), (-200).toShort())
+                        eq.setBandLevel(3.toShort(), 200.toShort())
+                        eq.setBandLevel(4.toShort(), 400.toShort())
+                    }
+                    bassBoost?.setStrength(100.toShort())
+                }
+                EqualizerPreset.JAZZ -> {
+                    if (numBands >= 5) {
+                        eq.setBandLevel(0.toShort(), 200.toShort())
+                        eq.setBandLevel(1.toShort(), 300.toShort())
+                        eq.setBandLevel(2.toShort(), 300.toShort())
+                        eq.setBandLevel(3.toShort(), 200.toShort())
+                        eq.setBandLevel(4.toShort(), 300.toShort())
+                    }
+                    bassBoost?.setStrength(300.toShort())
+                }
+                EqualizerPreset.HIP_HOP -> {
+                    if (numBands >= 5) {
+                        eq.setBandLevel(0.toShort(), 700.toShort())
+                        eq.setBandLevel(1.toShort(), 500.toShort())
+                        eq.setBandLevel(2.toShort(), 0.toShort())
+                        eq.setBandLevel(3.toShort(), 200.toShort())
+                        eq.setBandLevel(4.toShort(), 400.toShort())
+                    }
+                    bassBoost?.setStrength(800.toShort())
+                }
+                EqualizerPreset.ACOUSTIC -> {
+                    if (numBands >= 5) {
+                        eq.setBandLevel(0.toShort(), 200.toShort())
+                        eq.setBandLevel(1.toShort(), 300.toShort())
+                        eq.setBandLevel(2.toShort(), 400.toShort())
+                        eq.setBandLevel(3.toShort(), 400.toShort())
+                        eq.setBandLevel(4.toShort(), 300.toShort())
+                    }
+                    bassBoost?.setStrength(150.toShort())
+                }
+                EqualizerPreset.CUSTOM -> {
+                    // Custom band gains preserved
+                }
             }
         } catch (e: Exception) {
             Log.w("NexusAudioEffects", "Failed to apply preset $preset: ${e.message}")

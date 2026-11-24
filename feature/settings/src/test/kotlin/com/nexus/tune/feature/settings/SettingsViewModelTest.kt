@@ -266,4 +266,14 @@ class SettingsViewModelTest {
 
         coVerify { mockRepo.clearLyricsCache() }
     }
+
+    @Test
+    fun `toggleAutoGenreEq updates theme config`() = runTest {
+        viewModel.toggleAutoGenreEq(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.autoGenreEqEnabled })
+        }
+    }
 }

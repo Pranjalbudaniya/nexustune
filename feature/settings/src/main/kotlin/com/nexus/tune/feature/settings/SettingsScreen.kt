@@ -183,6 +183,19 @@ fun SettingsScreen(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(8.dp))
+
+                ListItem(
+                    headlineContent = { Text("Auto-Genre EQ Adaptation") },
+                    supportingContent = { Text("Automatically adapt EQ profile based on track genre keywords") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.autoGenreEqEnabled,
+                            onCheckedChange = { viewModel.toggleAutoGenreEq(it) }
+                        )
+                    }
+                )
+
                 Spacer(modifier = Modifier.height(12.dp))
 
                 ListItem(
@@ -653,8 +666,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v2.7.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Offline Lyrics Cache & Calibration Memory") }
+                    headlineContent = { Text("NexusTune v2.8.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Parametric EQ & Auto-Genre DSP Profiles") }
                 )
             }
         }

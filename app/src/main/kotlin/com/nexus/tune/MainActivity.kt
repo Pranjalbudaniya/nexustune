@@ -104,6 +104,20 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        lifecycleScope.launch {
+            kotlinx.coroutines.flow.combine(
+                app.playerController.playbackState,
+                settingsViewModel.themeConfig
+            ) { state, config ->
+                Pair(state.currentTrack, config.autoGenreEqEnabled)
+            }.collect { (track, autoGenre) ->
+                if (autoGenre && track != null) {
+                    val preset = app.genreAdaptiveEqManager.applyAdaptivePreset(track)
+                    settingsViewModel.setEqualizerPreset(preset)
+                }
+            }
+        }
+
         setContent {
             val themeConfig by settingsViewModel.themeConfig.collectAsState()
             val playbackState by app.playerController.playbackState.collectAsState()

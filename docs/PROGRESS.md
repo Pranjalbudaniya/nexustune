@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 17 (v2.7.0 Released)
-- In Flight: Preparing Improvement Loop 18 (Parametric EQ Engine & Per-Genre Audio Profiles)
+- Active Phase: Post-v1.0 Improvement Loop 18 (v2.8.0 Released)
+- In Flight: Preparing Improvement Loop 19 (Smart Safe Listening & Volume Limiter Protection)
 - Branches: `main`
 
 ## Phase Tracking
@@ -167,12 +167,20 @@
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `git tag v2.7-1`
 
-## Improvement Loop 18 (v2.8 Features - Planned)
-- [ ] Parametric EQ Engine & Per-Genre Audio Profiles:
-  - 10-band fine-grained frequency equalizer with adjustable Q factor
-  - Automatic EQ profile switching based on detected music genre
+- [x] Improvement Loop 18 (v2.8 Features - Tagged `v2.8-1`)
+  - [x] Parametric EQ Engine & Per-Genre Audio Profiles:
+    - [x] Expanded `EqualizerPreset` with `Classical`, `Jazz`, `Hip-Hop`, `Acoustic`, `Custom`
+    - [x] Real-time keyword genre heuristic in `GenreAdaptiveEqManager`
+    - [x] Reactive auto-genre adaptation toggle in Settings
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `git tag v2.8-1`
+
+## Improvement Loop 19 (v2.9 Features - Planned)
+- [ ] Smart Safe Listening & Volume Limiter Protection:
+  - Cumulative sound exposure tracking against safe daily acoustic thresholds
+  - Configurable maximum volume cap (70%, 80%, 90%, 100%) in Settings
 - [ ] Slice gate passed
-- [ ] Final gate passed & tagged: `git tag v2.8-1`
+- [ ] Final gate passed & tagged: `git tag v2.9-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

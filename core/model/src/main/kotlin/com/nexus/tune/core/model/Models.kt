@@ -131,7 +131,8 @@ data class ThemeConfig(
     val bitPerfectUsbAudioEnabled: Boolean = false,
     val forceHiResSamplingRate: Int = 0,
     val gaplessPreloadEnabled: Boolean = true,
-    val gaplessPreloadSeconds: Int = 5
+    val gaplessPreloadSeconds: Int = 5,
+    val autoGenreEqEnabled: Boolean = false
 )
 
 data class StorageUsage(
@@ -168,7 +169,7 @@ data class TrackLyrics(
 )
 
 enum class EqualizerPreset {
-    FLAT, BASS_BOOST, TREBLE_BOOST, VOCAL, ELECTRONIC, ROCK
+    FLAT, BASS_BOOST, TREBLE_BOOST, VOCAL, ELECTRONIC, ROCK, CLASSICAL, JAZZ, HIP_HOP, ACOUSTIC, CUSTOM
 }
 
 data class ListeningStats(
