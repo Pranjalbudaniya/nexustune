@@ -705,6 +705,19 @@ data class AutoStashReport(
     val usageRatio: Float get() = if (budgetBytes > 0L) (totalUsedBytes.toFloat() / budgetBytes.toFloat()).coerceIn(0f, 1f) else 0f
 }
 
+data class CleanMetadataResult(
+    val originalTitle: String,
+    val cleanedTitle: String,
+    val originalArtist: String,
+    val cleanedArtist: String,
+    val originalAlbum: String? = null,
+    val cleanedAlbum: String? = null,
+    val featuredArtists: List<String> = emptyList(),
+    val removedPatterns: List<String> = emptyList(),
+    val isModified: Boolean = false
+)
+
+
 
 
 

@@ -36,6 +36,7 @@ interface MusicRepository {
     suspend fun deleteBookmark(bookmarkId: Long)
     suspend fun addTracksToPlaylist(playlistId: String, trackIds: List<String>) {}
     fun getTracksForPlaylist(playlistId: String): Flow<List<Track>> = kotlinx.coroutines.flow.flowOf(emptyList())
+    suspend fun updateTrackMetadata(trackId: String, title: String, artist: String, album: String? = null): Boolean = false
 }
 
 interface QueueRepository {

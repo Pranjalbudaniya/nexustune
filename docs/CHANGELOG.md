@@ -5,6 +5,15 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.4.0] - 2026-11-24
+
+### Added
+- **Interactive Audio Tag & Metadata Studio (`AudioTagStudio`)**: Added `CleanMetadataResult` in `:core:model`.
+- **Intelligent Metadata Normalization Engine**: Implemented `MetadataNormalizerEngine` in `:core:domain:metadata` providing regex artifact stripping (20+ patterns including `(Official Music Video)`, `[Official Audio]`, `(Lyric Video)`, `[HD]`, `(Visualizer)`), featured artist extraction (`feat. XYZ`), hyphenated artist-title parsing, smart Title Casing, and bitrate badge formatting.
+- **Room Database Track Metadata Persistence**: Added `TrackDao.updateTrackMetadata()` in `:core:database` and `MusicRepository.updateTrackMetadata()` in `:core:data`.
+- **Library Screen Metadata Editor Bottom Sheet**: Added `TrackMetadataEditorSheet` in `LibraryScreen` accessible via track item edit icon with one-tap "✨ Auto-Clean" action, detected artifact tag chips, editable text fields, and persistence to library.
+- **Unit Test Coverage**: Comprehensive test coverage in `MetadataNormalizerEngineTest` in `:core:domain` and `LibraryViewModelTest` in `:feature:library`.
+
 ## [6.3.0] - 2026-11-24
 
 ### Added

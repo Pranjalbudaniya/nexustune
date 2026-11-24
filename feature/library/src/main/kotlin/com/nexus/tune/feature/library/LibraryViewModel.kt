@@ -199,4 +199,10 @@ class LibraryViewModel(
             }
         }
     }
+
+    fun updateTrackMetadata(trackId: String, title: String, artist: String, album: String?) {
+        viewModelScope.launch {
+            musicRepository.updateTrackMetadata(trackId, title, artist, album)
+        }
+    }
 }

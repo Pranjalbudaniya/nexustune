@@ -13,6 +13,7 @@ import androidx.compose.material.icons.automirrored.rounded.QueueMusic
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Search
@@ -58,6 +59,7 @@ fun LibraryScreen(
     val smartPlaylists by viewModel.smartPlaylists.collectAsState()
     val activeSmartPreview by viewModel.activeSmartPlaylistPreview.collectAsState()
     var showCreateSmartPlaylistSheet by remember { mutableStateOf(false) }
+    var editingTrackForMetadata by remember { mutableStateOf<Track?>(null) }
     val context = androidx.compose.ui.platform.LocalContext.current
 
     LaunchedEffect(showVibeMixSheet, selectedVibeTheme, targetVibeDuration, selectedEnergyCurve) {
@@ -196,7 +198,8 @@ fun LibraryScreen(
                     onTrackClick = { track ->
                         viewModel.playTrack(track, filteredLikedTracks)
                         onTrackClick(track, filteredLikedTracks)
-                    }
+                    },
+                    onEditMetadata = { editingTrackForMetadata = it }
                 )
             }
             1 -> {
@@ -245,7 +248,8 @@ fun LibraryScreen(
                     onTrackClick = { track ->
                         viewModel.playTrack(track, filteredHistoryTracks)
                         onTrackClick(track, filteredHistoryTracks)
-                    }
+                    },
+                    onEditMetadata = { editingTrackForMetadata = it }
                 )
             }
         }
@@ -268,6 +272,17 @@ fun LibraryScreen(
             onConfirm = { artworkUrl ->
                 viewModel.updatePlaylistArtwork(playlist.id, artworkUrl)
                 editingPlaylistForArtwork = null
+            }
+        )
+    }
+
+    editingTrackForMetadata?.let { track ->
+        TrackMetadataEditorSheet(
+            track = track,
+            onDismiss = { editingTrackForMetadata = null },
+            onSave = { title, artist, album ->
+                viewModel.updateTrackMetadata(track.id, title, artist, album)
+                editingTrackForMetadata = null
             }
         )
     }
@@ -882,7 +897,8 @@ private fun PlaylistItem(
 private fun TrackListTab(
     tracks: List<Track>,
     emptyMessage: String,
-    onTrackClick: (Track) -> Unit
+    onTrackClick: (Track) -> Unit,
+    onEditMetadata: ((Track) -> Unit)? = null
 ) {
     if (tracks.isEmpty()) {
         Box(
@@ -904,7 +920,19 @@ private fun TrackListTab(
             items(tracks) { track ->
                 TrackListItem(
                     track = track,
-                    onClick = { onTrackClick(track) }
+                    onClick = { onTrackClick(track) },
+                    trailingContent = if (onEditMetadata != null) {
+                        {
+                            IconButton(onClick = { onEditMetadata(track) }) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Edit,
+                                    contentDescription = "Edit Metadata",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        }
+                    } else null
                 )
             }
         }
@@ -1181,6 +1209,155 @@ private fun CreateSmartPlaylistSheet(
             }
 
             Spacer(modifier = Modifier.height(24.dp))
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TrackMetadataEditorSheet(
+    track: Track,
+    onDismiss: () -> Unit,
+    onSave: (title: String, artist: String, album: String?) -> Unit
+) {
+    var title by remember { mutableStateOf(track.title) }
+    var artist by remember { mutableStateOf(track.artist) }
+    var album by remember { mutableStateOf(track.album ?: "") }
+    var removedPatterns by remember { mutableStateOf<List<String>>(emptyList()) }
+    var featuredArtists by remember { mutableStateOf<List<String>>(emptyList()) }
+    var autoCleanApplied by remember { mutableStateOf(false) }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp, vertical = 16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = "Edit Track Metadata",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "Audio Tag Studio",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                FilledTonalButton(
+                    onClick = {
+                        val cleaned = com.nexus.tune.core.domain.metadata.MetadataNormalizerEngine.cleanMetadata(
+                            title,
+                            artist,
+                            album.ifBlank { null }
+                        )
+                        title = cleaned.cleanedTitle
+                        artist = cleaned.cleanedArtist
+                        album = cleaned.cleanedAlbum ?: ""
+                        removedPatterns = cleaned.removedPatterns
+                        featuredArtists = cleaned.featuredArtists
+                        autoCleanApplied = true
+                    }
+                ) {
+                    Text("✨ Auto-Clean", style = MaterialTheme.typography.labelSmall)
+                }
+            }
+
+            if (autoCleanApplied && removedPatterns.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = "Cleaned Artifacts:",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    removedPatterns.forEach { pattern ->
+                        SuggestionChip(
+                            onClick = {},
+                            label = { Text(pattern, style = MaterialTheme.typography.labelSmall) }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = title,
+                onValueChange = { title = it },
+                label = { Text("Track Title") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = artist,
+                onValueChange = { artist = it },
+                label = { Text("Artist Name") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = album,
+                onValueChange = { album = it },
+                label = { Text("Album Name (Optional)") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            if (featuredArtists.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Featured Artists: ${featuredArtists.joinToString(", ")}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(onClick = onDismiss) {
+                    Text("Cancel")
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(
+                    onClick = {
+                        if (title.isNotBlank() && artist.isNotBlank()) {
+                            onSave(title.trim(), artist.trim(), album.trim().ifBlank { null })
+                        }
+                    }
+                ) {
+                    Text("Save to Library")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

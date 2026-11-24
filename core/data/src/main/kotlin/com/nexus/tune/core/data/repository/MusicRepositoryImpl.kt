@@ -356,5 +356,19 @@ class MusicRepositoryImpl(
     override suspend fun deleteBookmark(bookmarkId: Long) {
         database.trackBookmarkDao().delete(bookmarkId)
     }
+
+    override suspend fun updateTrackMetadata(trackId: String, title: String, artist: String, album: String?): Boolean {
+        return try {
+            val existing = database.trackDao().getTrackById(trackId)
+            if (existing != null) {
+                database.trackDao().updateTrackMetadata(trackId, title, artist, album)
+                true
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            false
+        }
+    }
 }
 

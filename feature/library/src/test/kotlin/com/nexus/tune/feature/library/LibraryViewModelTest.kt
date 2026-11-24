@@ -235,4 +235,12 @@ class LibraryViewModelTest {
 
         coVerify { settingsRepository.deleteCustomSmartPlaylist("custom_123") }
     }
+
+    @Test
+    fun `updateTrackMetadata delegates to musicRepository`() = runTest {
+        viewModel.updateTrackMetadata("trk1", "Clean Title", "Clean Artist", "Album A")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { musicRepository.updateTrackMetadata("trk1", "Clean Title", "Clean Artist", "Album A") }
+    }
 }
