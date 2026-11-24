@@ -24,6 +24,7 @@ import com.nexus.tune.core.domain.audio.UltrasonicFilterEngine
 import com.nexus.tune.core.domain.audio.TubeSaturationEngine
 import com.nexus.tune.core.domain.audio.TransientShaperEngine
 import com.nexus.tune.core.domain.audio.DynamicStereoImagerEngine
+import com.nexus.tune.core.domain.audio.TapeHysteresisEngine
 import com.nexus.tune.core.ui.EqCurveVisualizer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -2927,6 +2928,194 @@ fun SettingsScreen(
                                 )
                                 Text(
                                     text = "Mono Safety: ${imagerMetrics.monoCompatibilityScore}/100",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+                ListItem(
+                    headlineContent = { Text("Analog Tape Flutter, Wow & Hysteresis Warmer Studio") },
+                    supportingContent = { Text("Reel-to-reel magnetic tape modeling with Langevin hysteresis saturation, physical head bump bass resonance, and capstan wow/flutter") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.tapeHysteresisConfig.isEnabled,
+                            onCheckedChange = { viewModel.setTapeHysteresisEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.tapeHysteresisConfig.isEnabled) {
+                    val tapeMetrics = remember(themeConfig.tapeHysteresisConfig) {
+                        TapeHysteresisEngine.calculateMetrics(themeConfig.tapeHysteresisConfig)
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Tape Machine Preset",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        TapePreset.entries.forEach { preset ->
+                            FilterChip(
+                                selected = themeConfig.tapeHysteresisConfig.preset == preset,
+                                onClick = { viewModel.setTapeHysteresisPreset(preset) },
+                                label = { Text(preset.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "Tape Speed (Formulation & Mechanics)",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        TapeSpeed.entries.forEach { speed ->
+                            FilterChip(
+                                selected = themeConfig.tapeHysteresisConfig.speed == speed,
+                                onClick = { viewModel.setTapeHysteresisSpeed(speed) },
+                                label = { Text(speed.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Tape Drive / Magnetic Saturation: ${(themeConfig.tapeHysteresisConfig.tapeDrive * 100).toInt()}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Comp: ${tapeMetrics.saturationCompressionDb} dB",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.tapeHysteresisConfig.tapeDrive,
+                        onValueChange = { viewModel.setTapeHysteresisDrive(it) },
+                        valueRange = 0.0f..1.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Head Bump Resonance (+Bass Foundation): ${String.format(java.util.Locale.US, "+%.1f dB", themeConfig.tapeHysteresisConfig.headBumpGainDb)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "@ ${tapeMetrics.headBumpFrequencyHz.toInt()} Hz",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.tapeHysteresisConfig.headBumpGainDb,
+                        onValueChange = { viewModel.setTapeHysteresisHeadBump(it) },
+                        valueRange = 0.0f..4.5f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Wow & Flutter Modulation (Pitch Drift): ${(themeConfig.tapeHysteresisConfig.wowFlutterDepth * 100).toInt()}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "${tapeMetrics.wowFlutterPpm} PPM",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.tapeHysteresisConfig.wowFlutterDepth,
+                        onValueChange = { viewModel.setTapeHysteresisWowFlutter(it) },
+                        valueRange = 0.0f..1.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Residual Tape Hiss Suppression",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Switch(
+                            checked = themeConfig.tapeHysteresisConfig.tapeHissReduction,
+                            onCheckedChange = { viewModel.setTapeHysteresisNoiseReduction(it) }
+                        )
+                    }
+
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Text(
+                                text = tapeMetrics.tapeCharacterRating,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Warmth: ${tapeMetrics.analogWarmthScore}/100",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Speed: ${themeConfig.tapeHysteresisConfig.speed.displayName.substringBefore(" (")}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                                Text(
+                                    text = "Resonance: ${tapeMetrics.headBumpFrequencyHz.toInt()} Hz",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.tertiary
                                 )

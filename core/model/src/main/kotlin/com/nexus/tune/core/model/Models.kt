@@ -243,7 +243,8 @@ data class ThemeConfig(
     val ultrasonicFilterConfig: UltrasonicFilterConfig = UltrasonicFilterConfig(),
     val tubeSaturationConfig: TubeSaturationConfig = TubeSaturationConfig(),
     val transientShaperConfig: TransientShaperConfig = TransientShaperConfig(),
-    val dynamicStereoImagerConfig: DynamicStereoImagerConfig = DynamicStereoImagerConfig()
+    val dynamicStereoImagerConfig: DynamicStereoImagerConfig = DynamicStereoImagerConfig(),
+    val tapeHysteresisConfig: TapeHysteresisConfig = TapeHysteresisConfig()
 )
 
 data class SoundDoseInfo(
@@ -1395,6 +1396,47 @@ data class StereoImagerMetrics(
     val monoCompatibilityScore: Int,
     val spatialDepthRating: String
 )
+
+enum class TapeSpeed(val ips: Float, val displayName: String, val description: String) {
+    IPS_30(30.0f, "30 IPS (Mastering Reel)", "Pristine transient response, ultra-low noise, and flat extension beyond 22 kHz"),
+    IPS_15(15.0f, "15 IPS (Studio Standard)", "Classic golden-age rock & pop tape body with robust low-end head bump and warm saturation"),
+    IPS_7_5(7.5f, "7.5 IPS (Vintage Cassette)", "Nostalgic warm tape compression with mellow high-frequency rolloff above 14 kHz")
+}
+
+enum class TapePreset(
+    val displayName: String,
+    val speed: TapeSpeed,
+    val drive: Float,
+    val headBumpGainDb: Float,
+    val wowFlutter: Float,
+    val description: String
+) {
+    OFF("Off (Bypassed)", TapeSpeed.IPS_30, 0.0f, 0.0f, 0.0f, "Direct pristine digital stream without magnetic coloration"),
+    MASTER_TAPE_30_IPS("Studer A800 30-IPS Master", TapeSpeed.IPS_30, 0.25f, 1.2f, 0.08f, "Subtle mastering glue with transparent transient roundoff and punch"),
+    VINTAGE_WARM_15_IPS("Ampex ATR-102 15-IPS Warmth", TapeSpeed.IPS_15, 0.45f, 2.5f, 0.25f, "Lush analog body, authoritative 55 Hz bass weight, and organic magnetic saturation"),
+    HOT_SATURATED_TAPE("Hot Driven Ferric Tape", TapeSpeed.IPS_15, 0.70f, 3.2f, 0.35f, "Heavy magnetic saturation with soft peak compression and harmonic glue"),
+    LO_FI_CASSETTE_7_5("Vintage Cassette Tape Glow", TapeSpeed.IPS_7_5, 0.50f, 1.8f, 0.55f, "Gentle high-end rolloff, mechanical capstan wow, and nostalgic warble"),
+    SUB_BASS_HEAD_BUMP("Acoustic Head Bump Slam", TapeSpeed.IPS_15, 0.30f, 4.0f, 0.12f, "Focused sub-bass resonance giving massive low-end weight to drums and bass")
+}
+
+data class TapeHysteresisConfig(
+    val isEnabled: Boolean = false,
+    val preset: TapePreset = TapePreset.OFF,
+    val speed: TapeSpeed = TapeSpeed.IPS_15,
+    val tapeDrive: Float = 0.35f,
+    val headBumpGainDb: Float = 2.0f,
+    val wowFlutterDepth: Float = 0.20f,
+    val tapeHissReduction: Boolean = true
+)
+
+data class TapeHysteresisMetrics(
+    val saturationCompressionDb: Float,
+    val headBumpFrequencyHz: Float,
+    val wowFlutterPpm: Int,
+    val analogWarmthScore: Int,
+    val tapeCharacterRating: String
+)
+
 
 
 

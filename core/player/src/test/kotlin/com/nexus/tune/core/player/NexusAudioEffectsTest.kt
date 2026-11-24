@@ -184,5 +184,14 @@ class NexusAudioEffectsTest {
         audioEffects.clearSpatialSpreadOffset()
         assertEquals(0, audioEffects.getSpatialSpreadOffset())
     }
+
+    @Test
+    fun `tape warmth offset can be applied and cleared`() {
+        audioEffects.applyTapeWarmthOffset(190)
+        assertEquals(190, audioEffects.getTapeWarmthOffset())
+
+        audioEffects.clearTapeWarmthOffset()
+        assertEquals(0, audioEffects.getTapeWarmthOffset())
+    }
 }
 

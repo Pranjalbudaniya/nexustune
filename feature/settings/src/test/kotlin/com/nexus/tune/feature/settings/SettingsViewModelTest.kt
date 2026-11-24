@@ -1338,4 +1338,49 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { !it.dynamicStereoImagerConfig.monoGuardActive })
         }
     }
+
+    @Test
+    fun `tape hysteresis settings update theme config`() = runTest {
+        viewModel.setTapeHysteresisEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.tapeHysteresisConfig.isEnabled })
+        }
+
+        viewModel.setTapeHysteresisPreset(TapePreset.VINTAGE_WARM_15_IPS)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.tapeHysteresisConfig.preset == TapePreset.VINTAGE_WARM_15_IPS })
+        }
+
+        viewModel.setTapeHysteresisSpeed(TapeSpeed.IPS_7_5)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.tapeHysteresisConfig.speed == TapeSpeed.IPS_7_5 })
+        }
+
+        viewModel.setTapeHysteresisDrive(0.75f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.tapeHysteresisConfig.tapeDrive == 0.75f })
+        }
+
+        viewModel.setTapeHysteresisHeadBump(3.5f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.tapeHysteresisConfig.headBumpGainDb == 3.5f })
+        }
+
+        viewModel.setTapeHysteresisWowFlutter(0.45f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.tapeHysteresisConfig.wowFlutterDepth == 0.45f })
+        }
+
+        viewModel.setTapeHysteresisNoiseReduction(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.tapeHysteresisConfig.tapeHissReduction })
+        }
+    }
 }

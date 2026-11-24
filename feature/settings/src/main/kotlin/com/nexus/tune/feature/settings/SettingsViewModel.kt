@@ -1180,4 +1180,51 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(dynamicStereoImagerConfig = current.dynamicStereoImagerConfig.copy(monoGuardActive = enabled)))
     }
+
+    fun setTapeHysteresisEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(tapeHysteresisConfig = current.tapeHysteresisConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setTapeHysteresisPreset(preset: TapePreset) {
+        val current = themeConfig.value
+        val isEnabled = preset != TapePreset.OFF
+        updateTheme(
+            current.copy(
+                tapeHysteresisConfig = current.tapeHysteresisConfig.copy(
+                    isEnabled = isEnabled,
+                    preset = preset,
+                    speed = preset.speed,
+                    tapeDrive = if (preset != TapePreset.OFF) preset.drive else current.tapeHysteresisConfig.tapeDrive,
+                    headBumpGainDb = if (preset != TapePreset.OFF) preset.headBumpGainDb else current.tapeHysteresisConfig.headBumpGainDb,
+                    wowFlutterDepth = if (preset != TapePreset.OFF) preset.wowFlutter else current.tapeHysteresisConfig.wowFlutterDepth
+                )
+            )
+        )
+    }
+
+    fun setTapeHysteresisSpeed(speed: TapeSpeed) {
+        val current = themeConfig.value
+        updateTheme(current.copy(tapeHysteresisConfig = current.tapeHysteresisConfig.copy(speed = speed)))
+    }
+
+    fun setTapeHysteresisDrive(drive: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(tapeHysteresisConfig = current.tapeHysteresisConfig.copy(tapeDrive = drive.coerceIn(0.0f, 1.0f))))
+    }
+
+    fun setTapeHysteresisHeadBump(gainDb: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(tapeHysteresisConfig = current.tapeHysteresisConfig.copy(headBumpGainDb = gainDb.coerceIn(0.0f, 4.5f))))
+    }
+
+    fun setTapeHysteresisWowFlutter(depth: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(tapeHysteresisConfig = current.tapeHysteresisConfig.copy(wowFlutterDepth = depth.coerceIn(0.0f, 1.0f))))
+    }
+
+    fun setTapeHysteresisNoiseReduction(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(tapeHysteresisConfig = current.tapeHysteresisConfig.copy(tapeHissReduction = enabled)))
+    }
 }

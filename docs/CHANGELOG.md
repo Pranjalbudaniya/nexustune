@@ -5,6 +5,17 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.28.0] - 2026-11-24
+
+### Added
+- **Audiophile Analog Tape Flutter, Wow & Hysteresis Warmer Studio (`TapeHysteresisEngine`)**: Added `TapeSpeed` (`IPS_30`, `IPS_15`, `IPS_7_5`), `TapePreset` (`OFF`, `MASTER_TAPE_30_IPS`, `VINTAGE_WARM_15_IPS`, `HOT_SATURATED_TAPE`, `LO_FI_CASSETTE_7_5`, `SUB_BASS_HEAD_BUMP`), `TapeHysteresisConfig`, and `TapeHysteresisMetrics` in `:core:model`.
+- **Langevin Magnetic Hysteresis, Head Bump Resonance & Dual-LFO Wow/Flutter DSP**: Implemented `TapeHysteresisEngine` in `:core:domain:audio`. Models the non-linear magnetic particle alignment of reel-to-reel tape decks with soft peak compression and harmonic warmth. Integrates an electromagnetic head bump peaking biquad ($45\dots 75\text{ Hz}$) recreating analog tape head flux resonance for authoritative sub-bass weight, tape speed high-frequency filtering, and a dual-LFO fractional-delay ring buffer simulating cyclic motor wow ($0.8\text{ Hz}$) and scraped-tape flutter ($8.5\text{ Hz}$).
+- **Hardware Equalizer Integration**: Added `applyTapeWarmthOffset`, `clearTapeWarmthOffset`, and `getTapeWarmthOffset` targeting Bands 0 & 1 in `NexusAudioEffects` in `:core:player` for physical acoustic tape bass reinforcement.
+- **DataStore Persistence**: Added `TAPE_HYSTERESIS_ENABLED`, `TAPE_HYSTERESIS_PRESET`, `TAPE_HYSTERESIS_SPEED`, `TAPE_HYSTERESIS_DRIVE`, `TAPE_HYSTERESIS_HEAD_BUMP`, `TAPE_HYSTERESIS_WOW_FLUTTER`, and `TAPE_HYSTERESIS_NOISE_REDUCTION` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Tape Studio**: Added interactive "Analog Tape Flutter, Wow & Hysteresis Warmer Studio" card in `SettingsScreen` with tape machine presets, tape speed selector chips (30, 15, 7.5 IPS), tape drive slider, head bump resonance slider (+0 to +4.5 dB), wow & flutter depth slider, and real-time analog warmth / head bump frequency HUD.
+- **Unit Test Coverage**: Comprehensive test suites in `TapeHysteresisEngineTest` in `:core:domain`, `NexusAudioEffectsTest` in `:core:player`, and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.27.0] - 2026-11-24
 
 ### Added

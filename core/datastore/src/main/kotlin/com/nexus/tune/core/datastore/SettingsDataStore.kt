@@ -157,6 +157,13 @@ class SettingsDataStore(private val context: Context) {
         val STEREO_IMAGER_BASS_CUTOFF = floatPreferencesKey("stereo_imager_bass_cutoff")
         val STEREO_IMAGER_AIR_SPREAD = floatPreferencesKey("stereo_imager_air_spread")
         val STEREO_IMAGER_MONO_GUARD = booleanPreferencesKey("stereo_imager_mono_guard")
+        val TAPE_HYSTERESIS_ENABLED = booleanPreferencesKey("tape_hysteresis_enabled")
+        val TAPE_HYSTERESIS_PRESET = stringPreferencesKey("tape_hysteresis_preset")
+        val TAPE_HYSTERESIS_SPEED = stringPreferencesKey("tape_hysteresis_speed")
+        val TAPE_HYSTERESIS_DRIVE = floatPreferencesKey("tape_hysteresis_drive")
+        val TAPE_HYSTERESIS_HEAD_BUMP = floatPreferencesKey("tape_hysteresis_head_bump")
+        val TAPE_HYSTERESIS_WOW_FLUTTER = floatPreferencesKey("tape_hysteresis_wow_flutter")
+        val TAPE_HYSTERESIS_NOISE_REDUCTION = booleanPreferencesKey("tape_hysteresis_noise_reduction")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -418,6 +425,19 @@ class SettingsDataStore(private val context: Context) {
                 monoBassCutoffHz = prefs[PreferencesKeys.STEREO_IMAGER_BASS_CUTOFF] ?: 160.0f,
                 highBandAirSpread = prefs[PreferencesKeys.STEREO_IMAGER_AIR_SPREAD] ?: 0.40f,
                 monoGuardActive = prefs[PreferencesKeys.STEREO_IMAGER_MONO_GUARD] ?: true
+            ),
+            tapeHysteresisConfig = TapeHysteresisConfig(
+                isEnabled = prefs[PreferencesKeys.TAPE_HYSTERESIS_ENABLED] ?: false,
+                preset = runCatching {
+                    TapePreset.valueOf(prefs[PreferencesKeys.TAPE_HYSTERESIS_PRESET] ?: TapePreset.OFF.name)
+                }.getOrDefault(TapePreset.OFF),
+                speed = runCatching {
+                    TapeSpeed.valueOf(prefs[PreferencesKeys.TAPE_HYSTERESIS_SPEED] ?: TapeSpeed.IPS_15.name)
+                }.getOrDefault(TapeSpeed.IPS_15),
+                tapeDrive = prefs[PreferencesKeys.TAPE_HYSTERESIS_DRIVE] ?: 0.35f,
+                headBumpGainDb = prefs[PreferencesKeys.TAPE_HYSTERESIS_HEAD_BUMP] ?: 2.0f,
+                wowFlutterDepth = prefs[PreferencesKeys.TAPE_HYSTERESIS_WOW_FLUTTER] ?: 0.20f,
+                tapeHissReduction = prefs[PreferencesKeys.TAPE_HYSTERESIS_NOISE_REDUCTION] ?: true
             )
         )
     }
@@ -558,6 +578,13 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.STEREO_IMAGER_BASS_CUTOFF] = config.dynamicStereoImagerConfig.monoBassCutoffHz
             prefs[PreferencesKeys.STEREO_IMAGER_AIR_SPREAD] = config.dynamicStereoImagerConfig.highBandAirSpread
             prefs[PreferencesKeys.STEREO_IMAGER_MONO_GUARD] = config.dynamicStereoImagerConfig.monoGuardActive
+            prefs[PreferencesKeys.TAPE_HYSTERESIS_ENABLED] = config.tapeHysteresisConfig.isEnabled
+            prefs[PreferencesKeys.TAPE_HYSTERESIS_PRESET] = config.tapeHysteresisConfig.preset.name
+            prefs[PreferencesKeys.TAPE_HYSTERESIS_SPEED] = config.tapeHysteresisConfig.speed.name
+            prefs[PreferencesKeys.TAPE_HYSTERESIS_DRIVE] = config.tapeHysteresisConfig.tapeDrive
+            prefs[PreferencesKeys.TAPE_HYSTERESIS_HEAD_BUMP] = config.tapeHysteresisConfig.headBumpGainDb
+            prefs[PreferencesKeys.TAPE_HYSTERESIS_WOW_FLUTTER] = config.tapeHysteresisConfig.wowFlutterDepth
+            prefs[PreferencesKeys.TAPE_HYSTERESIS_NOISE_REDUCTION] = config.tapeHysteresisConfig.tapeHissReduction
         }
     }
 
@@ -730,6 +757,18 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.STEREO_IMAGER_BASS_CUTOFF] = config.monoBassCutoffHz
             prefs[PreferencesKeys.STEREO_IMAGER_AIR_SPREAD] = config.highBandAirSpread
             prefs[PreferencesKeys.STEREO_IMAGER_MONO_GUARD] = config.monoGuardActive
+        }
+    }
+
+    suspend fun updateTapeHysteresisConfig(config: TapeHysteresisConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.TAPE_HYSTERESIS_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.TAPE_HYSTERESIS_PRESET] = config.preset.name
+            prefs[PreferencesKeys.TAPE_HYSTERESIS_SPEED] = config.speed.name
+            prefs[PreferencesKeys.TAPE_HYSTERESIS_DRIVE] = config.tapeDrive
+            prefs[PreferencesKeys.TAPE_HYSTERESIS_HEAD_BUMP] = config.headBumpGainDb
+            prefs[PreferencesKeys.TAPE_HYSTERESIS_WOW_FLUTTER] = config.wowFlutterDepth
+            prefs[PreferencesKeys.TAPE_HYSTERESIS_NOISE_REDUCTION] = config.tapeHissReduction
         }
     }
 
