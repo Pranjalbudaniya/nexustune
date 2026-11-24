@@ -5,6 +5,17 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.27.0] - 2026-11-24
+
+### Added
+- **Audiophile Multi-Band Dynamic Stereo Imager & Ambience Extractor Studio (`DynamicStereoImagerEngine`)**: Added `StereoImagerPreset` (`OFF`, `WIDE_CONCERT_HALL`, `HEADPHONE_SPATIAL_SPHERE`, `INTIMATE_VOCAL_ANCHOR`, `MONO_BASS_FOCUS`, `DIFFUSE_AMBIENCE_GLOW`), `DynamicStereoImagerConfig`, and `StereoImagerMetrics` in `:core:model`.
+- **Mid/Side Frequency-Split Spatial Processing & Mono-Bass Foldback DSP**: Implemented `DynamicStereoImagerEngine` in `:core:domain:audio`. Decomposes incoming stereo stream into orthogonal Mid and Side components. Collapses sub-bass below configurable cutoff (80-250 Hz) via steep highpass biquad on the Side channel, eliminating bass phase cancellation and maximizing DAC dynamic headroom. Applies allpass phase decorrelation (>5 kHz) for expansive out-of-head spatial air, accompanied by continuous Pearson correlation coefficient tracking ($\rho_{LR}$) and auto mono phase guard damping to ensure 100% mono compatibility.
+- **Hardware Equalizer Integration**: Added `applySpatialSpreadOffset`, `clearSpatialSpreadOffset`, and `getSpatialSpreadOffset` in `NexusAudioEffects` in `:core:player` coordinating physical virtualizer and high-frequency spread.
+- **DataStore Persistence**: Added `STEREO_IMAGER_ENABLED`, `STEREO_IMAGER_PRESET`, `STEREO_IMAGER_WIDTH`, `STEREO_IMAGER_BASS_CUTOFF`, `STEREO_IMAGER_AIR_SPREAD`, and `STEREO_IMAGER_MONO_GUARD` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Stereo Imager Studio**: Added interactive "Multi-Band Dynamic Stereo Imager & Ambience Studio" card in `SettingsScreen` with spatial preset chips, width slider (0-200%), mono-bass cutoff chips, high-band air slider, mono guard switch, and real-time Pearson correlation / mono safety HUD.
+- **Unit Test Coverage**: Comprehensive test suites in `DynamicStereoImagerEngineTest` in `:core:domain`, `NexusAudioEffectsTest` in `:core:player`, and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.26.0] - 2026-11-24
 
 ### Added

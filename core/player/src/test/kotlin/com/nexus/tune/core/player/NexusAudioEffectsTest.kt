@@ -175,5 +175,14 @@ class NexusAudioEffectsTest {
         audioEffects.clearTransientPunchOffset()
         assertEquals(0, audioEffects.getTransientPunchOffset())
     }
+
+    @Test
+    fun `spatial spread offset can be applied and cleared`() {
+        audioEffects.applySpatialSpreadOffset(250)
+        assertEquals(250, audioEffects.getSpatialSpreadOffset())
+
+        audioEffects.clearSpatialSpreadOffset()
+        assertEquals(0, audioEffects.getSpatialSpreadOffset())
+    }
 }
 

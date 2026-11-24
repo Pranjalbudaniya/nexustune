@@ -23,6 +23,7 @@ import com.nexus.tune.core.domain.audio.TruePeakGuardEngine
 import com.nexus.tune.core.domain.audio.UltrasonicFilterEngine
 import com.nexus.tune.core.domain.audio.TubeSaturationEngine
 import com.nexus.tune.core.domain.audio.TransientShaperEngine
+import com.nexus.tune.core.domain.audio.DynamicStereoImagerEngine
 import com.nexus.tune.core.ui.EqCurveVisualizer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -2774,6 +2775,158 @@ fun SettingsScreen(
                                 )
                                 Text(
                                     text = themeConfig.transientShaperConfig.bandFocus.displayName.substringBefore(" ("),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+                ListItem(
+                    headlineContent = { Text("Multi-Band Dynamic Stereo Imager & Ambience Studio") },
+                    supportingContent = { Text("Orthogonal Mid/Side spatial processing with mono-bass foldback, high-frequency air decorrelation, and Pearson phase guard") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.dynamicStereoImagerConfig.isEnabled,
+                            onCheckedChange = { viewModel.setDynamicStereoImagerEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.dynamicStereoImagerConfig.isEnabled) {
+                    val imagerMetrics = remember(themeConfig.dynamicStereoImagerConfig) {
+                        DynamicStereoImagerEngine.calculateMetrics(themeConfig.dynamicStereoImagerConfig)
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Spatial Imager Preset",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        StereoImagerPreset.entries.forEach { preset ->
+                            FilterChip(
+                                selected = themeConfig.dynamicStereoImagerConfig.preset == preset,
+                                onClick = { viewModel.setDynamicStereoImagerPreset(preset) },
+                                label = { Text(preset.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Stereo Soundstage Width: ${(themeConfig.dynamicStereoImagerConfig.stereoWidth * 100).toInt()}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Phase Corr: ${imagerMetrics.correlationCoefficient}",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.dynamicStereoImagerConfig.stereoWidth,
+                        onValueChange = { viewModel.setDynamicStereoImagerWidth(it) },
+                        valueRange = 0.0f..2.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = "Mono-Bass Cutoff Frequency (Sub Foldback): ${themeConfig.dynamicStereoImagerConfig.monoBassCutoffHz.toInt()} Hz",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf(80.0f, 120.0f, 160.0f, 200.0f, 250.0f).forEach { cutoff ->
+                            FilterChip(
+                                selected = kotlin.math.abs(themeConfig.dynamicStereoImagerConfig.monoBassCutoffHz - cutoff) < 1.0f,
+                                onClick = { viewModel.setDynamicStereoImagerBassCutoff(cutoff) },
+                                label = { Text("${cutoff.toInt()} Hz") }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "High-Band Diffuse Air Spread: ${(themeConfig.dynamicStereoImagerConfig.highBandAirSpread * 100).toInt()}%",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Slider(
+                        value = themeConfig.dynamicStereoImagerConfig.highBandAirSpread,
+                        onValueChange = { viewModel.setDynamicStereoImagerAirSpread(it) },
+                        valueRange = 0.0f..1.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Mono Compatibility Phase Guard",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Switch(
+                            checked = themeConfig.dynamicStereoImagerConfig.monoGuardActive,
+                            onCheckedChange = { viewModel.setDynamicStereoImagerMonoGuard(it) }
+                        )
+                    }
+
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Text(
+                                text = imagerMetrics.spatialDepthRating,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Width: ${imagerMetrics.perceivedWidthPercent}%",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Mono Bass: ${imagerMetrics.monoBassCutoffHz.toInt()} Hz",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                                Text(
+                                    text = "Mono Safety: ${imagerMetrics.monoCompatibilityScore}/100",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.tertiary
                                 )

@@ -151,6 +151,12 @@ class SettingsDataStore(private val context: Context) {
         val TRANSIENT_SHAPER_ATTACK = floatPreferencesKey("transient_shaper_attack")
         val TRANSIENT_SHAPER_SUSTAIN = floatPreferencesKey("transient_shaper_sustain")
         val TRANSIENT_SHAPER_LIMIT = booleanPreferencesKey("transient_shaper_limit")
+        val STEREO_IMAGER_ENABLED = booleanPreferencesKey("stereo_imager_enabled")
+        val STEREO_IMAGER_PRESET = stringPreferencesKey("stereo_imager_preset")
+        val STEREO_IMAGER_WIDTH = floatPreferencesKey("stereo_imager_width")
+        val STEREO_IMAGER_BASS_CUTOFF = floatPreferencesKey("stereo_imager_bass_cutoff")
+        val STEREO_IMAGER_AIR_SPREAD = floatPreferencesKey("stereo_imager_air_spread")
+        val STEREO_IMAGER_MONO_GUARD = booleanPreferencesKey("stereo_imager_mono_guard")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -402,6 +408,16 @@ class SettingsDataStore(private val context: Context) {
                 attackBoost = prefs[PreferencesKeys.TRANSIENT_SHAPER_ATTACK] ?: 0.0f,
                 sustainBoost = prefs[PreferencesKeys.TRANSIENT_SHAPER_SUSTAIN] ?: 0.0f,
                 autoOutputLimit = prefs[PreferencesKeys.TRANSIENT_SHAPER_LIMIT] ?: true
+            ),
+            dynamicStereoImagerConfig = DynamicStereoImagerConfig(
+                isEnabled = prefs[PreferencesKeys.STEREO_IMAGER_ENABLED] ?: false,
+                preset = runCatching {
+                    StereoImagerPreset.valueOf(prefs[PreferencesKeys.STEREO_IMAGER_PRESET] ?: StereoImagerPreset.OFF.name)
+                }.getOrDefault(StereoImagerPreset.OFF),
+                stereoWidth = prefs[PreferencesKeys.STEREO_IMAGER_WIDTH] ?: 1.0f,
+                monoBassCutoffHz = prefs[PreferencesKeys.STEREO_IMAGER_BASS_CUTOFF] ?: 160.0f,
+                highBandAirSpread = prefs[PreferencesKeys.STEREO_IMAGER_AIR_SPREAD] ?: 0.40f,
+                monoGuardActive = prefs[PreferencesKeys.STEREO_IMAGER_MONO_GUARD] ?: true
             )
         )
     }
@@ -536,6 +552,12 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.TRANSIENT_SHAPER_ATTACK] = config.transientShaperConfig.attackBoost
             prefs[PreferencesKeys.TRANSIENT_SHAPER_SUSTAIN] = config.transientShaperConfig.sustainBoost
             prefs[PreferencesKeys.TRANSIENT_SHAPER_LIMIT] = config.transientShaperConfig.autoOutputLimit
+            prefs[PreferencesKeys.STEREO_IMAGER_ENABLED] = config.dynamicStereoImagerConfig.isEnabled
+            prefs[PreferencesKeys.STEREO_IMAGER_PRESET] = config.dynamicStereoImagerConfig.preset.name
+            prefs[PreferencesKeys.STEREO_IMAGER_WIDTH] = config.dynamicStereoImagerConfig.stereoWidth
+            prefs[PreferencesKeys.STEREO_IMAGER_BASS_CUTOFF] = config.dynamicStereoImagerConfig.monoBassCutoffHz
+            prefs[PreferencesKeys.STEREO_IMAGER_AIR_SPREAD] = config.dynamicStereoImagerConfig.highBandAirSpread
+            prefs[PreferencesKeys.STEREO_IMAGER_MONO_GUARD] = config.dynamicStereoImagerConfig.monoGuardActive
         }
     }
 
@@ -697,6 +719,17 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.TRANSIENT_SHAPER_ATTACK] = config.attackBoost
             prefs[PreferencesKeys.TRANSIENT_SHAPER_SUSTAIN] = config.sustainBoost
             prefs[PreferencesKeys.TRANSIENT_SHAPER_LIMIT] = config.autoOutputLimit
+        }
+    }
+
+    suspend fun updateDynamicStereoImagerConfig(config: DynamicStereoImagerConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.STEREO_IMAGER_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.STEREO_IMAGER_PRESET] = config.preset.name
+            prefs[PreferencesKeys.STEREO_IMAGER_WIDTH] = config.stereoWidth
+            prefs[PreferencesKeys.STEREO_IMAGER_BASS_CUTOFF] = config.monoBassCutoffHz
+            prefs[PreferencesKeys.STEREO_IMAGER_AIR_SPREAD] = config.highBandAirSpread
+            prefs[PreferencesKeys.STEREO_IMAGER_MONO_GUARD] = config.monoGuardActive
         }
     }
 

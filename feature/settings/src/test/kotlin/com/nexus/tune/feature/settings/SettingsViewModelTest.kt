@@ -1299,4 +1299,43 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { !it.transientShaperConfig.autoOutputLimit })
         }
     }
+
+    @Test
+    fun `dynamic stereo imager settings update theme config`() = runTest {
+        viewModel.setDynamicStereoImagerEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.dynamicStereoImagerConfig.isEnabled })
+        }
+
+        viewModel.setDynamicStereoImagerPreset(StereoImagerPreset.WIDE_CONCERT_HALL)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.dynamicStereoImagerConfig.preset == StereoImagerPreset.WIDE_CONCERT_HALL })
+        }
+
+        viewModel.setDynamicStereoImagerWidth(1.65f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.dynamicStereoImagerConfig.stereoWidth == 1.65f })
+        }
+
+        viewModel.setDynamicStereoImagerBassCutoff(180.0f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.dynamicStereoImagerConfig.monoBassCutoffHz == 180.0f })
+        }
+
+        viewModel.setDynamicStereoImagerAirSpread(0.65f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.dynamicStereoImagerConfig.highBandAirSpread == 0.65f })
+        }
+
+        viewModel.setDynamicStereoImagerMonoGuard(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.dynamicStereoImagerConfig.monoGuardActive })
+        }
+    }
 }

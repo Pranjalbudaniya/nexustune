@@ -242,7 +242,8 @@ data class ThemeConfig(
     val truePeakGuardConfig: TruePeakGuardConfig = TruePeakGuardConfig(),
     val ultrasonicFilterConfig: UltrasonicFilterConfig = UltrasonicFilterConfig(),
     val tubeSaturationConfig: TubeSaturationConfig = TubeSaturationConfig(),
-    val transientShaperConfig: TransientShaperConfig = TransientShaperConfig()
+    val transientShaperConfig: TransientShaperConfig = TransientShaperConfig(),
+    val dynamicStereoImagerConfig: DynamicStereoImagerConfig = DynamicStereoImagerConfig()
 )
 
 data class SoundDoseInfo(
@@ -1362,6 +1363,39 @@ data class TransientShaperMetrics(
     val dynamicPunchScore: Int,
     val punchRating: String
 )
+
+enum class StereoImagerPreset(
+    val displayName: String,
+    val stereoWidth: Float,
+    val monoBassCutoffHz: Float,
+    val highBandAirSpread: Float,
+    val description: String
+) {
+    OFF("Off (Bypassed)", 1.0f, 0.0f, 0.0f, "Standard untouched dual-channel stereo stream"),
+    WIDE_CONCERT_HALL("Wide Concert Soundstage", 1.45f, 160.0f, 0.50f, "Expands perceived stage width with centered mono kick/bass and natural hall reflections"),
+    HEADPHONE_SPATIAL_SPHERE("Headphone Binaural Out-of-Head", 1.60f, 200.0f, 0.70f, "Projects soundstage far outside the ear canals using high-frequency decorrelation"),
+    INTIMATE_VOCAL_ANCHOR("Vocal Center Anchor", 1.25f, 140.0f, 0.30f, "Locks lead vocal tightly to the center while expanding backing instruments laterally"),
+    MONO_BASS_FOCUS("Solid Mono-Bass Sub Slam", 1.10f, 250.0f, 0.15f, "Collapses low frequencies to mono for maximum headroom and zero bass phase cancelation"),
+    DIFFUSE_AMBIENCE_GLOW("Diffuse Ambient Glow", 1.80f, 180.0f, 0.85f, "Ultra-wide ambient immersion ideal for synthwave, chillout, and cinematic scores")
+}
+
+data class DynamicStereoImagerConfig(
+    val isEnabled: Boolean = false,
+    val preset: StereoImagerPreset = StereoImagerPreset.OFF,
+    val stereoWidth: Float = 1.0f,
+    val monoBassCutoffHz: Float = 160.0f,
+    val highBandAirSpread: Float = 0.40f,
+    val monoGuardActive: Boolean = true
+)
+
+data class StereoImagerMetrics(
+    val correlationCoefficient: Float,
+    val perceivedWidthPercent: Int,
+    val monoBassCutoffHz: Float,
+    val monoCompatibilityScore: Int,
+    val spatialDepthRating: String
+)
+
 
 
 

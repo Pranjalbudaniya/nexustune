@@ -1139,4 +1139,45 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(transientShaperConfig = current.transientShaperConfig.copy(autoOutputLimit = enabled)))
     }
+
+    fun setDynamicStereoImagerEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(dynamicStereoImagerConfig = current.dynamicStereoImagerConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setDynamicStereoImagerPreset(preset: StereoImagerPreset) {
+        val current = themeConfig.value
+        val isEnabled = preset != StereoImagerPreset.OFF
+        updateTheme(
+            current.copy(
+                dynamicStereoImagerConfig = current.dynamicStereoImagerConfig.copy(
+                    isEnabled = isEnabled,
+                    preset = preset,
+                    stereoWidth = if (preset != StereoImagerPreset.OFF) preset.stereoWidth else current.dynamicStereoImagerConfig.stereoWidth,
+                    monoBassCutoffHz = if (preset != StereoImagerPreset.OFF) preset.monoBassCutoffHz else current.dynamicStereoImagerConfig.monoBassCutoffHz,
+                    highBandAirSpread = if (preset != StereoImagerPreset.OFF) preset.highBandAirSpread else current.dynamicStereoImagerConfig.highBandAirSpread
+                )
+            )
+        )
+    }
+
+    fun setDynamicStereoImagerWidth(width: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(dynamicStereoImagerConfig = current.dynamicStereoImagerConfig.copy(stereoWidth = width.coerceIn(0.0f, 2.0f))))
+    }
+
+    fun setDynamicStereoImagerBassCutoff(cutoffHz: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(dynamicStereoImagerConfig = current.dynamicStereoImagerConfig.copy(monoBassCutoffHz = cutoffHz.coerceIn(40.0f, 400.0f))))
+    }
+
+    fun setDynamicStereoImagerAirSpread(airSpread: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(dynamicStereoImagerConfig = current.dynamicStereoImagerConfig.copy(highBandAirSpread = airSpread.coerceIn(0.0f, 1.0f))))
+    }
+
+    fun setDynamicStereoImagerMonoGuard(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(dynamicStereoImagerConfig = current.dynamicStereoImagerConfig.copy(monoGuardActive = enabled)))
+    }
 }

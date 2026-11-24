@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 76 (v6.26.0 Audiophile Multi-Band Transient Shaper & Dynamic Punch Studio)
+- Active Phase: Post-v1.0 Improvement Loop 77 (v6.27.0 Audiophile Multi-Band Dynamic Stereo Imager & Ambience Extractor Studio)
 - In Flight: Slice and final qualification gate verification
 - Branches: `main`
 
@@ -739,7 +739,7 @@
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.25-1`
 
-- [ ] Improvement Loop 76 (v6.26 Milestone - In Flight)
+- [x] Improvement Loop 76 (v6.26 Milestone - Tagged `v6.26-1`)
   - [x] Audiophile Multi-Band Transient Shaper & Dynamic Punch Studio (`TransientShaperEngine`):
     - [x] `TransientBandFocus`, `TransientPreset`, `TransientShaperConfig`, and `TransientShaperMetrics` in `:core:model`
     - [x] `TransientShaperEngine` in `:core:domain:audio` with dual ballistic envelope followers, transient gain modulation, band focus biquads, and real-time crest factor diagnostics
@@ -750,6 +750,18 @@
     - [x] Comprehensive test suites in `TransientShaperEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.26-1`
+
+- [ ] Improvement Loop 77 (v6.27 Milestone - In Flight)
+  - [x] Audiophile Multi-Band Dynamic Stereo Imager & Ambience Extractor Studio (`DynamicStereoImagerEngine`):
+    - [x] `StereoImagerPreset`, `DynamicStereoImagerConfig`, and `StereoImagerMetrics` in `:core:model`
+    - [x] `DynamicStereoImagerEngine` in `:core:domain:audio` with Mid/Side decomposition, mono-bass highpass biquad, high-band air allpass decorrelation, and Pearson correlation phase guard
+    - [x] Hardware equalizer integration in `NexusAudioEffects` (`applySpatialSpreadOffset`, `clearSpatialSpreadOffset`, `getSpatialSpreadOffset`)
+    - [x] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
+    - [x] `SettingsViewModel` stereo imager control methods
+    - [x] Interactive "Multi-Band Dynamic Stereo Imager & Ambience Studio" card in `SettingsScreen` with preset chips, width slider, mono-bass cutoff chips, air spread slider, mono guard switch, and correlation HUD
+    - [x] Comprehensive test suites in `DynamicStereoImagerEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v6.27-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.
