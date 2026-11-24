@@ -18,3 +18,4 @@
   - `SonicDnaCalculatorTest` in `:core:domain`.
   - `SettingsViewModelTest` in `:feature:settings`.
   - `./scripts/gate.sh slice` and `./scripts/gate.sh final`.
+

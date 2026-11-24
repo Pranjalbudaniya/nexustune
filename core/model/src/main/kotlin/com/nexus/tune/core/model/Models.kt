@@ -447,3 +447,37 @@ data class SonicDnaProfile(
     val gradientEndHex: String = "#7C3AED"
 )
 
+enum class VibeTheme(val displayName: String, val tagline: String, val icon: String) {
+    LATE_NIGHT_CHILL("Late-Night Lo-Fi", "Gentle downtempo & relaxing twilight atmosphere", "🌙"),
+    HIGH_OCTANE_ENERGY("High-Octane Energy", "Kinetic beats, electronic drive & workout fuel", "⚡"),
+    DEEP_FOCUS_STUDY("Deep Focus & Flow", "Immersive study, classical & minimal distraction", "🧠"),
+    SUNSET_ACOUSTIC("Golden Hour Acoustic", "Warm analog strings, folk & authentic resonance", "🌅"),
+    CLUB_EUPHORIA("Club Euphoria", "Heavy sub-bass, dance anthems & night rhythm", "🪩"),
+    TIME_MACHINE_DEEP_CUTS("Nostalgia & Deep Cuts", "Rediscover forgotten favorites & timeless gems", "⏳"),
+    DYNAMIC_ECLECTIC("Eclectic Taste Mix", "Curated surprise spanning across your music universe", "✨")
+}
+
+enum class EnergyCurve(val displayName: String, val description: String) {
+    RAMP_UP("Ramp-Up", "Starts mellow and builds toward a high-energy climax"),
+    PEAK_SUSTAINED("Sustained Peak", "High kinetic energy from first beat to last"),
+    WAVE_DYNAMIC("Dynamic Waves", "Alternating crests and troughs of energy"),
+    GENTLE_COOLDOWN("Gentle Cooldown", "Starts energetic and gradually winds down")
+}
+
+data class VibeMixRequest(
+    val theme: VibeTheme = VibeTheme.LATE_NIGHT_CHILL,
+    val targetDurationMinutes: Int = 30,
+    val energyCurve: EnergyCurve = EnergyCurve.RAMP_UP,
+    val includeLikedTracks: Boolean = true,
+    val includeHistory: Boolean = true
+)
+
+data class VibeMixResult(
+    val title: String = "Smart Vibe Mix",
+    val theme: VibeTheme = VibeTheme.LATE_NIGHT_CHILL,
+    val tracks: List<Track> = emptyList(),
+    val totalDurationSeconds: Long = 0L,
+    val formattedDuration: String = "0 min",
+    val curve: EnergyCurve = EnergyCurve.RAMP_UP
+)
+

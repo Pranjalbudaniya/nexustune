@@ -8,6 +8,8 @@ import com.nexus.tune.core.domain.usecase.ManageQueueUseCase
 import com.nexus.tune.core.model.LibrarySortOrder
 import com.nexus.tune.core.model.Playlist
 import com.nexus.tune.core.model.Track
+import com.nexus.tune.core.model.VibeMixRequest
+import com.nexus.tune.core.model.VibeMixResult
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -104,6 +106,32 @@ class LibraryViewModel(
         viewModelScope.launch {
             val removed = musicRepository.deduplicateLikedTracks()
             deduplicationStatus.value = if (removed > 0) "Removed $removed duplicate tracks" else "No duplicates found"
+        }
+    }
+
+    val vibeMixPreview = MutableStateFlow<VibeMixResult?>(null)
+
+    fun previewVibeMix(request: VibeMixRequest) {
+        val liked = likedTracks.value
+        val history = historyTracks.value
+        val candidatePool = (liked + history).distinctBy { it.id }
+        val result = com.nexus.tune.core.domain.playlist.VibePlaylistGenerator.generateVibeMix(request, candidatePool)
+        vibeMixPreview.value = result
+    }
+
+    fun saveVibeMixAsPlaylist(result: VibeMixResult, onComplete: ((String) -> Unit)? = null) {
+        if (result.tracks.isEmpty()) return
+        viewModelScope.launch {
+            val playlistId = musicRepository.createPlaylist(result.title, result.tracks.firstOrNull()?.artworkUrl)
+            musicRepository.addTracksToPlaylist(playlistId, result.tracks.map { it.id })
+            onComplete?.invoke(playlistId)
+        }
+    }
+
+    fun playVibeMixNow(result: VibeMixResult) {
+        if (result.tracks.isEmpty()) return
+        viewModelScope.launch {
+            manageQueueUseCase.playTrackNow(result.tracks.first(), result.tracks)
         }
     }
 }

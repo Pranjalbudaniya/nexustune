@@ -139,3 +139,4 @@ object SonicDnaCalculator {
         """.trimIndent()
     }
 }
+

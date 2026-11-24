@@ -305,6 +305,24 @@ class MusicRepositoryImpl(
         database.playlistDao().delete(playlistId)
     }
 
+    override suspend fun addTracksToPlaylist(playlistId: String, trackIds: List<String>) {
+        val refs = trackIds.mapIndexed { index, trackId ->
+            com.nexus.tune.core.database.entity.PlaylistTrackCrossRef(
+                playlistId = playlistId,
+                trackId = trackId,
+                trackOrder = index
+            )
+        }
+        database.playlistDao().insertTrackCrossRefs(refs)
+        database.playlistDao().updateTrackCount(playlistId, trackIds.size)
+    }
+
+    override fun getTracksForPlaylist(playlistId: String): Flow<List<Track>> {
+        return database.playlistDao().getTracksForPlaylist(playlistId).map { list ->
+            list.map { it.toModel() }
+        }
+    }
+
     override fun getBookmarksForTrack(trackId: String): Flow<List<TrackBookmark>> {
         return database.trackBookmarkDao().getBookmarksForTrack(trackId).map { list ->
             list.map {

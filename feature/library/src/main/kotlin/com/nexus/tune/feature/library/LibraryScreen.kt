@@ -25,11 +25,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.nexus.tune.core.model.EnergyCurve
 import com.nexus.tune.core.model.LibrarySortOrder
 import com.nexus.tune.core.model.Playlist
 import com.nexus.tune.core.model.Track
+import com.nexus.tune.core.model.VibeMixRequest
+import com.nexus.tune.core.model.VibeMixResult
+import com.nexus.tune.core.model.VibeTheme
 import com.nexus.tune.core.ui.TrackListItem
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LibraryScreen(
     viewModel: LibraryViewModel,
@@ -50,6 +55,24 @@ fun LibraryScreen(
 
     var showCreateDialog by remember { mutableStateOf(false) }
     var editingPlaylistForArtwork by remember { mutableStateOf<Playlist?>(null) }
+    var showVibeMixSheet by remember { mutableStateOf(false) }
+    var selectedVibeTheme by remember { mutableStateOf(VibeTheme.LATE_NIGHT_CHILL) }
+    var targetVibeDuration by remember { mutableIntStateOf(30) }
+    var selectedEnergyCurve by remember { mutableStateOf(EnergyCurve.RAMP_UP) }
+    val vibeMixPreview by viewModel.vibeMixPreview.collectAsState()
+    val context = androidx.compose.ui.platform.LocalContext.current
+
+    LaunchedEffect(showVibeMixSheet, selectedVibeTheme, targetVibeDuration, selectedEnergyCurve) {
+        if (showVibeMixSheet) {
+            viewModel.previewVibeMix(
+                VibeMixRequest(
+                    theme = selectedVibeTheme,
+                    targetDurationMinutes = targetVibeDuration,
+                    energyCurve = selectedEnergyCurve
+                )
+            )
+        }
+    }
 
     Column(modifier = modifier.fillMaxSize()) {
         // In-Library Search Field
@@ -183,6 +206,7 @@ fun LibraryScreen(
                 PlaylistsTab(
                     playlists = filteredPlaylists,
                     onCreateClick = { showCreateDialog = true },
+                    onVibeMixClick = { showVibeMixSheet = true },
                     onEditArtworkClick = { editingPlaylistForArtwork = it },
                     onDeleteClick = { viewModel.deletePlaylist(it.id) }
                 )
@@ -246,12 +270,204 @@ fun LibraryScreen(
             }
         )
     }
+
+    if (showVibeMixSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showVibeMixSheet = false },
+            containerColor = MaterialTheme.colorScheme.surface
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 8.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            text = "✨ Smart Vibe Mix Generator",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "Acoustic moods & energy curves tailored to your listening",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    IconButton(onClick = { showVibeMixSheet = false }) {
+                        Icon(Icons.Rounded.Close, contentDescription = "Close")
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Vibe Theme Selector Chips
+                Text(
+                    text = "Select Vibe Aesthetic",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    VibeTheme.values().forEach { theme ->
+                        val isSelected = selectedVibeTheme == theme
+                        FilterChip(
+                            selected = isSelected,
+                            onClick = { selectedVibeTheme = theme },
+                            label = { Text("${theme.icon} ${theme.displayName}") }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Duration Selector Chips
+                Text(
+                    text = "Target Duration",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listOf(15, 30, 45, 60).forEach { mins ->
+                        val isSelected = targetVibeDuration == mins
+                        FilterChip(
+                            selected = isSelected,
+                            onClick = { targetVibeDuration = mins },
+                            label = { Text("$mins mins") },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Energy Curve Chips
+                Text(
+                    text = "Energy Flow Curve",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    EnergyCurve.values().forEach { curve ->
+                        val isSelected = selectedEnergyCurve == curve
+                        FilterChip(
+                            selected = isSelected,
+                            onClick = { selectedEnergyCurve = curve },
+                            label = { Text(curve.displayName) }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Preview Summary Card
+                val preview = vibeMixPreview
+                Surface(
+                    shape = MaterialTheme.shapes.small,
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = preview?.title ?: "Generating Mix...",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "${preview?.tracks?.size ?: 0} tracks",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Estimated length: ${preview?.formattedDuration ?: "0 min"} • Curve: ${selectedEnergyCurve.description}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Action Buttons
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = {
+                            preview?.let { mix ->
+                                viewModel.playVibeMixNow(mix)
+                                showVibeMixSheet = false
+                            }
+                        },
+                        enabled = preview != null && preview.tracks.isNotEmpty(),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(Icons.Rounded.PlayArrow, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Play Now")
+                    }
+
+                    Button(
+                        onClick = {
+                            preview?.let { mix ->
+                                viewModel.saveVibeMixAsPlaylist(mix) {
+                                    android.widget.Toast.makeText(context, "Saved to your playlists!", android.widget.Toast.LENGTH_SHORT).show()
+                                }
+                                showVibeMixSheet = false
+                            }
+                        },
+                        enabled = preview != null && preview.tracks.isNotEmpty(),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Save Playlist")
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+        }
+    }
 }
 
 @Composable
 private fun PlaylistsTab(
     playlists: List<Playlist>,
     onCreateClick: () -> Unit,
+    onVibeMixClick: () -> Unit = {},
     onEditArtworkClick: (Playlist) -> Unit,
     onDeleteClick: (Playlist) -> Unit,
     modifier: Modifier = Modifier
@@ -269,17 +485,25 @@ private fun PlaylistsTab(
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
-            FilledTonalButton(
-                onClick = onCreateClick,
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Add,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text("New Playlist")
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(
+                    onClick = onVibeMixClick,
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                ) {
+                    Text("✨ Vibe Mix", style = MaterialTheme.typography.labelMedium)
+                }
+                FilledTonalButton(
+                    onClick = onCreateClick,
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("New", style = MaterialTheme.typography.labelMedium)
+                }
             }
         }
 

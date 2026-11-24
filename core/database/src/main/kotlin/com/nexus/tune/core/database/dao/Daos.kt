@@ -62,6 +62,24 @@ interface PlaylistDao {
 
     @Query("UPDATE playlists SET artworkUrl = :artworkUrl WHERE id = :id")
     suspend fun updateArtwork(id: String, artworkUrl: String?)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTrackCrossRef(ref: com.nexus.tune.core.database.entity.PlaylistTrackCrossRef)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTrackCrossRefs(refs: List<com.nexus.tune.core.database.entity.PlaylistTrackCrossRef>)
+
+    @Query("SELECT trackId FROM playlist_tracks WHERE playlistId = :playlistId ORDER BY trackOrder ASC")
+    fun getTrackIdsForPlaylist(playlistId: String): Flow<List<String>>
+
+    @Query("SELECT tracks.* FROM tracks INNER JOIN playlist_tracks ON tracks.id = playlist_tracks.trackId WHERE playlist_tracks.playlistId = :playlistId ORDER BY playlist_tracks.trackOrder ASC")
+    fun getTracksForPlaylist(playlistId: String): Flow<List<com.nexus.tune.core.database.entity.TrackEntity>>
+
+    @Query("UPDATE playlists SET trackCount = :count WHERE id = :id")
+    suspend fun updateTrackCount(id: String, count: Int)
+
+    @Query("DELETE FROM playlist_tracks WHERE playlistId = :playlistId")
+    suspend fun clearTracksForPlaylist(playlistId: String)
 }
 
 @Dao

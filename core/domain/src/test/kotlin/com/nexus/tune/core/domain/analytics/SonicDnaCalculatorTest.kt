@@ -124,3 +124,4 @@ class SonicDnaCalculatorTest {
         assertTrue(summary.contains("Pure 120Hz Sound"))
     }
 }
+

@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import com.nexus.tune.core.domain.repository.MusicRepository
 import com.nexus.tune.core.domain.usecase.ManageQueueUseCase
 import com.nexus.tune.core.model.Track
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -13,6 +14,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -142,5 +145,35 @@ class LibraryViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         coVerify { manageQueueUseCase.playTrackNow(sampleLiked.first(), sampleLiked) }
+    }
+
+    @Test
+    fun `previewVibeMix, saveVibeMixAsPlaylist, and playVibeMixNow function properly`() = runTest {
+        val request = com.nexus.tune.core.model.VibeMixRequest(
+            theme = com.nexus.tune.core.model.VibeTheme.LATE_NIGHT_CHILL,
+            targetDurationMinutes = 15
+        )
+        viewModel.previewVibeMix(request)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val preview = viewModel.vibeMixPreview.value
+        assertNotNull(preview)
+        assertTrue(preview!!.tracks.isNotEmpty())
+
+        coEvery { musicRepository.createPlaylist(any(), any()) } returns "vibe-p1"
+        var callbackCalled = false
+        viewModel.saveVibeMixAsPlaylist(preview) { id ->
+            assertEquals("vibe-p1", id)
+            callbackCalled = true
+        }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertTrue(callbackCalled)
+        coVerify { musicRepository.createPlaylist(preview.title, preview.tracks.firstOrNull()?.artworkUrl) }
+        coVerify { musicRepository.addTracksToPlaylist("vibe-p1", preview.tracks.map { it.id }) }
+
+        viewModel.playVibeMixNow(preview)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify { manageQueueUseCase.playTrackNow(preview.tracks.first(), preview.tracks) }
     }
 }

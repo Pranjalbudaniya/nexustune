@@ -5,6 +5,15 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.8.0] - 2026-11-24
+
+### Added
+- **Smart Vibe Mix & Dynamic Algorithmic Playlist Synthesis Engine**: Implemented `VibeTheme` (`LATE_NIGHT_CHILL`, `HIGH_OCTANE_ENERGY`, `DEEP_FOCUS_STUDY`, `SUNSET_ACOUSTIC`, `CLUB_EUPHORIA`, `TIME_MACHINE_DEEP_CUTS`, `DYNAMIC_ECLECTIC`), `EnergyCurve` (`RAMP_UP`, `PEAK_SUSTAINED`, `WAVE_DYNAMIC`, `GENTLE_COOLDOWN`), `VibeMixRequest`, and `VibeMixResult` in `:core:model`.
+- **Vibe Mix Generator Engine**: Created `VibePlaylistGenerator` in `:core:domain:playlist` providing keyword-scored theme matching, artist diversity spacing, session duration targeting (15m, 30m, 45m, 60m), and energy flow curves.
+- **Room Cross-Ref Playlist Persistence**: Added `PlaylistTrackCrossRef` batch insertion (`insertTrackCrossRefs`), track queries (`getTracksForPlaylist`), and count updates in `PlaylistDao`, `MusicRepository`, and `MusicRepositoryImpl`.
+- **Library Screen Smart Vibe Console**: Added "✨ Vibe Mix" launch button and Material 3 Expressive `ModalBottomSheet` in `LibraryScreen` featuring theme chips, duration selectors, energy curve chips, live track preview list, "Play Now" action, and "Save Playlist" Room persistence.
+- **Comprehensive Unit Tests**: Created `VibePlaylistGeneratorTest` in `:core:domain` and expanded `LibraryViewModelTest` in `:feature:library`.
+
 ## [5.7.0] - 2026-11-24
 
 ### Added
