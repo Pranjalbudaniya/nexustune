@@ -135,6 +135,10 @@ class SettingsDataStore(private val context: Context) {
         val TRUE_PEAK_MODE = stringPreferencesKey("true_peak_mode")
         val TRUE_PEAK_CEILING = stringPreferencesKey("true_peak_ceiling")
         val TRUE_PEAK_OVERSAMPLE_4X = booleanPreferencesKey("true_peak_oversample_4x")
+        val ULTRASONIC_ENABLED = booleanPreferencesKey("ultrasonic_enabled")
+        val ULTRASONIC_MODE = stringPreferencesKey("ultrasonic_mode")
+        val ULTRASONIC_TOPOLOGY = stringPreferencesKey("ultrasonic_topology")
+        val ULTRASONIC_CUTOFF_HZ = floatPreferencesKey("ultrasonic_cutoff_hz")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -352,6 +356,16 @@ class SettingsDataStore(private val context: Context) {
                     TruePeakCeiling.valueOf(prefs[PreferencesKeys.TRUE_PEAK_CEILING] ?: TruePeakCeiling.CEILING_MINUS_0_5_DBTP.name)
                 }.getOrDefault(TruePeakCeiling.CEILING_MINUS_0_5_DBTP),
                 oversample4xEnabled = prefs[PreferencesKeys.TRUE_PEAK_OVERSAMPLE_4X] ?: true
+            ),
+            ultrasonicFilterConfig = UltrasonicFilterConfig(
+                isEnabled = prefs[PreferencesKeys.ULTRASONIC_ENABLED] ?: false,
+                mode = runCatching {
+                    UltrasonicMode.valueOf(prefs[PreferencesKeys.ULTRASONIC_MODE] ?: UltrasonicMode.OFF.name)
+                }.getOrDefault(UltrasonicMode.OFF),
+                topology = runCatching {
+                    UltrasonicTopology.valueOf(prefs[PreferencesKeys.ULTRASONIC_TOPOLOGY] ?: UltrasonicTopology.LINEAR_PHASE_FIR.name)
+                }.getOrDefault(UltrasonicTopology.LINEAR_PHASE_FIR),
+                cutoffHz = prefs[PreferencesKeys.ULTRASONIC_CUTOFF_HZ] ?: 22050.0f
             )
         )
     }
@@ -470,6 +484,10 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.TRUE_PEAK_MODE] = config.truePeakGuardConfig.mode.name
             prefs[PreferencesKeys.TRUE_PEAK_CEILING] = config.truePeakGuardConfig.ceiling.name
             prefs[PreferencesKeys.TRUE_PEAK_OVERSAMPLE_4X] = config.truePeakGuardConfig.oversample4xEnabled
+            prefs[PreferencesKeys.ULTRASONIC_ENABLED] = config.ultrasonicFilterConfig.isEnabled
+            prefs[PreferencesKeys.ULTRASONIC_MODE] = config.ultrasonicFilterConfig.mode.name
+            prefs[PreferencesKeys.ULTRASONIC_TOPOLOGY] = config.ultrasonicFilterConfig.topology.name
+            prefs[PreferencesKeys.ULTRASONIC_CUTOFF_HZ] = config.ultrasonicFilterConfig.cutoffHz
         }
     }
 
@@ -600,6 +618,15 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.TRUE_PEAK_MODE] = config.mode.name
             prefs[PreferencesKeys.TRUE_PEAK_CEILING] = config.ceiling.name
             prefs[PreferencesKeys.TRUE_PEAK_OVERSAMPLE_4X] = config.oversample4xEnabled
+        }
+    }
+
+    suspend fun updateUltrasonicFilterConfig(config: UltrasonicFilterConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.ULTRASONIC_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.ULTRASONIC_MODE] = config.mode.name
+            prefs[PreferencesKeys.ULTRASONIC_TOPOLOGY] = config.topology.name
+            prefs[PreferencesKeys.ULTRASONIC_CUTOFF_HZ] = config.cutoffHz
         }
     }
 

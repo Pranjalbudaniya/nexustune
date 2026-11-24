@@ -1194,4 +1194,31 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { !it.truePeakGuardConfig.oversample4xEnabled })
         }
     }
+
+    @Test
+    fun `ultrasonic filter settings update theme config`() = runTest {
+        viewModel.setUltrasonicFilterEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.ultrasonicFilterConfig.isEnabled })
+        }
+
+        viewModel.setUltrasonicFilterMode(UltrasonicMode.HI_RES_TAMER_24K)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.ultrasonicFilterConfig.mode == UltrasonicMode.HI_RES_TAMER_24K })
+        }
+
+        viewModel.setUltrasonicFilterTopology(UltrasonicTopology.MINIMUM_PHASE_IIR)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.ultrasonicFilterConfig.topology == UltrasonicTopology.MINIMUM_PHASE_IIR })
+        }
+
+        viewModel.setUltrasonicFilterCutoff(24000.0f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.ultrasonicFilterConfig.cutoffHz == 24000.0f })
+        }
+    }
 }

@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 73 (v6.23.0 True Peak Inter-Sample Clipping Guard Studio)
+- Active Phase: Post-v1.0 Improvement Loop 74 (v6.24.0 Ultrasonic Anti-Aliasing & Nyquist Image Guard Studio)
 - In Flight: Quality gate execution and release qualification
 - Branches: `main`
 
@@ -715,6 +715,17 @@
     - [x] Comprehensive test suites in `TruePeakGuardEngineTest` and `SettingsViewModelTest`
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.23-1`
+
+- [x] Improvement Loop 74 (v6.24 Milestone - Tagged `v6.24-1`)
+  - [x] Ultrasonic Anti-Aliasing & Nyquist Image Guard Studio (`UltrasonicFilterEngine`):
+    - [x] `UltrasonicTopology`, `UltrasonicMode`, `UltrasonicFilterConfig`, and `UltrasonicMetrics` in `:core:model`
+    - [x] `UltrasonicFilterEngine` in `:core:domain:audio` with configurable biquad low-pass topologies (Butterworth Linear Phase, Minimum Phase Zero-Pre-Ring, Bessel Constant Delay, Apodizing Ring Killer), stopband rejection calculation, group delay estimation, and IMD protection ratings
+    - [x] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
+    - [x] `SettingsViewModel` ultrasonic filter control methods
+    - [x] Interactive "Ultrasonic Anti-Aliasing & Nyquist Image Guard" studio card in `SettingsScreen`
+    - [x] Comprehensive test suites in `UltrasonicFilterEngineTest` and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v6.24-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

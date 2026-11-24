@@ -5,6 +5,16 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.24.0] - 2026-11-24
+
+### Added
+- **Ultrasonic Anti-Aliasing & Nyquist Image Guard Studio (`UltrasonicFilterEngine`)**: Added `UltrasonicTopology` (`LINEAR_PHASE_FIR`, `MINIMUM_PHASE_IIR`, `BESSEL_CONSTANT_DELAY`, `APODIZING_RING_KILLER`), `UltrasonicMode` (`OFF`, `AUDIOPHILE_BRICKWALL_22K`, `HI_RES_TAMER_24K`, `NATURAL_TRANSIENT_BESSEL`, `APODIZING_RING_KILLER`), `UltrasonicFilterConfig`, and `UltrasonicMetrics` in `:core:model`.
+- **Supersonic Low-Pass Reconstruction & Analog IMD Shielding DSP**: Implemented `UltrasonicFilterEngine` in `:core:domain:audio` with configurable filter topologies. Rejects digital-to-analog converter mirror imaging foldback and suppresses supersonic energy (>20-24 kHz) before it enters analog amplification stages, eliminating intermodulation distortion (IMD) noise hash in the audible 1-10 kHz range and protecting headphone transducer voice coils.
+- **DataStore Persistence**: Added `ULTRASONIC_ENABLED`, `ULTRASONIC_MODE`, `ULTRASONIC_TOPOLOGY`, and `ULTRASONIC_CUTOFF_HZ` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Ultrasonic Studio**: Added interactive "Ultrasonic Anti-Aliasing & Nyquist Image Guard" studio card in `SettingsScreen` with profile chips, topology selector, cutoff chips (20, 22.05, 24, 28, 32 kHz), and live stopband rejection / group delay / IMD shield rating badge.
+- **Unit Test Coverage**: Comprehensive test suites in `UltrasonicFilterEngineTest` in `:core:domain` and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.23.0] - 2026-11-24
 
 ### Added

@@ -239,7 +239,8 @@ data class ThemeConfig(
     val airBandExciterConfig: AirBandExciterConfig = AirBandExciterConfig(),
     val subHarmonicSynthConfig: SubHarmonicSynthConfig = SubHarmonicSynthConfig(),
     val deEsserConfig: DeEsserConfig = DeEsserConfig(),
-    val truePeakGuardConfig: TruePeakGuardConfig = TruePeakGuardConfig()
+    val truePeakGuardConfig: TruePeakGuardConfig = TruePeakGuardConfig(),
+    val ultrasonicFilterConfig: UltrasonicFilterConfig = UltrasonicFilterConfig()
 )
 
 data class SoundDoseInfo(
@@ -1238,6 +1239,50 @@ data class TruePeakMetrics(
     val appliedGuardAttenuationDb: Float,
     val dacHeadroomRating: String
 )
+
+enum class UltrasonicTopology(val displayName: String, val description: String) {
+    LINEAR_PHASE_FIR("Linear Phase (Brickwall)", "Steep >96 dB stopband rejection preserving linear group delay across the audible band"),
+    MINIMUM_PHASE_IIR("Minimum Phase (Zero Pre-Ring)", "Eliminates all pre-ringing artifacts for crisp transient attack punch"),
+    BESSEL_CONSTANT_DELAY("Bessel (Flat Group Delay)", "Maximally flat group delay preserving micro-spatial imaging across high treble"),
+    APODIZING_RING_KILLER("Apodizing (Anti-Ringing)", "Attenuates pre-ringing baked into legacy digital recordings and DAC interpolation filters")
+}
+
+enum class UltrasonicMode(
+    val displayName: String,
+    val topology: UltrasonicTopology,
+    val cutoffHz: Float,
+    val description: String
+) {
+    OFF("Off (Bypassed)", UltrasonicTopology.LINEAR_PHASE_FIR, 48000.0f, "Full bandwidth passband without ultrasonic attenuation"),
+    AUDIOPHILE_BRICKWALL_22K("CD Nyquist Brickwall (22.05 kHz)", UltrasonicTopology.LINEAR_PHASE_FIR, 22050.0f, "Standard 22.05 kHz filter rejecting all ultrasonic digital imaging foldback"),
+    HI_RES_TAMER_24K("Hi-Res IMD Shield (24.0 kHz)", UltrasonicTopology.MINIMUM_PHASE_IIR, 24000.0f, "Blocks supersonic energy above 24 kHz to eliminate analog amplifier IMD hash"),
+    NATURAL_TRANSIENT_BESSEL("Natural Transient Bessel (28.0 kHz)", UltrasonicTopology.BESSEL_CONSTANT_DELAY, 28000.0f, "Gentle, organic rolloff with zero phase distortion for acoustic recordings"),
+    APODIZING_RING_KILLER("Apodizing Ring Killer (20.0 kHz)", UltrasonicTopology.APODIZING_RING_KILLER, 20000.0f, "Suppresses pre-echo ringing right at the 20 kHz threshold")
+}
+
+data class UltrasonicFilterConfig(
+    val isEnabled: Boolean = false,
+    val mode: UltrasonicMode = UltrasonicMode.OFF,
+    val topology: UltrasonicTopology = UltrasonicTopology.LINEAR_PHASE_FIR,
+    val cutoffHz: Float = 22050.0f
+)
+
+data class UltrasonicMetrics(
+    val cutoffHz: Float,
+    val stopbandRejectionDb: Float,
+    val groupDelayMicros: Float,
+    val preRingingSuppression: String,
+    val imdShieldRating: String
+)
+
+data class UltrasonicBiquadCoefficients(
+    val b0: Float,
+    val b1: Float,
+    val b2: Float,
+    val a1: Float,
+    val a2: Float
+)
+
 
 
 

@@ -20,6 +20,7 @@ import com.nexus.tune.core.domain.audio.AirBandExciterEngine
 import com.nexus.tune.core.domain.audio.SubHarmonicSynthEngine
 import com.nexus.tune.core.domain.audio.DeEsserEngine
 import com.nexus.tune.core.domain.audio.TruePeakGuardEngine
+import com.nexus.tune.core.domain.audio.UltrasonicFilterEngine
 import com.nexus.tune.core.ui.EqCurveVisualizer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -2330,6 +2331,126 @@ fun SettingsScreen(
                                 )
                                 Text(
                                     text = "Guard Gain: ${String.format(java.util.Locale.US, "%.2f", truePeakMetrics.appliedGuardAttenuationDb)} dB",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+                ListItem(
+                    headlineContent = { Text("Ultrasonic Anti-Aliasing & Nyquist Image Guard") },
+                    supportingContent = { Text("Supersonic low-pass reconstruction filter eliminating DAC imaging hash, analog IMD distortion, and amplifier thermal stress") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.ultrasonicFilterConfig.isEnabled,
+                            onCheckedChange = { viewModel.setUltrasonicFilterEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.ultrasonicFilterConfig.isEnabled) {
+                    val ultrasonicMetrics = remember(themeConfig.ultrasonicFilterConfig) {
+                        UltrasonicFilterEngine.calculateMetrics(themeConfig.ultrasonicFilterConfig)
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Ultrasonic Profile",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        UltrasonicMode.entries.forEach { mode ->
+                            FilterChip(
+                                selected = themeConfig.ultrasonicFilterConfig.mode == mode,
+                                onClick = { viewModel.setUltrasonicFilterMode(mode) },
+                                label = { Text(mode.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "Filter Topology",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        UltrasonicTopology.entries.forEach { topology ->
+                            FilterChip(
+                                selected = themeConfig.ultrasonicFilterConfig.topology == topology,
+                                onClick = { viewModel.setUltrasonicFilterTopology(topology) },
+                                label = { Text(topology.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "Supersonic Cutoff Frequency",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf(20000.0f, 22050.0f, 24000.0f, 28000.0f, 32000.0f).forEach { cutoff ->
+                            FilterChip(
+                                selected = kotlin.math.abs(themeConfig.ultrasonicFilterConfig.cutoffHz - cutoff) < 1.0f,
+                                onClick = { viewModel.setUltrasonicFilterCutoff(cutoff) },
+                                label = { Text("${(cutoff / 1000.0f).toInt()}k Hz") }
+                            )
+                        }
+                    }
+
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Text(
+                                text = themeConfig.ultrasonicFilterConfig.topology.description,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Rejection: -${ultrasonicMetrics.stopbandRejectionDb.toInt()} dB",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Delay: ${String.format(java.util.Locale.US, "%.1f", ultrasonicMetrics.groupDelayMicros)} µs",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                                Text(
+                                    text = ultrasonicMetrics.imdShieldRating,
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.tertiary
                                 )

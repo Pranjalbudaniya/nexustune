@@ -1027,4 +1027,34 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(truePeakGuardConfig = current.truePeakGuardConfig.copy(oversample4xEnabled = enabled)))
     }
+
+    fun setUltrasonicFilterEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(ultrasonicFilterConfig = current.ultrasonicFilterConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setUltrasonicFilterMode(mode: UltrasonicMode) {
+        val current = themeConfig.value
+        val isEnabled = mode != UltrasonicMode.OFF
+        updateTheme(
+            current.copy(
+                ultrasonicFilterConfig = current.ultrasonicFilterConfig.copy(
+                    isEnabled = isEnabled,
+                    mode = mode,
+                    topology = mode.topology,
+                    cutoffHz = mode.cutoffHz
+                )
+            )
+        )
+    }
+
+    fun setUltrasonicFilterTopology(topology: UltrasonicTopology) {
+        val current = themeConfig.value
+        updateTheme(current.copy(ultrasonicFilterConfig = current.ultrasonicFilterConfig.copy(topology = topology)))
+    }
+
+    fun setUltrasonicFilterCutoff(cutoffHz: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(ultrasonicFilterConfig = current.ultrasonicFilterConfig.copy(cutoffHz = cutoffHz.coerceIn(16000.0f, 48000.0f))))
+    }
 }
