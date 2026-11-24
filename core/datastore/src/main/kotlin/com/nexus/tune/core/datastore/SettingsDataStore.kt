@@ -63,6 +63,7 @@ class SettingsDataStore(private val context: Context) {
         val DJ_LOFI_FILTER = booleanPreferencesKey("dj_lofi_filter")
         val DJ_BASS_BOOST = intPreferencesKey("dj_bass_boost")
         val DJ_REMEMBER_ACROSS_TRACKS = booleanPreferencesKey("dj_remember_across_tracks")
+        val CUSTOM_SMART_PLAYLISTS = stringPreferencesKey("custom_smart_playlists_json")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -315,6 +316,16 @@ class SettingsDataStore(private val context: Context) {
     suspend fun setDjRememberAcrossTracks(remember: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[PreferencesKeys.DJ_REMEMBER_ACROSS_TRACKS] = remember
+        }
+    }
+
+    val customSmartPlaylistsRaw: Flow<String> = context.dataStore.data.map { prefs ->
+        prefs[PreferencesKeys.CUSTOM_SMART_PLAYLISTS] ?: ""
+    }
+
+    suspend fun saveCustomSmartPlaylistsRaw(raw: String) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.CUSTOM_SMART_PLAYLISTS] = raw
         }
     }
 }

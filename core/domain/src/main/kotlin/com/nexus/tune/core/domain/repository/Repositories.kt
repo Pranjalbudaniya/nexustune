@@ -74,6 +74,9 @@ interface SettingsRepository {
     suspend fun updateDjFxConfig(config: com.nexus.tune.core.model.DjFxConfig) {}
     fun getDjRememberAcrossTracks(): Flow<Boolean> = kotlinx.coroutines.flow.flowOf(false)
     suspend fun setDjRememberAcrossTracks(remember: Boolean) {}
+    fun getCustomSmartPlaylists(): Flow<List<com.nexus.tune.core.model.SmartPlaylistDefinition>> = kotlinx.coroutines.flow.flowOf(emptyList())
+    suspend fun saveCustomSmartPlaylist(definition: com.nexus.tune.core.model.SmartPlaylistDefinition) {}
+    suspend fun deleteCustomSmartPlaylist(playlistId: String) {}
 }
 
 

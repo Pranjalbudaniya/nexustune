@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
 
         homeViewModel = HomeViewModel(app.getHomeFeedUseCase, app.manageQueueUseCase)
         searchViewModel = SearchViewModel(app.searchMusicUseCase, app.manageQueueUseCase)
-        libraryViewModel = LibraryViewModel(app.musicRepository, app.manageQueueUseCase)
+        libraryViewModel = LibraryViewModel(app.musicRepository, app.manageQueueUseCase, app.settingsRepository)
         playerViewModel = PlayerViewModel(
             musicRepository = app.musicRepository,
             manageQueueUseCase = app.manageQueueUseCase,

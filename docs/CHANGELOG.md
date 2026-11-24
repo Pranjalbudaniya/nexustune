@@ -5,6 +5,15 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.9.0] - 2026-11-24
+
+### Added
+- **Dynamic Rule-Based Smart Playlists & Algorithmic Query Engine**: Implemented `SmartRuleField` (`TITLE`, `ARTIST`, `ALBUM`, `DURATION_SECONDS`, `IS_LIKED`, `IS_DOWNLOADED`, `PLAY_COUNT`), `SmartRuleOperator` (`EQUALS`, `CONTAINS`, `NOT_CONTAINS`, `GREATER_THAN`, `LESS_THAN`, `STARTS_WITH`), `SmartRuleMatch` (`ALL`, `ANY`), `SmartRuleSort`, `SmartPlaylistRule`, and `SmartPlaylistDefinition` domain models in `:core:model`.
+- **Smart Playlist Evaluator Engine**: Implemented `SmartPlaylistEvaluator` in `:core:domain:playlist` with rule matching, string & numeric evaluations, sorting options, track limit clipping, JSON serialization/deserialization, and 5 built-in smart presets: "🔥 Heavy Rotation", "⭐ Liked Gems", "⚡ Quick Jams", "🎧 Deep Listening", and "💾 Offline Stash".
+- **DataStore & Repository Persistence**: Persisted custom smart playlist definitions in `SettingsDataStore` with reactive streams and CRUD operations in `SettingsRepository` and `SettingsRepositoryImpl`.
+- **Library Screen Smart Playlist Carousel & Control Sheet**: Added "⚡ Dynamic Smart Playlists" horizontal card carousel to `LibraryScreen` Playlists tab, an interactive Smart Playlist Preview `ModalBottomSheet` with live track count, "Play All", "Shuffle All", and delete actions, plus a "Create Dynamic Smart Playlist" rule builder bottom sheet.
+- **Comprehensive Unit Tests**: Created `SmartPlaylistEvaluatorTest` in `:core:domain` and expanded `LibraryViewModelTest` in `:feature:library`.
+
 ## [5.8.0] - 2026-11-24
 
 ### Added

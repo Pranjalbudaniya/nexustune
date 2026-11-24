@@ -25,12 +25,13 @@ class LibraryViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private val musicRepository = mockk<MusicRepository>(relaxed = true)
     private val manageQueueUseCase = mockk<ManageQueueUseCase>(relaxed = true)
+    private val settingsRepository = mockk<com.nexus.tune.core.domain.repository.SettingsRepository>(relaxed = true)
 
     private val sampleLiked = listOf(
-        Track(id = "l1", title = "Liked Track", artist = "Artist 1", isLiked = true)
+        Track(id = "l1", title = "Liked Track", artist = "Artist 1", durationSeconds = 120L, isLiked = true)
     )
     private val sampleHistory = listOf(
-        Track(id = "h1", title = "History Track", artist = "Artist 2")
+        Track(id = "h1", title = "History Track", artist = "Artist 2", durationSeconds = 240L)
     )
     private val samplePlaylists = listOf(
         com.nexus.tune.core.model.Playlist(id = "p1", title = "Synthwave", artworkUrl = "file:///art.jpg")
@@ -44,8 +45,9 @@ class LibraryViewModelTest {
         every { musicRepository.getLikedTracks() } returns flowOf(sampleLiked)
         every { musicRepository.getHistory() } returns flowOf(sampleHistory)
         every { musicRepository.getPlaylists() } returns flowOf(samplePlaylists)
+        every { settingsRepository.getCustomSmartPlaylists() } returns flowOf(emptyList())
 
-        viewModel = LibraryViewModel(musicRepository, manageQueueUseCase)
+        viewModel = LibraryViewModel(musicRepository, manageQueueUseCase, settingsRepository)
     }
 
     @After
@@ -175,5 +177,62 @@ class LibraryViewModelTest {
         viewModel.playVibeMixNow(preview)
         testDispatcher.scheduler.advanceUntilIdle()
         coVerify { manageQueueUseCase.playTrackNow(preview.tracks.first(), preview.tracks) }
+    }
+
+    @Test
+    fun `smartPlaylists contains built-in playlists and preview and dismiss functions correctly`() = runTest {
+        val playlists = viewModel.smartPlaylists.value
+        assertTrue(playlists.isNotEmpty())
+        val quickJams = playlists.first { it.id == "builtin_quick_jams" }
+        assertNotNull(quickJams)
+
+        viewModel.previewSmartPlaylist(quickJams)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val preview = viewModel.activeSmartPlaylistPreview.value
+        assertNotNull(preview)
+        assertEquals("builtin_quick_jams", preview!!.first.id)
+        // sampleLiked has duration 120s which is < 180s
+        assertEquals(1, preview.second.size)
+        assertEquals("l1", preview.second.first().id)
+
+        viewModel.dismissSmartPlaylistPreview()
+        assertEquals(null, viewModel.activeSmartPlaylistPreview.value)
+    }
+
+    @Test
+    fun `playSmartPlaylist plays matching tracks in order and shuffled`() = runTest {
+        val quickJams = viewModel.smartPlaylists.value.first { it.id == "builtin_quick_jams" }
+        viewModel.playSmartPlaylist(quickJams, shuffle = false)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { manageQueueUseCase.playTrackNow(match { it.id == "l1" }, any()) }
+
+        viewModel.playSmartPlaylist(quickJams, shuffle = true)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { manageQueueUseCase.playTrackNow(match { it.id == "l1" }, any()) }
+    }
+
+    @Test
+    fun `createCustomSmartPlaylist and deleteCustomSmartPlaylist delegate to settingsRepository`() = runTest {
+        viewModel.createCustomSmartPlaylist(
+            title = "Chill Lofi",
+            icon = "🌙",
+            description = "Gentle beats",
+            limit = 30
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.saveCustomSmartPlaylist(match {
+                it.title == "Chill Lofi" && it.icon == "🌙" && it.limit == 30
+            })
+        }
+
+        viewModel.deleteCustomSmartPlaylist("custom_123")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { settingsRepository.deleteCustomSmartPlaylist("custom_123") }
     }
 }

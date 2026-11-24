@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.QueueMusic
 import androidx.compose.material.icons.rounded.Add
@@ -25,13 +26,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.nexus.tune.core.model.EnergyCurve
-import com.nexus.tune.core.model.LibrarySortOrder
-import com.nexus.tune.core.model.Playlist
-import com.nexus.tune.core.model.Track
-import com.nexus.tune.core.model.VibeMixRequest
-import com.nexus.tune.core.model.VibeMixResult
-import com.nexus.tune.core.model.VibeTheme
+import com.nexus.tune.core.model.*
 import com.nexus.tune.core.ui.TrackListItem
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,6 +55,9 @@ fun LibraryScreen(
     var targetVibeDuration by remember { mutableIntStateOf(30) }
     var selectedEnergyCurve by remember { mutableStateOf(EnergyCurve.RAMP_UP) }
     val vibeMixPreview by viewModel.vibeMixPreview.collectAsState()
+    val smartPlaylists by viewModel.smartPlaylists.collectAsState()
+    val activeSmartPreview by viewModel.activeSmartPlaylistPreview.collectAsState()
+    var showCreateSmartPlaylistSheet by remember { mutableStateOf(false) }
     val context = androidx.compose.ui.platform.LocalContext.current
 
     LaunchedEffect(showVibeMixSheet, selectedVibeTheme, targetVibeDuration, selectedEnergyCurve) {
@@ -205,6 +203,9 @@ fun LibraryScreen(
                 // Playlists Tab
                 PlaylistsTab(
                     playlists = filteredPlaylists,
+                    smartPlaylists = smartPlaylists,
+                    onSmartPlaylistClick = { viewModel.previewSmartPlaylist(it) },
+                    onCreateSmartPlaylistClick = { showCreateSmartPlaylistSheet = true },
                     onCreateClick = { showCreateDialog = true },
                     onVibeMixClick = { showVibeMixSheet = true },
                     onEditArtworkClick = { editingPlaylistForArtwork = it },
@@ -461,11 +462,153 @@ fun LibraryScreen(
             }
         }
     }
+
+    activeSmartPreview?.let { (definition, evaluatedTracks) ->
+        ModalBottomSheet(
+            onDismissRequest = { viewModel.dismissSmartPlaylistPreview() },
+            containerColor = MaterialTheme.colorScheme.surface
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 8.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = definition.icon, style = MaterialTheme.typography.headlineMedium)
+                        Column {
+                            Text(
+                                text = definition.title,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                            )
+                            Text(
+                                text = "${evaluatedTracks.size} matching tracks • Limit ${definition.limit}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+
+                    if (!definition.isBuiltIn) {
+                        IconButton(onClick = { viewModel.deleteCustomSmartPlaylist(definition.id) }) {
+                            Icon(Icons.Rounded.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error)
+                        }
+                    }
+                }
+
+                if (definition.description.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = definition.description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Button(
+                        onClick = {
+                            viewModel.playSmartPlaylist(definition, shuffle = false)
+                            viewModel.dismissSmartPlaylistPreview()
+                        },
+                        enabled = evaluatedTracks.isNotEmpty(),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(Icons.Rounded.PlayArrow, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Play All")
+                    }
+
+                    OutlinedButton(
+                        onClick = {
+                            viewModel.playSmartPlaylist(definition, shuffle = true)
+                            viewModel.dismissSmartPlaylistPreview()
+                        },
+                        enabled = evaluatedTracks.isNotEmpty(),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("🔀 Shuffle")
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                if (evaluatedTracks.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "No tracks currently match these criteria.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 340.dp)
+                    ) {
+                        items(evaluatedTracks, key = { it.id }) { track ->
+                            TrackListItem(
+                                track = track,
+                                onClick = {
+                                    viewModel.playTrack(track, evaluatedTracks)
+                                    onTrackClick(track, evaluatedTracks)
+                                    viewModel.dismissSmartPlaylistPreview()
+                                }
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+    }
+
+    if (showCreateSmartPlaylistSheet) {
+        CreateSmartPlaylistSheet(
+            onDismiss = { showCreateSmartPlaylistSheet = false },
+            onConfirm = { title, icon, description, matchType, rules, sortBy, limit ->
+                viewModel.createCustomSmartPlaylist(
+                    title = title,
+                    icon = icon,
+                    description = description,
+                    matchType = matchType,
+                    rules = rules,
+                    sortBy = sortBy,
+                    limit = limit
+                )
+                showCreateSmartPlaylistSheet = false
+            }
+        )
+    }
 }
 
 @Composable
 private fun PlaylistsTab(
     playlists: List<Playlist>,
+    smartPlaylists: List<SmartPlaylistDefinition> = emptyList(),
+    onSmartPlaylistClick: (SmartPlaylistDefinition) -> Unit = {},
+    onCreateSmartPlaylistClick: () -> Unit = {},
     onCreateClick: () -> Unit,
     onVibeMixClick: () -> Unit = {},
     onEditArtworkClick: (Playlist) -> Unit,
@@ -473,10 +616,108 @@ private fun PlaylistsTab(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
+        // Dynamic Smart Playlists Section
+        Text(
+            text = "⚡ Dynamic Smart Playlists",
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
+        )
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            smartPlaylists.forEach { pl ->
+                Card(
+                    modifier = Modifier
+                        .width(160.dp)
+                        .clickable { onSmartPlaylistClick(pl) },
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                    ),
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = pl.icon, style = MaterialTheme.typography.titleLarge)
+                            Surface(
+                                shape = MaterialTheme.shapes.small,
+                                color = MaterialTheme.colorScheme.primaryContainer
+                            ) {
+                                Text(
+                                    text = if (pl.isBuiltIn) "Auto" else "Custom",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = pl.title,
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = pl.description.ifBlank { "${pl.rules.size} rules" },
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.height(32.dp)
+                        )
+                    }
+                }
+            }
+
+            // Create custom smart playlist card
+            OutlinedCard(
+                modifier = Modifier
+                    .width(130.dp)
+                    .height(110.dp)
+                    .clickable { onCreateSmartPlaylistClick() },
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Add,
+                        contentDescription = "New Smart Playlist",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "New Rule",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -754,4 +995,192 @@ private fun EditArtworkDialog(
             }
         }
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CreateSmartPlaylistSheet(
+    onDismiss: () -> Unit,
+    onConfirm: (title: String, icon: String, description: String, matchType: SmartRuleMatch, rules: List<SmartPlaylistRule>, sortBy: SmartRuleSort, limit: Int) -> Unit
+) {
+    var title by remember { mutableStateOf("") }
+    var selectedIcon by remember { mutableStateOf("✨") }
+    var description by remember { mutableStateOf("") }
+    var matchType by remember { mutableStateOf(SmartRuleMatch.ALL) }
+    var selectedField by remember { mutableStateOf(SmartRuleField.PLAY_COUNT) }
+    var selectedOperator by remember { mutableStateOf(SmartRuleOperator.GREATER_THAN) }
+    var ruleValue by remember { mutableStateOf("3") }
+    var sortBy by remember { mutableStateOf(SmartRuleSort.PLAY_COUNT_DESC) }
+    var limit by remember { mutableIntStateOf(50) }
+
+    val icons = listOf("✨", "🔥", "🔮", "⚡", "🎧", "🌙", "⭐", "💎", "🚀")
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surface
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp, vertical = 8.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Text(
+                text = "⚡ Create Dynamic Smart Playlist",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Icon selector
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                icons.forEach { icon ->
+                    FilterChip(
+                        selected = selectedIcon == icon,
+                        onClick = { selectedIcon = icon },
+                        label = { Text(icon, style = MaterialTheme.typography.titleMedium) }
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = title,
+                onValueChange = { title = it },
+                label = { Text("Playlist Title") },
+                placeholder = { Text("e.g. Chill Beats") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = description,
+                onValueChange = { description = it },
+                label = { Text("Description (Optional)") },
+                placeholder = { Text("e.g. Tracks with high energy and favorites") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text("Rule Field:", style = MaterialTheme.typography.labelMedium)
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                SmartRuleField.entries.forEach { field ->
+                    FilterChip(
+                        selected = selectedField == field,
+                        onClick = {
+                            selectedField = field
+                            ruleValue = when (field) {
+                                SmartRuleField.PLAY_COUNT -> "3"
+                                SmartRuleField.DURATION_SECONDS -> "180"
+                                SmartRuleField.IS_LIKED -> "true"
+                                SmartRuleField.IS_DOWNLOADED -> "true"
+                                else -> ""
+                            }
+                        },
+                        label = { Text(field.displayName, style = MaterialTheme.typography.labelSmall) }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text("Comparison Operator:", style = MaterialTheme.typography.labelMedium)
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                SmartRuleOperator.entries.forEach { op ->
+                    FilterChip(
+                        selected = selectedOperator == op,
+                        onClick = { selectedOperator = op },
+                        label = { Text(op.displayName, style = MaterialTheme.typography.labelSmall) }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = ruleValue,
+                onValueChange = { ruleValue = it },
+                label = { Text("Criteria Value") },
+                placeholder = { Text("Value to match (e.g. Rock, 180, true)") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text("Sort Order:", style = MaterialTheme.typography.labelMedium)
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                SmartRuleSort.entries.forEach { sort ->
+                    FilterChip(
+                        selected = sortBy == sort,
+                        onClick = { sortBy = sort },
+                        label = { Text(sort.displayName, style = MaterialTheme.typography.labelSmall) }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Max Track Limit: $limit", style = MaterialTheme.typography.bodySmall)
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    listOf(25, 50, 100).forEach { lim ->
+                        FilterChip(
+                            selected = limit == lim,
+                            onClick = { limit = lim },
+                            label = { Text("$lim", style = MaterialTheme.typography.labelSmall) }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    val rule = SmartPlaylistRule(
+                        field = selectedField,
+                        operator = selectedOperator,
+                        value = ruleValue.trim()
+                    )
+                    onConfirm(title, selectedIcon, description, matchType, listOf(rule), sortBy, limit)
+                },
+                enabled = title.isNotBlank() && ruleValue.isNotBlank(),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Create Smart Playlist")
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+    }
 }

@@ -481,3 +481,56 @@ data class VibeMixResult(
     val curve: EnergyCurve = EnergyCurve.RAMP_UP
 )
 
+enum class SmartRuleField(val displayName: String) {
+    TITLE("Track Title"),
+    ARTIST("Artist Name"),
+    ALBUM("Album Title"),
+    DURATION_SECONDS("Duration (seconds)"),
+    IS_LIKED("Is Favorite"),
+    IS_DOWNLOADED("Is Downloaded"),
+    PLAY_COUNT("Play Count")
+}
+
+enum class SmartRuleOperator(val symbol: String, val displayName: String) {
+    EQUALS("==", "Equals"),
+    CONTAINS("contains", "Contains"),
+    NOT_CONTAINS("!contains", "Does Not Contain"),
+    GREATER_THAN(">", "Greater Than"),
+    LESS_THAN("<", "Less Than"),
+    STARTS_WITH("^=", "Starts With")
+}
+
+enum class SmartRuleMatch(val displayName: String) {
+    ALL("Match ALL Rules (AND)"),
+    ANY("Match ANY Rule (OR)")
+}
+
+enum class SmartRuleSort(val displayName: String) {
+    DEFAULT("Default (Library Order)"),
+    TITLE_ASC("Title (A-Z)"),
+    ARTIST_ASC("Artist (A-Z)"),
+    DURATION_ASC("Shortest First"),
+    DURATION_DESC("Longest First"),
+    PLAY_COUNT_DESC("Most Played First")
+}
+
+data class SmartPlaylistRule(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val field: SmartRuleField = SmartRuleField.PLAY_COUNT,
+    val operator: SmartRuleOperator = SmartRuleOperator.GREATER_THAN,
+    val value: String = "1"
+)
+
+data class SmartPlaylistDefinition(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val title: String,
+    val icon: String = "✨",
+    val description: String = "",
+    val matchType: SmartRuleMatch = SmartRuleMatch.ALL,
+    val rules: List<SmartPlaylistRule> = emptyList(),
+    val sortBy: SmartRuleSort = SmartRuleSort.DEFAULT,
+    val limit: Int = 50,
+    val isBuiltIn: Boolean = false
+)
+
+

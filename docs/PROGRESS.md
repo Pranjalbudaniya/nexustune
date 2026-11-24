@@ -7,8 +7,8 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 48 (v5.8.0 Smart Vibe Mix & Dynamic Algorithmic Playlist Synthesis Engine)
-- In Flight: Final release qualification gate and git tagging
+- Active Phase: Post-v1.0 Improvement Loop 49 (v5.9.0 Dynamic Rule-Based Smart Playlists & Algorithmic Query Engine)
+- In Flight: Quality gate execution and release qualification
 - Branches: `main`
 
 ## Phase Tracking
@@ -434,6 +434,16 @@
     - [x] Full unit test coverage in `VibePlaylistGeneratorTest` and `LibraryViewModelTest`
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v5.8-1`
+
+- [x] Improvement Loop 49 (v5.9 Milestone - Tagged `v5.9-1`)
+  - [x] Dynamic Rule-Based Smart Playlists & Algorithmic Query Engine:
+    - [x] `SmartRuleField`, `SmartRuleOperator`, `SmartRuleMatch`, `SmartRuleSort`, `SmartPlaylistRule`, and `SmartPlaylistDefinition` domain models in `:core:model`
+    - [x] `SmartPlaylistEvaluator` in `:core:domain:playlist` with rule matching, evaluation logic, and 5 built-in smart presets
+    - [x] Serialization & DataStore persistence for custom smart playlists in `SettingsDataStore` and `SettingsRepositoryImpl`
+    - [x] Interactive Smart Playlists carousel, preview bottom sheet with Play All / Shuffle, and custom rule builder in `LibraryScreen`
+    - [x] Full unit test suites in `SmartPlaylistEvaluatorTest` and `LibraryViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v5.9-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

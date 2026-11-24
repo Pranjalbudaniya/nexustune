@@ -3,19 +3,18 @@ package com.nexus.tune.feature.library
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nexus.tune.core.domain.library.LibraryFilterEngine
+import com.nexus.tune.core.domain.playlist.SmartPlaylistEvaluator
 import com.nexus.tune.core.domain.repository.MusicRepository
+import com.nexus.tune.core.domain.repository.SettingsRepository
 import com.nexus.tune.core.domain.usecase.ManageQueueUseCase
-import com.nexus.tune.core.model.LibrarySortOrder
-import com.nexus.tune.core.model.Playlist
-import com.nexus.tune.core.model.Track
-import com.nexus.tune.core.model.VibeMixRequest
-import com.nexus.tune.core.model.VibeMixResult
+import com.nexus.tune.core.model.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class LibraryViewModel(
     private val musicRepository: MusicRepository,
-    private val manageQueueUseCase: ManageQueueUseCase
+    private val manageQueueUseCase: ManageQueueUseCase,
+    private val settingsRepository: SettingsRepository? = null
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
@@ -132,6 +131,72 @@ class LibraryViewModel(
         if (result.tracks.isEmpty()) return
         viewModelScope.launch {
             manageQueueUseCase.playTrackNow(result.tracks.first(), result.tracks)
+        }
+    }
+
+    val smartPlaylists: StateFlow<List<SmartPlaylistDefinition>> =
+        (settingsRepository?.getCustomSmartPlaylists() ?: flowOf(emptyList()))
+            .map { custom ->
+                SmartPlaylistEvaluator.BUILT_IN_PLAYLISTS + custom
+            }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, SmartPlaylistEvaluator.BUILT_IN_PLAYLISTS)
+
+    val activeSmartPlaylistPreview = MutableStateFlow<Pair<SmartPlaylistDefinition, List<Track>>?>(null)
+
+    fun previewSmartPlaylist(definition: SmartPlaylistDefinition) {
+        val allTracks = (likedTracks.value + historyTracks.value).distinctBy { it.id }
+        val playCounts = historyTracks.value.groupingBy { it.id }.eachCount()
+        val evaluated = SmartPlaylistEvaluator.evaluate(allTracks, playCounts, definition)
+        activeSmartPlaylistPreview.value = Pair(definition, evaluated)
+    }
+
+    fun dismissSmartPlaylistPreview() {
+        activeSmartPlaylistPreview.value = null
+    }
+
+    fun playSmartPlaylist(definition: SmartPlaylistDefinition, shuffle: Boolean = false) {
+        val allTracks = (likedTracks.value + historyTracks.value).distinctBy { it.id }
+        val playCounts = historyTracks.value.groupingBy { it.id }.eachCount()
+        val evaluated = SmartPlaylistEvaluator.evaluate(allTracks, playCounts, definition)
+        if (evaluated.isEmpty()) return
+        val queue = if (shuffle) evaluated.shuffled() else evaluated
+        viewModelScope.launch {
+            manageQueueUseCase.playTrackNow(queue.first(), queue)
+        }
+    }
+
+    fun createCustomSmartPlaylist(
+        title: String,
+        icon: String = "✨",
+        description: String = "",
+        matchType: SmartRuleMatch = SmartRuleMatch.ALL,
+        rules: List<SmartPlaylistRule> = emptyList(),
+        sortBy: SmartRuleSort = SmartRuleSort.DEFAULT,
+        limit: Int = 50
+    ) {
+        if (title.isBlank()) return
+        val newPlaylist = SmartPlaylistDefinition(
+            id = "custom_" + java.util.UUID.randomUUID().toString(),
+            title = title.trim(),
+            icon = icon.ifBlank { "✨" },
+            description = description.trim(),
+            matchType = matchType,
+            rules = rules,
+            sortBy = sortBy,
+            limit = limit,
+            isBuiltIn = false
+        )
+        viewModelScope.launch {
+            settingsRepository?.saveCustomSmartPlaylist(newPlaylist)
+        }
+    }
+
+    fun deleteCustomSmartPlaylist(id: String) {
+        viewModelScope.launch {
+            settingsRepository?.deleteCustomSmartPlaylist(id)
+            if (activeSmartPlaylistPreview.value?.first?.id == id) {
+                activeSmartPlaylistPreview.value = null
+            }
         }
     }
 }

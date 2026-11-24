@@ -78,5 +78,25 @@ class SettingsRepositoryImpl(
     override suspend fun setDjRememberAcrossTracks(remember: Boolean) {
         dataStore.setDjRememberAcrossTracks(remember)
     }
+
+    override fun getCustomSmartPlaylists(): Flow<List<com.nexus.tune.core.model.SmartPlaylistDefinition>> =
+        dataStore.customSmartPlaylistsRaw.map { raw ->
+            com.nexus.tune.core.domain.playlist.SmartPlaylistEvaluator.deserializePlaylists(raw)
+        }
+
+    override suspend fun saveCustomSmartPlaylist(definition: com.nexus.tune.core.model.SmartPlaylistDefinition) {
+        val raw = dataStore.customSmartPlaylistsRaw.first()
+        val existing = com.nexus.tune.core.domain.playlist.SmartPlaylistEvaluator.deserializePlaylists(raw)
+            .filter { it.id != definition.id }
+        val updated = listOf(definition) + existing
+        dataStore.saveCustomSmartPlaylistsRaw(com.nexus.tune.core.domain.playlist.SmartPlaylistEvaluator.serializePlaylists(updated))
+    }
+
+    override suspend fun deleteCustomSmartPlaylist(playlistId: String) {
+        val raw = dataStore.customSmartPlaylistsRaw.first()
+        val existing = com.nexus.tune.core.domain.playlist.SmartPlaylistEvaluator.deserializePlaylists(raw)
+            .filter { it.id != playlistId }
+        dataStore.saveCustomSmartPlaylistsRaw(com.nexus.tune.core.domain.playlist.SmartPlaylistEvaluator.serializePlaylists(existing))
+    }
 }
 
