@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 66 (v6.16.0 Audiophile Transient De-Clicker & Micro-Discontinuity Suppressor Studio)
+- Active Phase: Post-v1.0 Improvement Loop 67 (v6.17.0 Dynamic Mid-Bass Mud Tamer & Clarity Sculptor Studio)
 - In Flight: Quality gate execution and release qualification
 - Branches: `main`
 
@@ -634,6 +634,18 @@
     - [x] Comprehensive test suites in `DeClickerEngineTest` and `SettingsViewModelTest`
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.16-1`
+
+- [x] Improvement Loop 67 (v6.17 Milestone - Tagged `v6.17-1`)
+  - [x] Dynamic Mid-Bass Mud Tamer & Clarity Sculptor Studio (`MidBassClarityEngine`):
+    - [x] `MidBassClarityMode`, `MidBassClarityConfig`, `MidBassClarityMetrics`, and `MidBassBiquadCoefficients` in `:core:model`
+    - [x] `MidBassClarityEngine` in `:core:domain:audio` with spectral congestion ratio calculation, dynamic parametric bell dip filter, RBJ peaking biquad coefficients ($Q = 1.4$), and adaptive recovery
+    - [x] Hardware equalizer integration in `NexusAudioEffects` targeting Band 1 (230 Hz) with `applyMidBassClarityOffset`
+    - [x] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
+    - [x] `SettingsViewModel` mid-bass clarity control methods
+    - [x] Interactive "Dynamic Mid-Bass Mud Tamer" studio card in `SettingsScreen`
+    - [x] Comprehensive test suites in `MidBassClarityEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v6.17-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

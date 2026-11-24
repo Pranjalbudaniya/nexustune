@@ -104,6 +104,10 @@ class SettingsDataStore(private val context: Context) {
         val DECLICKER_MODE = stringPreferencesKey("declicker_mode")
         val DECLICKER_SENSITIVITY = floatPreferencesKey("declicker_sensitivity")
         val DECLICKER_MAX_WIDTH = intPreferencesKey("declicker_max_width")
+        val MID_BASS_CLARITY_ENABLED = booleanPreferencesKey("mid_bass_clarity_enabled")
+        val MID_BASS_CLARITY_MODE = stringPreferencesKey("mid_bass_clarity_mode")
+        val MID_BASS_CLARITY_CENTER_HZ = floatPreferencesKey("mid_bass_clarity_center_hz")
+        val MID_BASS_CLARITY_THRESHOLD = intPreferencesKey("mid_bass_clarity_threshold")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -256,6 +260,14 @@ class SettingsDataStore(private val context: Context) {
                 }.getOrDefault(DeClickerMode.TRANSPARENT_STREAM),
                 sensitivityMultiplier = prefs[PreferencesKeys.DECLICKER_SENSITIVITY] ?: 3.5f,
                 maxClickWidthSamples = prefs[PreferencesKeys.DECLICKER_MAX_WIDTH] ?: 8
+            ),
+            midBassClarityConfig = MidBassClarityConfig(
+                isEnabled = prefs[PreferencesKeys.MID_BASS_CLARITY_ENABLED] ?: false,
+                mode = runCatching {
+                    MidBassClarityMode.valueOf(prefs[PreferencesKeys.MID_BASS_CLARITY_MODE] ?: MidBassClarityMode.BALANCED_DE_MUD.name)
+                }.getOrDefault(MidBassClarityMode.BALANCED_DE_MUD),
+                centerFrequencyHz = prefs[PreferencesKeys.MID_BASS_CLARITY_CENTER_HZ] ?: 300.0f,
+                dynamicThresholdPercent = prefs[PreferencesKeys.MID_BASS_CLARITY_THRESHOLD] ?: 40
             )
         )
     }
@@ -343,6 +355,10 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.DECLICKER_MODE] = config.deClickerConfig.mode.name
             prefs[PreferencesKeys.DECLICKER_SENSITIVITY] = config.deClickerConfig.sensitivityMultiplier
             prefs[PreferencesKeys.DECLICKER_MAX_WIDTH] = config.deClickerConfig.maxClickWidthSamples
+            prefs[PreferencesKeys.MID_BASS_CLARITY_ENABLED] = config.midBassClarityConfig.isEnabled
+            prefs[PreferencesKeys.MID_BASS_CLARITY_MODE] = config.midBassClarityConfig.mode.name
+            prefs[PreferencesKeys.MID_BASS_CLARITY_CENTER_HZ] = config.midBassClarityConfig.centerFrequencyHz
+            prefs[PreferencesKeys.MID_BASS_CLARITY_THRESHOLD] = config.midBassClarityConfig.dynamicThresholdPercent
         }
     }
 
@@ -407,6 +423,15 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.DECLICKER_MODE] = config.mode.name
             prefs[PreferencesKeys.DECLICKER_SENSITIVITY] = config.sensitivityMultiplier
             prefs[PreferencesKeys.DECLICKER_MAX_WIDTH] = config.maxClickWidthSamples
+        }
+    }
+
+    suspend fun updateMidBassClarityConfig(config: MidBassClarityConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.MID_BASS_CLARITY_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.MID_BASS_CLARITY_MODE] = config.mode.name
+            prefs[PreferencesKeys.MID_BASS_CLARITY_CENTER_HZ] = config.centerFrequencyHz
+            prefs[PreferencesKeys.MID_BASS_CLARITY_THRESHOLD] = config.dynamicThresholdPercent
         }
     }
 

@@ -232,7 +232,8 @@ data class ThemeConfig(
     val resamplingFilterConfig: ResamplingFilterConfig = ResamplingFilterConfig(),
     val phaseMeterConfig: PhaseMeterConfig = PhaseMeterConfig(),
     val tiltEqualizerConfig: TiltEqualizerConfig = TiltEqualizerConfig(),
-    val deClickerConfig: DeClickerConfig = DeClickerConfig()
+    val deClickerConfig: DeClickerConfig = DeClickerConfig(),
+    val midBassClarityConfig: MidBassClarityConfig = MidBassClarityConfig()
 )
 
 data class SoundDoseInfo(
@@ -999,6 +1000,35 @@ data class DeClickerMetrics(
     val peakClickReductionDb: Float,
     val currentNoiseFloorRms: Float,
     val statusSummary: String
+)
+
+enum class MidBassClarityMode(val displayName: String, val description: String, val maxDipDb: Float, val defaultThresholdRatio: Float) {
+    OFF("Off (Bypass)", "Disable dynamic mid-bass de-mudding", 0.0f, 0.0f),
+    SUBTLE_CLARITY("Subtle Clarity", "Gentle -2.5 dB maximum dip for acoustic, jazz, and classical", -2.5f, 0.35f),
+    BALANCED_DE_MUD("Balanced De-Mud", "Optimal -4.5 dB dynamic dip for pop, rock, and hip-hop", -4.5f, 0.45f),
+    AGGRESSIVE_DECONGEST("Max Decongest", "Steep -6.0 dB cut for heavily crowded mixes and bassy headphones", -6.0f, 0.55f)
+}
+
+data class MidBassClarityConfig(
+    val isEnabled: Boolean = false,
+    val mode: MidBassClarityMode = MidBassClarityMode.BALANCED_DE_MUD,
+    val centerFrequencyHz: Float = 300.0f,
+    val dynamicThresholdPercent: Int = 40
+)
+
+data class MidBassClarityMetrics(
+    val congestionRatio: Float,
+    val dynamicAttenuationDb: Float,
+    val isDecongesting: Boolean,
+    val clarityRating: String
+)
+
+data class MidBassBiquadCoefficients(
+    val b0: Float,
+    val b1: Float,
+    val b2: Float,
+    val a1: Float,
+    val a2: Float
 )
 
 

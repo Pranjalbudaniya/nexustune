@@ -24,6 +24,7 @@ class NexusAudioEffects {
     private var sleepDriftOffsets: List<Int> = List(5) { 0 }
     private var dynamicLoudnessOffsets: List<Int> = List(5) { 0 }
     private var tiltOffsets: List<Int> = List(5) { 0 }
+    private var midBassClarityOffset: Int = 0
 
     fun attachToAudioSession(sessionId: Int) {
         if (sessionId == 0 || sessionId == currentSessionId) return
@@ -272,6 +273,18 @@ class NexusAudioEffects {
 
     fun getTiltOffsets(): List<Int> = tiltOffsets
 
+    fun applyMidBassClarityOffset(offset: Int) {
+        midBassClarityOffset = offset
+        refreshBands()
+    }
+
+    fun clearMidBassClarityOffset() {
+        midBassClarityOffset = 0
+        refreshBands()
+    }
+
+    fun getMidBassClarityOffset(): Int = midBassClarityOffset
+
     fun setBassBoostStrength(strength: Short) {
         try {
             bassBoost?.setStrength(strength)
@@ -291,7 +304,8 @@ class NexusAudioEffects {
                 val sOffset = sleepDriftOffsets.getOrElse(i) { 0 }
                 val dOffset = dynamicLoudnessOffsets.getOrElse(i) { 0 }
                 val tOffset = tiltOffsets.getOrElse(i) { 0 }
-                val combined = (base + kOffset + hOffset + sOffset + dOffset + tOffset).coerceIn(-1500, 1500)
+                val mOffset = if (i == 1) midBassClarityOffset else 0
+                val combined = (base + kOffset + hOffset + sOffset + dOffset + tOffset + mOffset).coerceIn(-1500, 1500)
                 eq.setBandLevel(i.toShort(), combined.toShort())
             }
         } catch (e: Exception) {

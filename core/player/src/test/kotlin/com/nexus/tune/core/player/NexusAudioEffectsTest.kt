@@ -121,5 +121,14 @@ class NexusAudioEffectsTest {
         audioEffects.clearTiltOffsets()
         assertEquals(listOf(0, 0, 0, 0, 0), audioEffects.getTiltOffsets())
     }
+
+    @Test
+    fun `mid-bass clarity offset can be applied and cleared`() {
+        audioEffects.applyMidBassClarityOffset(-350)
+        assertEquals(-350, audioEffects.getMidBassClarityOffset())
+
+        audioEffects.clearMidBassClarityOffset()
+        assertEquals(0, audioEffects.getMidBassClarityOffset())
+    }
 }
 

@@ -987,4 +987,31 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.deClickerConfig.maxClickWidthSamples == 6 })
         }
     }
+
+    @Test
+    fun `mid-bass clarity settings update theme config`() = runTest {
+        viewModel.setMidBassClarityEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.midBassClarityConfig.isEnabled })
+        }
+
+        viewModel.setMidBassClarityMode(MidBassClarityMode.AGGRESSIVE_DECONGEST)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.midBassClarityConfig.mode == MidBassClarityMode.AGGRESSIVE_DECONGEST })
+        }
+
+        viewModel.setMidBassClarityCenterHz(360.0f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.midBassClarityConfig.centerFrequencyHz == 360.0f })
+        }
+
+        viewModel.setMidBassClarityThreshold(45)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.midBassClarityConfig.dynamicThresholdPercent == 45 })
+        }
+    }
 }

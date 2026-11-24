@@ -769,4 +769,24 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(deClickerConfig = current.deClickerConfig.copy(maxClickWidthSamples = maxWidth.coerceIn(1, 16))))
     }
+
+    fun setMidBassClarityEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(midBassClarityConfig = current.midBassClarityConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setMidBassClarityMode(mode: MidBassClarityMode) {
+        val current = themeConfig.value
+        updateTheme(current.copy(midBassClarityConfig = current.midBassClarityConfig.copy(mode = mode)))
+    }
+
+    fun setMidBassClarityCenterHz(centerHz: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(midBassClarityConfig = current.midBassClarityConfig.copy(centerFrequencyHz = centerHz.coerceIn(200.0f, 500.0f))))
+    }
+
+    fun setMidBassClarityThreshold(thresholdPercent: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(midBassClarityConfig = current.midBassClarityConfig.copy(dynamicThresholdPercent = thresholdPercent.coerceIn(20, 80))))
+    }
 }

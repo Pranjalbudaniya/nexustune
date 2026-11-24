@@ -5,6 +5,17 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.17.0] - 2026-11-24
+
+### Added
+- **Dynamic Mid-Bass Mud Tamer & Clarity Sculptor Studio (`MidBassClarityEngine`)**: Added `MidBassClarityMode` (`OFF`, `SUBTLE_CLARITY`, `BALANCED_DE_MUD`, `AGGRESSIVE_DECONGEST`), `MidBassClarityConfig`, `MidBassClarityMetrics`, and `MidBassBiquadCoefficients` in `:core:model`.
+- **Spectral Congestion Detector & Dynamic Parametric Bell Dip Filter DSP**: Implemented `MidBassClarityEngine` in `:core:domain:audio` monitoring localized energy ratio between the crowded 200-450 Hz mud pocket and broad acoustic spectrum, applying an inverted RBJ peaking/dip filter ($Q = 1.4$) with rapid attack (5ms) and smooth release (80ms) when congestion occurs, while automatically relaxing during sparse vocal/solo sections to preserve natural warmth and body.
+- **Hardware Equalizer Integration**: Added `applyMidBassClarityOffset`, `clearMidBassClarityOffset`, and `getMidBassClarityOffset` in `NexusAudioEffects` targeting Band 1 (230 Hz) in the hardware equalizer pipeline.
+- **DataStore Persistence**: Added `MID_BASS_CLARITY_ENABLED`, `MID_BASS_CLARITY_MODE`, `MID_BASS_CLARITY_CENTER_HZ`, and `MID_BASS_CLARITY_THRESHOLD` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Mid-Bass Clarity Studio**: Added interactive "Dynamic Mid-Bass Mud Tamer" card in `SettingsScreen` with profile chips, center frequency chips (250 Hz, 300 Hz, 360 Hz), threshold slider, and real-time clarity rating badge.
+- **Unit Test Coverage**: Comprehensive test suites in `MidBassClarityEngineTest` in `:core:domain`, `NexusAudioEffectsTest` in `:core:player`, and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.16.0] - 2026-11-24
 
 ### Added

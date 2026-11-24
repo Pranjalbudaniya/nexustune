@@ -988,6 +988,128 @@ fun SettingsScreen(
                             }
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+                    ListItem(
+                        headlineContent = { Text("Dynamic Mid-Bass Mud Tamer") },
+                        supportingContent = { Text("Detects and attenuates spectral congestion in the 200-450 Hz boxy mud zone") },
+                        trailingContent = {
+                            Switch(
+                                checked = themeConfig.midBassClarityConfig.isEnabled,
+                                onCheckedChange = { viewModel.setMidBassClarityEnabled(it) }
+                            )
+                        }
+                    )
+
+                    if (themeConfig.midBassClarityConfig.isEnabled) {
+                        val clarityMetrics = com.nexus.tune.core.domain.audio.MidBassClarityEngine.calculateMetrics(
+                            midBassEnergy = 35.0f,
+                            totalEnergy = 100.0f,
+                            config = themeConfig.midBassClarityConfig
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "De-Mudding Profile",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState()),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            MidBassClarityMode.entries.forEach { mode ->
+                                FilterChip(
+                                    selected = themeConfig.midBassClarityConfig.mode == mode,
+                                    onClick = { viewModel.setMidBassClarityMode(mode) },
+                                    label = { Text(mode.displayName) }
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = "Center Frequency",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState()),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            listOf(
+                                250.0f to "250 Hz (Low Mid)",
+                                300.0f to "300 Hz (Standard Boxiness)",
+                                360.0f to "360 Hz (Upper Mud)"
+                            ).forEach { (freq, label) ->
+                                FilterChip(
+                                    selected = themeConfig.midBassClarityConfig.centerFrequencyHz == freq,
+                                    onClick = { viewModel.setMidBassClarityCenterHz(freq) },
+                                    label = { Text(label) }
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Dynamic Trigger Threshold: ${themeConfig.midBassClarityConfig.dynamicThresholdPercent}%",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = "Max Dip: ${themeConfig.midBassClarityConfig.mode.maxDipDb} dB",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.tertiary
+                            )
+                        }
+
+                        Slider(
+                            value = themeConfig.midBassClarityConfig.dynamicThresholdPercent.toFloat(),
+                            onValueChange = { viewModel.setMidBassClarityThreshold(it.toInt()) },
+                            valueRange = 20.0f..70.0f,
+                            steps = 9,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Surface(
+                            shape = MaterialTheme.shapes.small,
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(8.dp)) {
+                                Text(
+                                    text = themeConfig.midBassClarityConfig.mode.description,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Rating: ${clarityMetrics.clarityRating}",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                    Text(
+                                        text = "Q: 1.4 RBJ Dip",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.secondary
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
