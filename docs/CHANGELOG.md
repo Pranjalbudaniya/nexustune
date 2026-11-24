@@ -5,6 +5,15 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.7.0] - 2026-11-24
+
+### Added
+- **Interactive Music Identity Card & Shareable Sonic DNA Fingerprint Engine**: Implemented `SonicArchetype` (`NOCTURNAL_VOYAGER`, `AURORA_PULSE`, `DEEP_FOCUS_SCHOLAR`, `ECLECTIC_EXPLORER`, `RHYTHMIC_ATHLETE`, `ACOUSTIC_PURIST`, `CHRONO_DISCOVERER`, `SONIC_NOMAD`) and `SonicDnaProfile` in `:core:model`.
+- **Sonic DNA Intelligence Calculator**: Created `SonicDnaCalculator` in `:core:domain:analytics` analyzing playback history, genre distribution, diurnal periods, and consecutive day streaks to calculate Variety Score (10-100%), Energy Pulse (10-100%), Acoustic Depth (10-100%), archetype color gradients, and formatted shareable ASCII-art summaries.
+- **Expressive Sonic DNA Card Component**: Implemented `SonicDnaCard` in `:core:ui` featuring dynamic archetype-tailored gradient brushes, circular badge icons, linear dimension progress meters, quick stats chips, and a one-tap social share action.
+- **Settings Console Integration**: Embedded the interactive `SonicDnaCard` in `SettingsScreen` with clipboard export integration (`getShareableSonicDnaText()`).
+- **Comprehensive Unit Tests**: Created `SonicDnaCalculatorTest` in `:core:domain` and expanded `SettingsViewModelTest` in `:feature:settings`.
+
 ## [5.6.0] - 2026-11-24
 
 ### Added

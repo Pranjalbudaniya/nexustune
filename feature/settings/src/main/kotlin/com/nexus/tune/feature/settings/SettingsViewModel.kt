@@ -173,6 +173,17 @@ class SettingsViewModel(
         com.nexus.tune.core.domain.analytics.MilestoneCalculator.generateRecap(stats, streak)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, TimeCapsuleRecap())
 
+    val sonicDnaProfile: StateFlow<SonicDnaProfile> = combine(
+        listeningStats,
+        listeningStreak
+    ) { stats, streak ->
+        com.nexus.tune.core.domain.analytics.SonicDnaCalculator.calculateSonicDna(stats, streak)
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, SonicDnaProfile())
+
+    fun getShareableSonicDnaText(): String {
+        return com.nexus.tune.core.domain.analytics.SonicDnaCalculator.formatShareableSummary(sonicDnaProfile.value)
+    }
+
     fun updateTheme(config: ThemeConfig) {
         viewModelScope.launch {
             settingsRepository.updateThemeConfig(config)

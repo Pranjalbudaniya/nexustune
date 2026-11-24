@@ -420,3 +420,30 @@ data class DjFxConfig(
     val isEqualizerLinked: Boolean = true
 )
 
+enum class SonicArchetype(val title: String, val tagline: String, val badgeIcon: String) {
+    NOCTURNAL_VOYAGER("Nocturnal Voyager", "Guided by late-night melodies and twilight acoustics", "🌙"),
+    AURORA_PULSE("Aurora Pulse", "Awakened by morning beats and vibrant sunrise rhythms", "🌅"),
+    DEEP_FOCUS_SCHOLAR("Deep Focus Scholar", "Immersed in sustained concentration and reflective soundscapes", "🧠"),
+    ECLECTIC_EXPLORER("Eclectic Explorer", "Crosses genre boundaries with ceaseless curiosity", "🧭"),
+    RHYTHMIC_ATHLETE("Rhythmic Athlete", "Fueled by high-energy pulse and relentless drive", "⚡"),
+    ACOUSTIC_PURIST("Acoustic Purist", "Cherishes authentic instruments, warmth, and audiophile depth", "🎻"),
+    CHRONO_DISCOVERER("Chrono Discoverer", "Unbroken daily listening streaks weaving music into life", "🔥"),
+    SONIC_NOMAD("Sonic Nomad", "Harmonious sound tracking through every hour of the day", "🎧")
+}
+
+data class SonicDnaProfile(
+    val archetype: SonicArchetype = SonicArchetype.SONIC_NOMAD,
+    val dominantGenre: String = "All Genres",
+    val genreDistribution: List<GenreShare> = emptyList(),
+    val peakPeriod: String = "All Day",
+    val varietyScorePercent: Int = 50,
+    val energyScorePercent: Int = 50,
+    val acousticScorePercent: Int = 50,
+    val totalTracksPlayed: Int = 0,
+    val estimatedMinutes: Long = 0L,
+    val topArtists: List<String> = emptyList(),
+    val streakDays: Int = 0,
+    val gradientStartHex: String = "#4A1D96",
+    val gradientEndHex: String = "#7C3AED"
+)
+

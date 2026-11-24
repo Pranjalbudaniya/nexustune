@@ -20,3 +20,4 @@
   - `PlayerViewModelTest` in `:feature:player`.
   - `SettingsViewModelTest` in `:feature:settings`.
   - `./scripts/gate.sh slice` and `./scripts/gate.sh final`.
+

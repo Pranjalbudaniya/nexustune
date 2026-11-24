@@ -37,6 +37,8 @@ fun SettingsScreen(
     val listeningStreak by viewModel.listeningStreak.collectAsState()
     val milestones by viewModel.milestones.collectAsState()
     val timeCapsuleRecap by viewModel.timeCapsuleRecap.collectAsState()
+    val sonicDnaProfile by viewModel.sonicDnaProfile.collectAsState()
+    val context = androidx.compose.ui.platform.LocalContext.current
     val customEqProfiles by viewModel.customEqProfiles.collectAsState()
     val closestPresetMatch by viewModel.closestPresetMatch.collectAsState()
     var showSaveProfileDialog by remember { mutableStateOf(false) }
@@ -1563,6 +1565,20 @@ fun SettingsScreen(
                                 }
                             }
                         }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Sonic DNA Card
+                        com.nexus.tune.core.ui.SonicDnaCard(
+                            profile = sonicDnaProfile,
+                            onShareClick = {
+                                val text = viewModel.getShareableSonicDnaText()
+                                val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as? android.content.ClipboardManager
+                                val clip = android.content.ClipData.newPlainText("Sonic DNA Profile", text)
+                                clipboard?.setPrimaryClip(clip)
+                                android.widget.Toast.makeText(context, "Sonic DNA copied to clipboard!", android.widget.Toast.LENGTH_SHORT).show()
+                            }
+                        )
                     }
                 }
 

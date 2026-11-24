@@ -695,4 +695,29 @@ class SettingsViewModelTest {
             })
         }
     }
+
+    @Test
+    fun `sonicDnaProfile calculates correctly and provides shareable text`() = runTest {
+        val stats = ListeningStats(
+            totalPlays = 60,
+            morningPlays = 2,
+            nightPlays = 50,
+            topArtists = listOf("M83", "Daft Punk")
+        )
+        val streak = ListeningStreak(currentStreakDays = 4, longestStreakDays = 6)
+        every { getListeningStatsUseCase.invoke() } returns flowOf(stats)
+        every { settingsRepository.getListeningStreak() } returns flowOf(streak)
+
+        val vm = SettingsViewModel(
+            settingsRepository = settingsRepository,
+            getListeningStatsUseCase = getListeningStatsUseCase
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(SonicArchetype.NOCTURNAL_VOYAGER, vm.sonicDnaProfile.value.archetype)
+        assertEquals(60, vm.sonicDnaProfile.value.totalTracksPlayed)
+        val summary = vm.getShareableSonicDnaText()
+        assertTrue(summary.contains("Nocturnal Voyager"))
+        assertTrue(summary.contains("M83"))
+    }
 }
