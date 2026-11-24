@@ -225,7 +225,8 @@ data class ThemeConfig(
     val headphoneCorrectionConfig: HeadphoneCorrectionConfig = HeadphoneCorrectionConfig(),
     val stereoWidthConfig: StereoWidthConfig = StereoWidthConfig(),
     val sleepDriftProfile: SleepDriftProfile = SleepDriftProfile.OFF,
-    val ditherMode: DitherMode = DitherMode.TRIANGULAR_TPDF
+    val ditherMode: DitherMode = DitherMode.TRIANGULAR_TPDF,
+    val dynamicLoudnessConfig: DynamicLoudnessConfig = DynamicLoudnessConfig()
 )
 
 data class SoundDoseInfo(
@@ -821,6 +822,27 @@ data class QuantizationNoiseMetrics(
     val effectiveSnrDb: Float,
     val noiseShapingGainDb: Float
 )
+
+enum class DynamicLoudnessMode(val displayName: String, val description: String, val maxBassBoostDb: Float, val maxTrebleBoostDb: Float) {
+    OFF("Off (Linear)", "Linear frequency response without dynamic volume compensation", 0.0f, 0.0f),
+    ISO_226_REFERENCE("ISO 226 Reference", "Calibrated ISO 226 equal-loudness curve restoring low-volume bass and treble", 8.0f, 4.5f),
+    SUBTLE_CONTOUR("Subtle Contour", "Gentle audiophile contour preserving pristine acoustic neutrality", 4.5f, 2.5f),
+    DEEP_PUNCH("Deep Punch", "Enhanced low-frequency fullness for low-volume headphone and speaker listening", 10.0f, 5.5f),
+    NIGHT_WHISPER("Night Whisper", "Intense low-volume compensation tailored for whisper-quiet bedtime playback", 12.0f, 7.0f)
+}
+
+data class DynamicLoudnessConfig(
+    val isEnabled: Boolean = false,
+    val mode: DynamicLoudnessMode = DynamicLoudnessMode.ISO_226_REFERENCE,
+    val intensityPercent: Int = 100
+)
+
+data class LoudnessCurveOffsets(
+    val bandOffsetsMb: List<Int>,
+    val effectiveBassGainDb: Float,
+    val effectiveTrebleGainDb: Float
+)
+
 
 
 

@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 59 (v6.9.0 Audiophile TPDF Dither & Psychoacoustic Noise Shaping Studio)
+- Active Phase: Post-v1.0 Improvement Loop 60 (v6.10.0 Dynamic Fletcher-Munson Equal-Loudness Contour Engine)
 - In Flight: Quality gate execution and release qualification
 - Branches: `main`
 
@@ -555,6 +555,18 @@
     - [x] Comprehensive unit test suites in `DitherShapingEngineTest` and `SettingsViewModelTest`
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.9-1`
+
+- [x] Improvement Loop 60 (v6.10 Milestone - Tagged `v6.10-1`)
+  - [x] Dynamic Fletcher-Munson Equal-Loudness Contour Engine (`DynamicLoudnessEngine`):
+    - [x] `DynamicLoudnessMode`, `DynamicLoudnessConfig`, and `LoudnessCurveOffsets` in `:core:model`
+    - [x] `DynamicLoudnessEngine` in `:core:domain:audio` with non-linear ISO 226 equal-loudness sensitivity modeling, 5-band millibel contour calculation, and safe digital headroom calculation
+    - [x] Dynamic loudness offsets layering in `NexusAudioEffects`
+    - [x] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
+    - [x] `SettingsViewModel` dynamic loudness control methods
+    - [x] Interactive "Dynamic Equal-Loudness (Fletcher-Munson)" studio card in `SettingsScreen`
+    - [x] Comprehensive test suites in `DynamicLoudnessEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v6.10-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

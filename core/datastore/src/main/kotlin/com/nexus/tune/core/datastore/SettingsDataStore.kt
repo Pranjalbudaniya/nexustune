@@ -81,6 +81,9 @@ class SettingsDataStore(private val context: Context) {
         val STEREO_SIDE_LEVEL_DB = floatPreferencesKey("stereo_side_level_db")
         val SLEEP_DRIFT_PROFILE = stringPreferencesKey("sleep_drift_profile")
         val DITHER_MODE = stringPreferencesKey("dither_mode")
+        val DYNAMIC_LOUDNESS_ENABLED = booleanPreferencesKey("dynamic_loudness_enabled")
+        val DYNAMIC_LOUDNESS_MODE = stringPreferencesKey("dynamic_loudness_mode")
+        val DYNAMIC_LOUDNESS_INTENSITY = intPreferencesKey("dynamic_loudness_intensity")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -184,7 +187,14 @@ class SettingsDataStore(private val context: Context) {
             }.getOrDefault(SleepDriftProfile.OFF),
             ditherMode = runCatching {
                 DitherMode.valueOf(prefs[PreferencesKeys.DITHER_MODE] ?: DitherMode.TRIANGULAR_TPDF.name)
-            }.getOrDefault(DitherMode.TRIANGULAR_TPDF)
+            }.getOrDefault(DitherMode.TRIANGULAR_TPDF),
+            dynamicLoudnessConfig = DynamicLoudnessConfig(
+                isEnabled = prefs[PreferencesKeys.DYNAMIC_LOUDNESS_ENABLED] ?: false,
+                mode = runCatching {
+                    DynamicLoudnessMode.valueOf(prefs[PreferencesKeys.DYNAMIC_LOUDNESS_MODE] ?: DynamicLoudnessMode.ISO_226_REFERENCE.name)
+                }.getOrDefault(DynamicLoudnessMode.ISO_226_REFERENCE),
+                intensityPercent = prefs[PreferencesKeys.DYNAMIC_LOUDNESS_INTENSITY] ?: 100
+            )
         )
     }
 
@@ -248,12 +258,23 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.STEREO_SIDE_LEVEL_DB] = config.stereoWidthConfig.sideLevelDb
             prefs[PreferencesKeys.SLEEP_DRIFT_PROFILE] = config.sleepDriftProfile.name
             prefs[PreferencesKeys.DITHER_MODE] = config.ditherMode.name
+            prefs[PreferencesKeys.DYNAMIC_LOUDNESS_ENABLED] = config.dynamicLoudnessConfig.isEnabled
+            prefs[PreferencesKeys.DYNAMIC_LOUDNESS_MODE] = config.dynamicLoudnessConfig.mode.name
+            prefs[PreferencesKeys.DYNAMIC_LOUDNESS_INTENSITY] = config.dynamicLoudnessConfig.intensityPercent
         }
     }
 
     suspend fun setDitherMode(mode: DitherMode) {
         context.dataStore.edit { prefs ->
             prefs[PreferencesKeys.DITHER_MODE] = mode.name
+        }
+    }
+
+    suspend fun updateDynamicLoudnessConfig(config: DynamicLoudnessConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.DYNAMIC_LOUDNESS_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.DYNAMIC_LOUDNESS_MODE] = config.mode.name
+            prefs[PreferencesKeys.DYNAMIC_LOUDNESS_INTENSITY] = config.intensityPercent
         }
     }
 

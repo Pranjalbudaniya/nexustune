@@ -22,6 +22,7 @@ class NexusAudioEffects {
     private var karaokeOffsets: List<Int> = List(5) { 0 }
     private var headphoneOffsets: List<Int> = List(5) { 0 }
     private var sleepDriftOffsets: List<Int> = List(5) { 0 }
+    private var dynamicLoudnessOffsets: List<Int> = List(5) { 0 }
 
     fun attachToAudioSession(sessionId: Int) {
         if (sessionId == 0 || sessionId == currentSessionId) return
@@ -201,7 +202,8 @@ class NexusAudioEffects {
                 val kOffset = karaokeOffsets.getOrElse(band) { 0 }
                 val hOffset = headphoneOffsets.getOrElse(band) { 0 }
                 val sOffset = sleepDriftOffsets.getOrElse(band) { 0 }
-                val combined = (clamped + kOffset + hOffset + sOffset).coerceIn(-1500, 1500)
+                val dOffset = dynamicLoudnessOffsets.getOrElse(band) { 0 }
+                val combined = (clamped + kOffset + hOffset + sOffset + dOffset).coerceIn(-1500, 1500)
                 eq.setBandLevel(band.toShort(), combined.toShort())
             }
         } catch (e: Exception) {
@@ -245,6 +247,18 @@ class NexusAudioEffects {
 
     fun getSleepDriftOffsets(): List<Int> = sleepDriftOffsets
 
+    fun applyDynamicLoudnessOffsets(offsets: List<Int>) {
+        dynamicLoudnessOffsets = offsets
+        refreshBands()
+    }
+
+    fun clearDynamicLoudnessOffsets() {
+        dynamicLoudnessOffsets = List(5) { 0 }
+        refreshBands()
+    }
+
+    fun getDynamicLoudnessOffsets(): List<Int> = dynamicLoudnessOffsets
+
     fun setBassBoostStrength(strength: Short) {
         try {
             bassBoost?.setStrength(strength)
@@ -262,7 +276,8 @@ class NexusAudioEffects {
                 val kOffset = karaokeOffsets.getOrElse(i) { 0 }
                 val hOffset = headphoneOffsets.getOrElse(i) { 0 }
                 val sOffset = sleepDriftOffsets.getOrElse(i) { 0 }
-                val combined = (base + kOffset + hOffset + sOffset).coerceIn(-1500, 1500)
+                val dOffset = dynamicLoudnessOffsets.getOrElse(i) { 0 }
+                val combined = (base + kOffset + hOffset + sOffset + dOffset).coerceIn(-1500, 1500)
                 eq.setBandLevel(i.toShort(), combined.toShort())
             }
         } catch (e: Exception) {

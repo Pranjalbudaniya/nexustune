@@ -834,4 +834,25 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.ditherMode == DitherMode.PSYCHOACOUSTIC_LIPSHITZ })
         }
     }
+
+    @Test
+    fun `dynamic loudness settings update theme config and apply offsets`() = runTest {
+        viewModel.setDynamicLoudnessEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.dynamicLoudnessConfig.isEnabled })
+        }
+
+        viewModel.setDynamicLoudnessMode(DynamicLoudnessMode.DEEP_PUNCH)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.dynamicLoudnessConfig.mode == DynamicLoudnessMode.DEEP_PUNCH })
+        }
+
+        viewModel.setDynamicLoudnessIntensity(80)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.dynamicLoudnessConfig.intensityPercent == 80 })
+        }
+    }
 }

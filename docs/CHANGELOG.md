@@ -5,6 +5,17 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.10.0] - 2026-11-24
+
+### Added
+- **Dynamic Fletcher-Munson Equal-Loudness Contour Engine (`DynamicLoudnessEngine`)**: Added `DynamicLoudnessMode` (`OFF`, `ISO_226_REFERENCE`, `SUBTLE_CONTOUR`, `DEEP_PUNCH`, `NIGHT_WHISPER`), `DynamicLoudnessConfig`, and `LoudnessCurveOffsets` in `:core:model`.
+- **Psychoacoustic Inverted Equal-Loudness DSP**: Implemented `DynamicLoudnessEngine` in `:core:domain:audio` with non-linear auditory sensitivity modeling ($1.0 - V^{0.6}$), restoring low-end punch (+4dB to +12dB) and high-frequency sparkle (+2.5dB to +7dB) dynamically as listening volume is attenuated, while anchoring midrange (910Hz) and attenuating ear-canal resonance (3.6kHz).
+- **Multi-Layer Audio Effects Integration**: Added `applyDynamicLoudnessOffsets`, `clearDynamicLoudnessOffsets`, and dynamic loudness offset combination in `NexusAudioEffects` ensuring seamless coexistence with user EQ presets, headphone targets, karaoke attenuation, and sleep drift filters.
+- **DataStore Persistence**: Added `DYNAMIC_LOUDNESS_ENABLED`, `DYNAMIC_LOUDNESS_MODE`, and `DYNAMIC_LOUDNESS_INTENSITY` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Dynamic Equal-Loudness Studio**: Added interactive "Dynamic Equal-Loudness (Fletcher-Munson)" studio card in `SettingsScreen` with curve profile filter chips, intensity slider (0% to 100%), and live low-volume bass/treble boost preview.
+- **Unit Test Coverage**: Comprehensive test suites in `DynamicLoudnessEngineTest` in `:core:domain`, `NexusAudioEffectsTest` in `:core:player`, and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.9.0] - 2026-11-24
 
 ### Added

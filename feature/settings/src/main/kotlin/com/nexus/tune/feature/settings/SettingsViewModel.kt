@@ -144,6 +144,16 @@ class SettingsViewModel(
                     NexusAudioEffects.instance.setVirtualizerStrength(strength)
                 }
                 sleepTimerManager?.setSleepDriftProfile(config.sleepDriftProfile)
+                if (config.dynamicLoudnessConfig.isEnabled) {
+                    val loudnessOffsets = com.nexus.tune.core.domain.audio.DynamicLoudnessEngine.calculateContourOffsets(
+                        mode = config.dynamicLoudnessConfig.mode,
+                        currentVolume = 0.5f,
+                        intensityPercent = config.dynamicLoudnessConfig.intensityPercent
+                    )
+                    NexusAudioEffects.instance.applyDynamicLoudnessOffsets(loudnessOffsets)
+                } else {
+                    NexusAudioEffects.instance.clearDynamicLoudnessOffsets()
+                }
             }
         }
     }
@@ -644,5 +654,20 @@ class SettingsViewModel(
 
     fun setDitherMode(mode: DitherMode) {
         updateTheme(themeConfig.value.copy(ditherMode = mode))
+    }
+
+    fun setDynamicLoudnessEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(dynamicLoudnessConfig = current.dynamicLoudnessConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setDynamicLoudnessMode(mode: DynamicLoudnessMode) {
+        val current = themeConfig.value
+        updateTheme(current.copy(dynamicLoudnessConfig = current.dynamicLoudnessConfig.copy(mode = mode)))
+    }
+
+    fun setDynamicLoudnessIntensity(intensity: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(dynamicLoudnessConfig = current.dynamicLoudnessConfig.copy(intensityPercent = intensity.coerceIn(0, 100))))
     }
 }

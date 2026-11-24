@@ -101,5 +101,15 @@ class NexusAudioEffectsTest {
         audioEffects.clearSleepDriftOffsets()
         assertEquals(listOf(0, 0, 0, 0, 0), audioEffects.getSleepDriftOffsets())
     }
+
+    @Test
+    fun `dynamic loudness contour offsets can be applied and cleared`() {
+        val loudnessOffsets = listOf(800, 440, 0, -45, 450)
+        audioEffects.applyDynamicLoudnessOffsets(loudnessOffsets)
+        assertEquals(loudnessOffsets, audioEffects.getDynamicLoudnessOffsets())
+
+        audioEffects.clearDynamicLoudnessOffsets()
+        assertEquals(listOf(0, 0, 0, 0, 0), audioEffects.getDynamicLoudnessOffsets())
+    }
 }
 

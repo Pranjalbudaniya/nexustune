@@ -794,6 +794,118 @@ fun SettingsScreen(
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
+                // --- Dynamic Fletcher-Munson Equal-Loudness Studio ---
+                Text(
+                    text = "Dynamic Equal-Loudness (Fletcher-Munson)",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+                Text(
+                    text = "Compensates for human ear sensitivity loss at lower listening volumes by dynamically restoring bass punch and treble brilliance (ISO 226 calibrated).",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 6.dp)
+                )
+
+                ListItem(
+                    headlineContent = { Text("Dynamic Equal-Loudness") },
+                    supportingContent = { Text("Volume-adaptive frequency contouring") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.dynamicLoudnessConfig.isEnabled,
+                            onCheckedChange = { viewModel.setDynamicLoudnessEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.dynamicLoudnessConfig.isEnabled) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Contour Curve Profile",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        DynamicLoudnessMode.entries.filter { it != DynamicLoudnessMode.OFF }.forEach { mode ->
+                            FilterChip(
+                                selected = themeConfig.dynamicLoudnessConfig.mode == mode,
+                                onClick = { viewModel.setDynamicLoudnessMode(mode) },
+                                label = { Text(mode.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Compensation Intensity",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "${themeConfig.dynamicLoudnessConfig.intensityPercent}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.dynamicLoudnessConfig.intensityPercent.toFloat(),
+                        onValueChange = { viewModel.setDynamicLoudnessIntensity(it.toInt()) },
+                        valueRange = 0f..100f,
+                        steps = 19
+                    )
+
+                    val dynamicLoudnessCurve = com.nexus.tune.core.domain.audio.DynamicLoudnessEngine.calculateLoudnessCurve(
+                        mode = themeConfig.dynamicLoudnessConfig.mode,
+                        currentVolume = 0.3f,
+                        intensityPercent = themeConfig.dynamicLoudnessConfig.intensityPercent
+                    )
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Text(
+                                text = themeConfig.dynamicLoudnessConfig.mode.description,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Low-Vol Bass: +${String.format(java.util.Locale.US, "%.1f", dynamicLoudnessCurve.effectiveBassGainDb)} dB",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Treble Sparkle: +${String.format(java.util.Locale.US, "%.1f", dynamicLoudnessCurve.effectiveTrebleGainDb)} dB",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
                 // --- Hearing Protection & Safe Listening ---
                 Text(
                     text = "Hearing Protection & Safe Listening",
