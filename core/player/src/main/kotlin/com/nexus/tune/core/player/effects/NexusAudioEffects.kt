@@ -18,6 +18,7 @@ class NexusAudioEffects {
 
     private var spatialAudioEnabled: Boolean = false
     private var currentSpatialStage: SpatialAudioStage = SpatialAudioStage.OFF
+    private var customBandLevels: IntArray = IntArray(5) { 0 }
 
     fun attachToAudioSession(sessionId: Int) {
         if (sessionId == 0 || sessionId == currentSessionId) return
@@ -178,12 +179,48 @@ class NexusAudioEffects {
                     bassBoost?.setStrength(150.toShort())
                 }
                 EqualizerPreset.CUSTOM -> {
-                    // Custom band gains preserved
+                    setCustomBands(customBandLevels.toList())
                 }
             }
         } catch (e: Exception) {
             Log.w("NexusAudioEffects", "Failed to apply preset $preset: ${e.message}")
         }
+    }
+
+    fun setBandLevel(band: Int, levelmB: Int) {
+        val clamped = levelmB.coerceIn(-1200, 1200)
+        if (band in 0 until 5) {
+            customBandLevels[band] = clamped
+        }
+        val eq = equalizer ?: return
+        try {
+            if (band in 0 until eq.numberOfBands.toInt()) {
+                eq.setBandLevel(band.toShort(), clamped.toShort())
+            }
+        } catch (e: Exception) {
+            Log.w("NexusAudioEffects", "Failed to set band $band level: ${e.message}")
+        }
+    }
+
+    fun setCustomBands(bands: List<Int>) {
+        bands.forEachIndexed { index, level ->
+            setBandLevel(index, level)
+        }
+    }
+
+    fun getBandLevels(): List<Int> {
+        val eq = equalizer
+        if (eq != null) {
+            try {
+                val bands = (0 until eq.numberOfBands.toInt().coerceAtMost(5)).map { band ->
+                    eq.getBandLevel(band.toShort()).toInt()
+                }
+                if (bands.isNotEmpty()) return bands
+            } catch (e: Exception) {
+                // Return cached
+            }
+        }
+        return customBandLevels.toList()
     }
 
     fun release() {

@@ -188,6 +188,66 @@ fun SettingsScreen(
                     }
                 }
 
+                if (equalizerEnabled) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "5-Band Frequency Tuning",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                TextButton(onClick = { viewModel.resetCustomEqBands() }) {
+                                    Text("Reset Flat")
+                                }
+                            }
+
+                            val bandFrequencies = listOf("60 Hz", "230 Hz", "910 Hz", "3.6 kHz", "14 kHz")
+                            val currentBands = themeConfig.customEqBands
+
+                            bandFrequencies.forEachIndexed { index, freqName ->
+                                val levelmB = currentBands.getOrElse(index) { 0 }
+                                val gainDb = levelmB / 100f
+                                val formattedGain = if (gainDb > 0) "+%.1f dB".format(gainDb) else "%.1f dB".format(gainDb)
+
+                                Column(modifier = Modifier.padding(vertical = 4.dp)) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = freqName,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Text(
+                                            text = formattedGain,
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = if (levelmB != 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                    Slider(
+                                        value = levelmB.toFloat(),
+                                        onValueChange = { viewModel.setCustomEqBandLevel(index, it.toInt()) },
+                                        valueRange = -1000f..1000f,
+                                        steps = 19,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(8.dp))
 
                 ListItem(

@@ -53,5 +53,28 @@ class NexusAudioEffectsTest {
         audioEffects.release()
         assertNotNull(audioEffects)
     }
+
+    @Test
+    fun `custom equalizer band tuning clamps and stores band levels`() {
+        audioEffects.setBandLevel(0, 500)
+        audioEffects.setBandLevel(1, -300)
+        audioEffects.setBandLevel(2, 1500) // Clamps to 1200
+        audioEffects.setBandLevel(3, -2000) // Clamps to -1200
+        audioEffects.setBandLevel(4, 0)
+
+        val levels = audioEffects.getBandLevels()
+        assertEquals(500, levels[0])
+        assertEquals(-300, levels[1])
+        assertEquals(1200, levels[2])
+        assertEquals(-1200, levels[3])
+        assertEquals(0, levels[4])
+
+        audioEffects.setCustomBands(listOf(100, 200, 300, 400, 500))
+        val newLevels = audioEffects.getBandLevels()
+        assertEquals(listOf(100, 200, 300, 400, 500), newLevels)
+
+        audioEffects.applyPreset(EqualizerPreset.CUSTOM)
+        assertEquals(listOf(100, 200, 300, 400, 500), audioEffects.getBandLevels())
+    }
 }
 

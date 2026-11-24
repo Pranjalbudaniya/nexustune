@@ -157,7 +157,8 @@ data class ThemeConfig(
     val shakeToExtendSleepTimerEnabled: Boolean = false,
     val shakeExtendMinutes: Int = 10,
     val ambientSoundType: AmbientSoundType = AmbientSoundType.OFF,
-    val ambientSoundVolume: Float = 0.5f
+    val ambientSoundVolume: Float = 0.5f,
+    val customEqBands: List<Int> = listOf(0, 0, 0, 0, 0)
 )
 
 data class SoundDoseInfo(

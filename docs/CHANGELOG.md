@@ -5,6 +5,13 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.0] - 2026-11-24
+
+### Added
+- **Audiophile 5-Band Parametric Equalizer Faders**: Enhanced `NexusAudioEffects` with fine-grained band level tuning (`setBandLevel`, `setCustomBands`, `getBandLevels`) across standard center frequencies (60Hz Sub-Bass, 230Hz Mid-Bass, 910Hz Midrange, 3.6kHz Presence, 14kHz Air) spanning ±12 dB (±1200 mB).
+- **Interactive Equalizer Console**: Added real-time 5-band vertical slider console in `SettingsScreen` with numeric dB indicators and a one-tap "Reset Flat" button.
+- **Custom Preset Persistence**: Added `customEqBands` to `ThemeConfig` and `SettingsDataStore`, automatically persisting personalized equalizer curves across launches.
+
 ## [4.0.0] - 2026-11-24
 
 ### Added

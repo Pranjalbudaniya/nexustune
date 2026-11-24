@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 30 (v4.0.0 Bedtime Ambient Soundscapes & Binaural Brainwave Synthesizer Milestone)
+- Active Phase: Post-v1.0 Improvement Loop 31 (v4.1.0 Audiophile 5-Band Parametric Equalizer Faders)
 - In Flight: Running test suites and ./scripts/gate.sh slice
 - Branches: `main`
 
@@ -238,15 +238,24 @@
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `git tag v3.9-1`
 
-## Improvement Loop 30 (v4.0 Milestone - In Progress)
-- [ ] Bedtime Ambient Soundscapes & Binaural Brainwave Synthesizer:
-  - Procedural DSP math engine `AmbientSoundGenerator` in `:core:domain` (Brown, Pink, White noise, Alpha, Theta, Delta binaural waves, 432Hz/528Hz Solfeggio tones)
-  - Streaming `AmbientSoundSynthesizer` in `:core:player` using native low-latency `AudioTrack`
-  - DataStore preference persistence for ambient sound profile and volume
-  - Material 3 Expressive UI card in `SettingsScreen` with play/stop, volume slider, and profile selector chips
-  - Auto-shutoff coordination with `SleepTimerManager`
+- [x] Improvement Loop 30 (v4.0 Milestone - Tagged `v4.0-1`)
+  - [x] Bedtime Ambient Soundscapes & Binaural Brainwave Synthesizer:
+    - [x] Procedural DSP math engine `AmbientSoundGenerator` in `:core:domain` (Brown, Pink, White noise, Alpha, Theta, Delta binaural waves, 432Hz/528Hz Solfeggio tones)
+    - [x] Streaming `AmbientSoundSynthesizer` in `:core:player` using native low-latency `AudioTrack`
+    - [x] DataStore preference persistence for ambient sound profile and volume
+    - [x] Material 3 Expressive UI card in `SettingsScreen` with play/stop, volume slider, and profile selector chips
+    - [x] Auto-shutoff coordination with `SleepTimerManager`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `git tag v4.0-1`
+
+## Improvement Loop 31 (v4.1 Milestone - In Progress)
+- [ ] Audiophile 5-Band Parametric Equalizer Faders:
+  - [x] Fine-grained band level tuning (`setBandLevel`, `setCustomBands`, `getBandLevels`) in `NexusAudioEffects`
+  - [x] Persistent custom band storage `customEqBands` in `ThemeConfig` and `SettingsDataStore`
+  - [x] Interactive 5-band slider console in `SettingsScreen` with dB readouts and reset button
+  - [x] Unit test suites in `NexusAudioEffectsTest` and `SettingsViewModelTest`
 - [ ] Slice gate passed
-- [ ] Final gate passed & tagged: `git tag v4.0-1`
+- [ ] Final gate passed & tagged: `git tag v4.1-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

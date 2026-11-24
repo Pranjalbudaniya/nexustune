@@ -320,6 +320,34 @@ class SettingsViewModel(
     fun setEqualizerPreset(preset: EqualizerPreset) {
         _equalizerPreset.value = preset
         NexusAudioEffects.instance.applyPreset(preset)
+        if (preset == EqualizerPreset.CUSTOM) {
+            NexusAudioEffects.instance.setCustomBands(themeConfig.value.customEqBands)
+        }
+    }
+
+    val customEqBands: StateFlow<List<Int>> = themeConfig.map { it.customEqBands }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), listOf(0, 0, 0, 0, 0))
+
+    fun setCustomEqBandLevel(bandIndex: Int, levelmB: Int) {
+        val currentBands = themeConfig.value.customEqBands.toMutableList()
+        while (currentBands.size < 5) currentBands.add(0)
+        if (bandIndex in 0 until currentBands.size) {
+            currentBands[bandIndex] = levelmB.coerceIn(-1200, 1200)
+            updateTheme(themeConfig.value.copy(customEqBands = currentBands))
+            NexusAudioEffects.instance.setBandLevel(bandIndex, levelmB)
+            if (_equalizerPreset.value != EqualizerPreset.CUSTOM) {
+                _equalizerPreset.value = EqualizerPreset.CUSTOM
+            }
+        }
+    }
+
+    fun resetCustomEqBands() {
+        val flatBands = listOf(0, 0, 0, 0, 0)
+        updateTheme(themeConfig.value.copy(customEqBands = flatBands))
+        NexusAudioEffects.instance.setCustomBands(flatBands)
+        if (_equalizerPreset.value != EqualizerPreset.CUSTOM) {
+            _equalizerPreset.value = EqualizerPreset.CUSTOM
+        }
     }
 
     fun toggleEqualizer(enabled: Boolean) {

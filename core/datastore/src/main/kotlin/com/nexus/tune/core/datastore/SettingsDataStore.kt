@@ -35,6 +35,7 @@ class SettingsDataStore(private val context: Context) {
         val SHAKE_EXTEND_MINUTES = intPreferencesKey("sleep_timer_shake_extend_minutes")
         val AMBIENT_SOUND_TYPE = stringPreferencesKey("ambient_sound_type")
         val AMBIENT_SOUND_VOLUME = floatPreferencesKey("ambient_sound_volume")
+        val CUSTOM_EQ_BANDS = stringPreferencesKey("custom_eq_bands_csv")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -61,7 +62,8 @@ class SettingsDataStore(private val context: Context) {
             ambientSoundType = runCatching {
                 AmbientSoundType.valueOf(prefs[PreferencesKeys.AMBIENT_SOUND_TYPE] ?: AmbientSoundType.OFF.name)
             }.getOrDefault(AmbientSoundType.OFF),
-            ambientSoundVolume = prefs[PreferencesKeys.AMBIENT_SOUND_VOLUME] ?: 0.5f
+            ambientSoundVolume = prefs[PreferencesKeys.AMBIENT_SOUND_VOLUME] ?: 0.5f,
+            customEqBands = prefs[PreferencesKeys.CUSTOM_EQ_BANDS]?.split(",")?.mapNotNull { it.trim().toIntOrNull() }?.takeIf { it.size == 5 } ?: listOf(0, 0, 0, 0, 0)
         )
     }
 
@@ -84,6 +86,7 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.SHAKE_EXTEND_MINUTES] = config.shakeExtendMinutes
             prefs[PreferencesKeys.AMBIENT_SOUND_TYPE] = config.ambientSoundType.name
             prefs[PreferencesKeys.AMBIENT_SOUND_VOLUME] = config.ambientSoundVolume
+            prefs[PreferencesKeys.CUSTOM_EQ_BANDS] = config.customEqBands.joinToString(",")
         }
     }
 

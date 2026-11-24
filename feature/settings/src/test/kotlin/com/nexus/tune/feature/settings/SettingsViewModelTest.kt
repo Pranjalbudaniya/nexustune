@@ -456,4 +456,26 @@ class SettingsViewModelTest {
         }
         assertEquals(0.85f, viewModel.ambientState.value.volume, 0.001f)
     }
+
+    @Test
+    fun `setCustomEqBandLevel updates band and switches preset to CUSTOM`() = runTest {
+        viewModel.setCustomEqBandLevel(0, 400)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.customEqBands[0] == 400 })
+        }
+        assertEquals(EqualizerPreset.CUSTOM, viewModel.equalizerPreset.value)
+    }
+
+    @Test
+    fun `resetCustomEqBands resets all bands to 0`() = runTest {
+        viewModel.resetCustomEqBands()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.customEqBands.all { b -> b == 0 } })
+        }
+        assertEquals(EqualizerPreset.CUSTOM, viewModel.equalizerPreset.value)
+    }
 }
