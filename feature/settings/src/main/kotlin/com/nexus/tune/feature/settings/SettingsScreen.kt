@@ -558,10 +558,34 @@ fun SettingsScreen(
 
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Time-of-Day: Morning ${stats.morningPlays} | Afternoon ${stats.afternoonPlays} | Evening ${stats.eveningPlays} | Night ${stats.nightPlays}",
+                            text = "Peak: ${stats.peakPeriod} | Morning ${stats.morningPlays} | Afternoon ${stats.afternoonPlays} | Evening ${stats.eveningPlays} | Night ${stats.nightPlays}",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+
+                        if (stats.topGenres.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Top Genres",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .horizontalScroll(rememberScrollState()),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                stats.topGenres.forEach { genreShare ->
+                                    FilterChip(
+                                        selected = true,
+                                        onClick = {},
+                                        label = { Text("${genreShare.genre} ${genreShare.percentage}%") }
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -785,8 +809,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v3.1.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Dual-Engine Dynamic Crossfade DSP") }
+                    headlineContent = { Text("NexusTune v3.2.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Listening Habit Insights & Genre Distribution Analytics") }
                 )
             }
         }

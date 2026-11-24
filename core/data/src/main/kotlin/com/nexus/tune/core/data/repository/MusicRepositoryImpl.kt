@@ -170,13 +170,19 @@ class MusicRepositoryImpl(
                 }
             }
 
+            val tracksInfo = list.map { Triple(it.title, it.artist, it.album) }
+            val peakPeriod = com.nexus.tune.core.domain.analytics.ListeningHabitAnalyzer.determinePeakPeriod(morning, afternoon, evening, night)
+            val topGenres = com.nexus.tune.core.domain.analytics.ListeningHabitAnalyzer.analyzeGenres(tracksInfo)
+
             ListeningStats(
                 totalPlays = totalPlays,
                 topArtists = topArtists,
                 morningPlays = morning,
                 afternoonPlays = afternoon,
                 eveningPlays = evening,
-                nightPlays = night
+                nightPlays = night,
+                topGenres = topGenres,
+                peakPeriod = peakPeriod
             )
         }
     }

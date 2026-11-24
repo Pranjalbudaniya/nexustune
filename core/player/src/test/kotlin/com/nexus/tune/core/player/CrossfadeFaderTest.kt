@@ -75,3 +75,4 @@ class CrossfadeFaderTest {
         assertEquals(0.0f, negativeElapsed.incomingVolume, 0.001f)
     }
 }
+

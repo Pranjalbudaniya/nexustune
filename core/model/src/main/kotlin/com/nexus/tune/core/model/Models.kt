@@ -192,13 +192,21 @@ enum class EqualizerPreset {
     FLAT, BASS_BOOST, TREBLE_BOOST, VOCAL, ELECTRONIC, ROCK, CLASSICAL, JAZZ, HIP_HOP, ACOUSTIC, CUSTOM
 }
 
+data class GenreShare(
+    val genre: String,
+    val playCount: Int,
+    val percentage: Int
+)
+
 data class ListeningStats(
     val totalPlays: Int = 0,
     val topArtists: List<String> = emptyList(),
     val morningPlays: Int = 0,
     val afternoonPlays: Int = 0,
     val eveningPlays: Int = 0,
-    val nightPlays: Int = 0
+    val nightPlays: Int = 0,
+    val topGenres: List<GenreShare> = emptyList(),
+    val peakPeriod: String = "All Day"
 )
 
 data class SkipSegment(

@@ -5,6 +5,12 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.0] - 2026-11-24
+
+### Added
+- **Listening Habit Insights & Genre Distribution Analytics**: Implemented `ListeningHabitAnalyzer` in `core:domain:analytics` evaluating track history metadata to detect user genre affinity percentages and peak listening periods.
+- **Top Genres Visual Breakdown**: Added top genre affinity chips with percentages and peak period badges in `SettingsScreen` under Listening Analytics.
+
 ## [3.1.0] - 2026-11-24
 
 ### Added
