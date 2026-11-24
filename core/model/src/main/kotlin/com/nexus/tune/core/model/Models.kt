@@ -233,7 +233,8 @@ data class ThemeConfig(
     val phaseMeterConfig: PhaseMeterConfig = PhaseMeterConfig(),
     val tiltEqualizerConfig: TiltEqualizerConfig = TiltEqualizerConfig(),
     val deClickerConfig: DeClickerConfig = DeClickerConfig(),
-    val midBassClarityConfig: MidBassClarityConfig = MidBassClarityConfig()
+    val midBassClarityConfig: MidBassClarityConfig = MidBassClarityConfig(),
+    val crosstalkCancellationConfig: CrosstalkCancellationConfig = CrosstalkCancellationConfig()
 )
 
 data class SoundDoseInfo(
@@ -1029,6 +1030,34 @@ data class MidBassBiquadCoefficients(
     val b2: Float,
     val a1: Float,
     val a2: Float
+)
+
+enum class CrosstalkCancellationMode(
+    val displayName: String,
+    val description: String,
+    val defaultDelaySamples: Int,
+    val defaultIntensityFactor: Float,
+    val targetSpanDegrees: Int
+) {
+    OFF("Off (Bypass)", "Direct stereo without crosstalk cancellation", 0, 0.0f, 30),
+    PHONE_STEREO_SPEAKERS("Phone Dual Speakers", "Calibrated for 7-8 cm mobile chassis spacing (120 µs delay)", 5, 0.65f, 140),
+    DESKTOP_NEARFIELD("Desktop & Tablet", "Optimized for laptop/tablet near-field speakers (220 µs delay)", 9, 0.75f, 160),
+    SOUNDBAR_LIVING_ROOM("Living Room Soundbar", "Optimized for external Bluetooth soundbar & room hi-fi (340 µs delay)", 14, 0.82f, 175)
+}
+
+data class CrosstalkCancellationConfig(
+    val isEnabled: Boolean = false,
+    val mode: CrosstalkCancellationMode = CrosstalkCancellationMode.PHONE_STEREO_SPEAKERS,
+    val delaySamples: Int = 5,
+    val cancellationIntensityPercent: Int = 70,
+    val headShadowDamping: Float = 0.45f
+)
+
+data class CrosstalkCancellationMetrics(
+    val delayMicroseconds: Float,
+    val effectiveCancellationDb: Float,
+    val virtualStageSpanDegrees: Int,
+    val binauralRating: String
 )
 
 

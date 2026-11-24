@@ -1110,6 +1110,100 @@ fun SettingsScreen(
                             }
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+                    ListItem(
+                        headlineContent = { Text("Loudspeaker Holographic 3D (XTC)") },
+                        supportingContent = { Text("Acoustic crosstalk cancellation expanding stereo phone & speaker soundstage to 160°") },
+                        trailingContent = {
+                            Switch(
+                                checked = themeConfig.crosstalkCancellationConfig.isEnabled,
+                                onCheckedChange = { viewModel.setCrosstalkCancellationEnabled(it) }
+                            )
+                        }
+                    )
+
+                    if (themeConfig.crosstalkCancellationConfig.isEnabled) {
+                        val xtcMetrics = com.nexus.tune.core.domain.audio.CrosstalkCancellationEngine.calculateMetrics(themeConfig.crosstalkCancellationConfig)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Speaker Acoustic Geometry",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState()),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            CrosstalkCancellationMode.entries.forEach { mode ->
+                                FilterChip(
+                                    selected = themeConfig.crosstalkCancellationConfig.mode == mode,
+                                    onClick = { viewModel.setCrosstalkCancellationMode(mode) },
+                                    label = { Text(mode.displayName) }
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Interaural Delay: ${themeConfig.crosstalkCancellationConfig.delaySamples} smp (${String.format(java.util.Locale.US, "%.0f µs", xtcMetrics.delayMicroseconds)})",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = "Span: ${xtcMetrics.virtualStageSpanDegrees}° Arc",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
+                        Slider(
+                            value = themeConfig.crosstalkCancellationConfig.cancellationIntensityPercent.toFloat(),
+                            onValueChange = { viewModel.setCrosstalkCancellationIntensity(it.toInt()) },
+                            valueRange = 20.0f..100.0f,
+                            steps = 8,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Surface(
+                            shape = MaterialTheme.shapes.small,
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(8.dp)) {
+                                Text(
+                                    text = themeConfig.crosstalkCancellationConfig.mode.description,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = xtcMetrics.binauralRating,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                    Text(
+                                        text = "XTC Depth: ${String.format(java.util.Locale.US, "%.1f dB", xtcMetrics.effectiveCancellationDb)}",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.secondary
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))

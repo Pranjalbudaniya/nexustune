@@ -789,4 +789,24 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(midBassClarityConfig = current.midBassClarityConfig.copy(dynamicThresholdPercent = thresholdPercent.coerceIn(20, 80))))
     }
+
+    fun setCrosstalkCancellationEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(crosstalkCancellationConfig = current.crosstalkCancellationConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setCrosstalkCancellationMode(mode: CrosstalkCancellationMode) {
+        val current = themeConfig.value
+        updateTheme(current.copy(crosstalkCancellationConfig = current.crosstalkCancellationConfig.copy(mode = mode, delaySamples = mode.defaultDelaySamples)))
+    }
+
+    fun setCrosstalkCancellationDelay(delaySamples: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(crosstalkCancellationConfig = current.crosstalkCancellationConfig.copy(delaySamples = delaySamples.coerceIn(1, 24))))
+    }
+
+    fun setCrosstalkCancellationIntensity(intensityPercent: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(crosstalkCancellationConfig = current.crosstalkCancellationConfig.copy(cancellationIntensityPercent = intensityPercent.coerceIn(10, 100))))
+    }
 }

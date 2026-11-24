@@ -5,6 +5,17 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.18.0] - 2026-11-24
+
+### Added
+- **Loudspeaker Acoustic Crosstalk Cancellation & Stereo Dipole 3D Studio (`CrosstalkCancellationEngine`)**: Added `CrosstalkCancellationMode` (`OFF`, `PHONE_STEREO_SPEAKERS`, `DESKTOP_NEARFIELD`, `SOUNDBAR_LIVING_ROOM`), `CrosstalkCancellationConfig`, and `CrosstalkCancellationMetrics` in `:core:model`.
+- **Contralateral Inverted Acoustic Cancellation & Soundstage Expansion DSP**: Implemented `CrosstalkCancellationEngine` in `:core:domain:audio` synthesizing an inverted, interaurally delayed, head-shadowed contralateral cancellation wave ($C_L = -\alpha \cdot H_{shadow}(R[n - \Delta n])$) to annihilate acoustic crosstalk in the air at the listener's ear canal entrance, expanding perceived soundstage width from $30^\circ$ physical mobile chassis angle up to $140^\circ \dots 175^\circ$ holographic panoramic arch.
+- **Hardware Profile Geometries**: Tailored propagation delay presets for Phone Stereo Speakers (5 samples / 113 µs), Desktop/Tablet (9 samples / 204 µs), and Living Room Soundbars (14 samples / 317 µs).
+- **DataStore Persistence**: Added `XTC_ENABLED`, `XTC_MODE`, `XTC_DELAY_SAMPLES`, and `XTC_INTENSITY_PERCENT` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Crosstalk Cancellation Studio**: Added interactive "Loudspeaker Holographic 3D (XTC)" card in `SettingsScreen` with geometry chips, delay sample selector, intensity slider, and live soundstage expansion degree badge.
+- **Unit Test Coverage**: Comprehensive test suites in `CrosstalkCancellationEngineTest` in `:core:domain` and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.17.0] - 2026-11-24
 
 ### Added

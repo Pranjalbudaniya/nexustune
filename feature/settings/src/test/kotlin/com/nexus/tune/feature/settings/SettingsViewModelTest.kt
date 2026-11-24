@@ -1014,4 +1014,31 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.midBassClarityConfig.dynamicThresholdPercent == 45 })
         }
     }
+
+    @Test
+    fun `crosstalk cancellation settings update theme config`() = runTest {
+        viewModel.setCrosstalkCancellationEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.crosstalkCancellationConfig.isEnabled })
+        }
+
+        viewModel.setCrosstalkCancellationMode(CrosstalkCancellationMode.SOUNDBAR_LIVING_ROOM)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.crosstalkCancellationConfig.mode == CrosstalkCancellationMode.SOUNDBAR_LIVING_ROOM })
+        }
+
+        viewModel.setCrosstalkCancellationDelay(12)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.crosstalkCancellationConfig.delaySamples == 12 })
+        }
+
+        viewModel.setCrosstalkCancellationIntensity(85)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.crosstalkCancellationConfig.cancellationIntensityPercent == 85 })
+        }
+    }
 }

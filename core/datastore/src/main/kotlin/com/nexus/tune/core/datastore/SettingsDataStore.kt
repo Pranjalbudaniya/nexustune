@@ -108,6 +108,10 @@ class SettingsDataStore(private val context: Context) {
         val MID_BASS_CLARITY_MODE = stringPreferencesKey("mid_bass_clarity_mode")
         val MID_BASS_CLARITY_CENTER_HZ = floatPreferencesKey("mid_bass_clarity_center_hz")
         val MID_BASS_CLARITY_THRESHOLD = intPreferencesKey("mid_bass_clarity_threshold")
+        val XTC_ENABLED = booleanPreferencesKey("xtc_enabled")
+        val XTC_MODE = stringPreferencesKey("xtc_mode")
+        val XTC_DELAY_SAMPLES = intPreferencesKey("xtc_delay_samples")
+        val XTC_INTENSITY_PERCENT = intPreferencesKey("xtc_intensity_percent")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -268,6 +272,14 @@ class SettingsDataStore(private val context: Context) {
                 }.getOrDefault(MidBassClarityMode.BALANCED_DE_MUD),
                 centerFrequencyHz = prefs[PreferencesKeys.MID_BASS_CLARITY_CENTER_HZ] ?: 300.0f,
                 dynamicThresholdPercent = prefs[PreferencesKeys.MID_BASS_CLARITY_THRESHOLD] ?: 40
+            ),
+            crosstalkCancellationConfig = CrosstalkCancellationConfig(
+                isEnabled = prefs[PreferencesKeys.XTC_ENABLED] ?: false,
+                mode = runCatching {
+                    CrosstalkCancellationMode.valueOf(prefs[PreferencesKeys.XTC_MODE] ?: CrosstalkCancellationMode.PHONE_STEREO_SPEAKERS.name)
+                }.getOrDefault(CrosstalkCancellationMode.PHONE_STEREO_SPEAKERS),
+                delaySamples = prefs[PreferencesKeys.XTC_DELAY_SAMPLES] ?: 5,
+                cancellationIntensityPercent = prefs[PreferencesKeys.XTC_INTENSITY_PERCENT] ?: 70
             )
         )
     }
@@ -359,6 +371,10 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.MID_BASS_CLARITY_MODE] = config.midBassClarityConfig.mode.name
             prefs[PreferencesKeys.MID_BASS_CLARITY_CENTER_HZ] = config.midBassClarityConfig.centerFrequencyHz
             prefs[PreferencesKeys.MID_BASS_CLARITY_THRESHOLD] = config.midBassClarityConfig.dynamicThresholdPercent
+            prefs[PreferencesKeys.XTC_ENABLED] = config.crosstalkCancellationConfig.isEnabled
+            prefs[PreferencesKeys.XTC_MODE] = config.crosstalkCancellationConfig.mode.name
+            prefs[PreferencesKeys.XTC_DELAY_SAMPLES] = config.crosstalkCancellationConfig.delaySamples
+            prefs[PreferencesKeys.XTC_INTENSITY_PERCENT] = config.crosstalkCancellationConfig.cancellationIntensityPercent
         }
     }
 
@@ -432,6 +448,15 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.MID_BASS_CLARITY_MODE] = config.mode.name
             prefs[PreferencesKeys.MID_BASS_CLARITY_CENTER_HZ] = config.centerFrequencyHz
             prefs[PreferencesKeys.MID_BASS_CLARITY_THRESHOLD] = config.dynamicThresholdPercent
+        }
+    }
+
+    suspend fun updateCrosstalkCancellationConfig(config: CrosstalkCancellationConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.XTC_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.XTC_MODE] = config.mode.name
+            prefs[PreferencesKeys.XTC_DELAY_SAMPLES] = config.delaySamples
+            prefs[PreferencesKeys.XTC_INTENSITY_PERCENT] = config.cancellationIntensityPercent
         }
     }
 
