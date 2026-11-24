@@ -24,6 +24,8 @@ interface MusicRepository {
     suspend fun saveLyricsOffset(trackId: String, offsetMs: Long)
     suspend fun getLyricsOffset(trackId: String): Long
     suspend fun clearLyricsCache()
+    suspend fun saveCustomLyrics(trackId: String, title: String, artist: String, lrcContent: String): MusicResult<TrackLyrics>
+    suspend fun exportLyricsToLrc(trackId: String): String?
     fun getRecentSearches(): Flow<List<String>>
     suspend fun addRecentSearch(query: String)
     suspend fun removeRecentSearch(query: String)

@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 36 (v4.6.0 Smart Artist-Spaced Diversity Shuffle & Repeat Mode Orchestration Engine)
+- Active Phase: Post-v1.0 Improvement Loop 37 (v4.7.0 Custom Synced LRC Lyrics Import, Export & Offline Storage Engine)
 - In Flight: Running test suites and ./scripts/gate.sh slice
 - Branches: `main`
 
@@ -297,17 +297,27 @@
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v4.5-1`
 
-## Improvement Loop 36 (v4.6 Milestone - In Progress)
-- [x] Smart Artist-Spaced Diversity Shuffle & Repeat Mode Orchestration Engine:
-  - [x] `SmartShuffleEngine` in `:core:domain:queue` interleaving tracks to eliminate artist clustering
-  - [x] `shuffleQueue` method in `ManageQueueUseCase` and `PlayerViewModel`
-  - [x] `PlayerController` listeners and control methods (`toggleShuffle`, `cycleRepeatMode`, `setRepeatMode`)
-  - [x] `isShuffle`, `isRepeatOne`, `isRepeatAll` in `PlaybackState`
-  - [x] Interactive Shuffle, Repeat, and Skip buttons in `PlayerScreen`
-  - [x] Settings UI toggle for "Smart Artist-Spaced Shuffle" in `SettingsScreen`
-  - [x] Unit test suites across `:core:domain`, `:feature:player`, and `:feature:settings`
+- [x] Improvement Loop 36 (v4.6 Milestone - Tagged `v4.6-1`)
+  - [x] Smart Artist-Spaced Diversity Shuffle & Repeat Mode Orchestration Engine:
+    - [x] `SmartShuffleEngine` in `:core:domain:queue` interleaving tracks to eliminate artist clustering
+    - [x] `shuffleQueue` method in `ManageQueueUseCase` and `PlayerViewModel`
+    - [x] `PlayerController` listeners and control methods (`toggleShuffle`, `cycleRepeatMode`, `setRepeatMode`)
+    - [x] `isShuffle`, `isRepeatOne`, `isRepeatAll` in `PlaybackState`
+    - [x] Interactive Shuffle, Repeat, and Skip buttons in `PlayerScreen`
+    - [x] Settings UI toggle for "Smart Artist-Spaced Shuffle" in `SettingsScreen`
+    - [x] Unit test suites across `:core:domain`, `:feature:player`, and `:feature:settings`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v4.6-1`
+
+## Improvement Loop 37 (v4.7 Milestone - In Progress)
+- [x] Custom Synced LRC Lyrics Import, Export & Offline Storage Engine:
+  - [x] `LrcParser` and `LrcSerializer` in `:core:domain:lyrics` with full RFC timestamp and metadata support
+  - [x] `saveCustomLyrics` and `exportLyricsToLrc` in `MusicRepository` and `MusicRepositoryImpl`
+  - [x] `importCustomLrc` and `exportCurrentLyrics` in `PlayerViewModel`
+  - [x] Interactive Import LRC dialog and Export action in `PlayerScreen`
+  - [x] Unit test suites in `LrcParserTest`, `LrcSerializerTest`, and `PlayerViewModelTest`
 - [x] Slice gate passed
-- [ ] Final gate passed & tagged: `git tag v4.6-1`
+- [ ] Final gate passed & tagged: `git tag v4.7-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

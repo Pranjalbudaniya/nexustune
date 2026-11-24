@@ -128,6 +128,52 @@ class MusicRepositoryImpl(
         database.lyricsDao().clearAll()
     }
 
+    override suspend fun saveCustomLyrics(
+        trackId: String,
+        title: String,
+        artist: String,
+        lrcContent: String
+    ): MusicResult<TrackLyrics> {
+        val parsed = com.nexus.tune.core.domain.lyrics.LrcParser.parse(lrcContent, trackId)
+        val rawSynced = if (parsed.lines.isNotEmpty()) {
+            parsed.lines.joinToString("\n") { "${it.startTimeMs}:${it.text}" }
+        } else null
+        val plain = if (parsed.lines.isNotEmpty()) parsed.lines.joinToString("\n") { it.text } else lrcContent
+        val cached = database.lyricsDao().getLyrics(trackId)
+
+        database.lyricsDao().insertOrUpdate(
+            com.nexus.tune.core.database.entity.LyricsEntity(
+                trackId = trackId,
+                title = title,
+                artist = artist,
+                plainLyrics = plain,
+                syncedLyricsRaw = rawSynced,
+                userOffsetMs = cached?.userOffsetMs ?: 0L
+            )
+        )
+        return MusicResult.Success(parsed)
+    }
+
+    override suspend fun exportLyricsToLrc(trackId: String): String? {
+        val cached = database.lyricsDao().getLyrics(trackId) ?: return null
+        val lines = cached.syncedLyricsRaw?.split("\n")?.mapNotNull { line ->
+            val parts = line.split(":", limit = 2)
+            if (parts.size == 2) {
+                val ts = parts[0].toLongOrNull()
+                if (ts != null) LyricsLine(ts, parts[1]) else null
+            } else null
+        } ?: emptyList()
+
+        if (lines.isEmpty()) {
+            return cached.plainLyrics
+        }
+        return com.nexus.tune.core.domain.lyrics.LrcSerializer.serialize(
+            lines = lines,
+            title = cached.title,
+            artist = cached.artist
+        )
+    }
+
     override fun getLikedTracks(): Flow<List<Track>> {
         return database.trackDao().getLikedTracks().map { list -> list.map { it.toModel() } }
     }

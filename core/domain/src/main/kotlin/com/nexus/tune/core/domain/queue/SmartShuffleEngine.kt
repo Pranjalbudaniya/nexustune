@@ -68,3 +68,4 @@ object SmartShuffleEngine {
         return listOfNotNull(pinnedTrack) + result
     }
 }
+

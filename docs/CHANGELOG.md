@@ -5,6 +5,13 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.7.0] - 2026-11-24
+
+### Added
+- **Custom Synced LRC Lyrics Import, Export & Offline Storage Engine**: Implemented `LrcParser` and `LrcSerializer` in `:core:domain:lyrics` with support for standard time tags (`[mm:ss.xx]`, `[mm:ss.xxx]`), global time offset tags (`[offset:]`), multi-timestamp line distribution, and metadata tags (`[ti:]`, `[ar:]`, `[al:]`).
+- **Local LRC Persistence**: Added `saveCustomLyrics()` and `exportLyricsToLrc()` in `MusicRepository`, saving imported lyrics into `LyricsDao` (`lyrics_cache`) for full offline availability.
+- **Interactive Player Lyrics Console**: Added "Import LRC" text-entry/paste dialog and "Export LRC" clipboard export action in `PlayerScreen` for seamless custom timing management even when online lyrics are unavailable.
+
 ## [4.6.0] - 2026-11-24
 
 ### Added

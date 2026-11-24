@@ -205,5 +205,28 @@ class PlayerViewModelTest {
 
         coVerify { manageQueueUseCase.shuffleQueue(smartDiversity = true) }
     }
+
+    @Test
+    fun `importCustomLrc delegates to musicRepository and updates lyrics`() = runTest {
+        val track = Track(id = "trk1", title = "Title", artist = "Artist")
+        val lyrics = com.nexus.tune.core.model.TrackLyrics(trackId = "trk1", lines = listOf(LyricsLine(1000L, "Hello")), isSynced = true)
+        coEvery { musicRepository.saveCustomLyrics("trk1", "Title", "Artist", any()) } returns MusicResult.Success(lyrics)
+
+        viewModel.importCustomLrc(track, "[00:01.00] Hello")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { musicRepository.saveCustomLyrics("trk1", "Title", "Artist", "[00:01.00] Hello") }
+        assertEquals(lyrics, viewModel.lyrics.value)
+    }
+
+    @Test
+    fun `exportCurrentLyrics delegates to musicRepository`() = runTest {
+        val track = Track(id = "trk1", title = "Title", artist = "Artist")
+        coEvery { musicRepository.exportLyricsToLrc("trk1") } returns "[00:01.00] Hello"
+
+        val exported = viewModel.exportCurrentLyrics(track)
+        assertEquals("[00:01.00] Hello", exported)
+        coVerify { musicRepository.exportLyricsToLrc("trk1") }
+    }
 }
 

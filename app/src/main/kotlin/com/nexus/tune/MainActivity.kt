@@ -284,7 +284,25 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onCycleRepeatMode = { app.playerController.cycleRepeatMode() },
                                 onSkipPrevious = { app.playerController.seekToPrevious() },
-                                onSkipNext = { app.playerController.seekToNext() }
+                                onSkipNext = { app.playerController.seekToNext() },
+                                onImportLrc = { lrc ->
+                                    playbackState.currentTrack?.let { track ->
+                                        playerViewModel.importCustomLrc(track, lrc)
+                                    }
+                                },
+                                onExportLrc = {
+                                    playbackState.currentTrack?.let { track ->
+                                        lifecycleScope.launch {
+                                            val exported = playerViewModel.exportCurrentLyrics(track)
+                                            if (exported != null) {
+                                                val clipboard = getSystemService(android.content.Context.CLIPBOARD_SERVICE) as? android.content.ClipboardManager
+                                                val clip = android.content.ClipData.newPlainText("Lyrics", exported)
+                                                clipboard?.setPrimaryClip(clip)
+                                                android.widget.Toast.makeText(this@MainActivity, "Lyrics copied to clipboard as .LRC", android.widget.Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                    }
+                                }
                             )
                         }
                     }

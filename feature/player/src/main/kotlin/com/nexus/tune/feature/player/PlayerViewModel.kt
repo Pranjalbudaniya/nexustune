@@ -163,5 +163,18 @@ class PlayerViewModel(
             queueDedupStatus.value = if (count > 0) "Removed $count duplicate tracks from queue" else "Queue has no duplicates"
         }
     }
+
+    fun importCustomLrc(track: Track, lrcContent: String) {
+        viewModelScope.launch {
+            when (val result = musicRepository.saveCustomLyrics(track.id, track.title, track.artist, lrcContent)) {
+                is MusicResult.Success -> _lyrics.value = result.data
+                is MusicResult.Failure -> { /* no-op */ }
+            }
+        }
+    }
+
+    suspend fun exportCurrentLyrics(track: Track): String? {
+        return musicRepository.exportLyricsToLrc(track.id)
+    }
 }
 

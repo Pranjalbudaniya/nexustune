@@ -57,10 +57,14 @@ fun PlayerScreen(
     onToggleShuffle: () -> Unit = {},
     onCycleRepeatMode: () -> Unit = {},
     onSkipPrevious: () -> Unit = {},
-    onSkipNext: () -> Unit = {}
+    onSkipNext: () -> Unit = {},
+    onImportLrc: (String) -> Unit = {},
+    onExportLrc: () -> Unit = {}
 ) {
     val track = playbackState.currentTrack ?: return
     val isPlaying = playbackState.status == PlaybackStatus.PLAYING
+    var showImportLrcDialog by remember { mutableStateOf(false) }
+    var lrcInputText by remember { mutableStateOf("") }
 
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -185,17 +189,31 @@ fun PlayerScreen(
                         val currentMs = (playbackState.positionMs + lyricsOffsetMs).coerceAtLeast(0L)
                         val lines = lyrics?.lines ?: emptyList()
                         if (lines.isEmpty()) {
-                            Text(
-                                text = "Lyrics unavailable for this track.",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(24.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = "Lyrics unavailable for this track.",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Button(onClick = { showImportLrcDialog = true }) {
+                                    Icon(Icons.Rounded.FileUpload, contentDescription = null, modifier = Modifier.size(18.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text("Import .LRC Lyrics")
+                                }
+                            }
                         } else {
                             Column(modifier = Modifier.fillMaxSize()) {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                                        .padding(horizontal = 8.dp, vertical = 4.dp),
                                     horizontalArrangement = Arrangement.Center,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
@@ -203,24 +221,34 @@ fun PlayerScreen(
                                         onClick = { onAdjustLyricsOffset(-100L) },
                                         label = { Text("-100ms") }
                                     )
-                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
                                     Text(
                                         text = if (lyricsOffsetMs >= 0) "+${lyricsOffsetMs}ms" else "${lyricsOffsetMs}ms",
                                         style = MaterialTheme.typography.labelMedium,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
-                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
                                     AssistChip(
                                         onClick = { onAdjustLyricsOffset(100L) },
                                         label = { Text("+100ms") }
                                     )
                                     if (lyricsOffsetMs != 0L) {
-                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Spacer(modifier = Modifier.width(4.dp))
                                         AssistChip(
                                             onClick = { onResetLyricsOffset() },
                                             label = { Text("Reset") }
                                         )
                                     }
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    AssistChip(
+                                        onClick = { showImportLrcDialog = true },
+                                        label = { Text("Import") }
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    AssistChip(
+                                        onClick = onExportLrc,
+                                        label = { Text("Export") }
+                                    )
                                 }
 
                                 LazyColumn(
@@ -575,6 +603,48 @@ fun PlayerScreen(
             }
 
             Spacer(modifier = Modifier.height(24.dp))
+        }
+
+        if (showImportLrcDialog) {
+            AlertDialog(
+                onDismissRequest = { showImportLrcDialog = false },
+                title = { Text("Import LRC Lyrics") },
+                text = {
+                    Column {
+                        Text(
+                            text = "Paste standard timed LRC lines (e.g. [00:15.20] Lyric line):",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedTextField(
+                            value = lrcInputText,
+                            onValueChange = { lrcInputText = it },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(160.dp),
+                            placeholder = { Text("[00:12.50] Line 1\n[00:18.00] Line 2") }
+                        )
+                    }
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            if (lrcInputText.isNotBlank()) {
+                                onImportLrc(lrcInputText)
+                            }
+                            showImportLrcDialog = false
+                        }
+                    ) {
+                        Text("Save & Apply")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showImportLrcDialog = false }) {
+                        Text("Cancel")
+                    }
+                }
+            )
         }
     }
 }

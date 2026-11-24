@@ -90,3 +90,4 @@ class SmartShuffleEngineTest {
         assertEquals(tracks.map { it.id }.toSet(), result.map { it.id }.toSet())
     }
 }
+
