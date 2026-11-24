@@ -231,7 +231,8 @@ data class ThemeConfig(
     val silenceTrimConfig: SilenceTrimConfig = SilenceTrimConfig(),
     val resamplingFilterConfig: ResamplingFilterConfig = ResamplingFilterConfig(),
     val phaseMeterConfig: PhaseMeterConfig = PhaseMeterConfig(),
-    val tiltEqualizerConfig: TiltEqualizerConfig = TiltEqualizerConfig()
+    val tiltEqualizerConfig: TiltEqualizerConfig = TiltEqualizerConfig(),
+    val deClickerConfig: DeClickerConfig = DeClickerConfig()
 )
 
 data class SoundDoseInfo(
@@ -977,6 +978,27 @@ data class TiltBiquadCoefficients(
     val b2: Float,
     val a1: Float,
     val a2: Float
+)
+
+enum class DeClickerMode(val displayName: String, val description: String, val defaultSensitivity: Float) {
+    OFF("Off (Bypass)", "Disable click detection and repair", 0.0f),
+    TRANSPARENT_STREAM("Stream Guard", "Repairs stream buffer glitches and packet ticks without touching transients", 6.0f),
+    VINYL_RESTORATION("Vinyl & Analog", "Removes vinyl surface dust, pops, and tape clicks", 3.5f),
+    HIGH_SENSITIVITY("Max Suppression", "Aggressively repairs all detected sample discontinuities", 2.0f)
+}
+
+data class DeClickerConfig(
+    val isEnabled: Boolean = false,
+    val mode: DeClickerMode = DeClickerMode.TRANSPARENT_STREAM,
+    val sensitivityMultiplier: Float = 3.5f,
+    val maxClickWidthSamples: Int = 8
+)
+
+data class DeClickerMetrics(
+    val clicksRepaired: Int,
+    val peakClickReductionDb: Float,
+    val currentNoiseFloorRms: Float,
+    val statusSummary: String
 )
 
 

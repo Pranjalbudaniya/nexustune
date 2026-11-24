@@ -100,6 +100,10 @@ class SettingsDataStore(private val context: Context) {
         val TILT_EQ_DB = floatPreferencesKey("tilt_eq_db")
         val TILT_EQ_PIVOT_HZ = floatPreferencesKey("tilt_eq_pivot_hz")
         val TILT_EQ_LOUDNESS_COMPENSATE = booleanPreferencesKey("tilt_eq_loudness_compensate")
+        val DECLICKER_ENABLED = booleanPreferencesKey("declicker_enabled")
+        val DECLICKER_MODE = stringPreferencesKey("declicker_mode")
+        val DECLICKER_SENSITIVITY = floatPreferencesKey("declicker_sensitivity")
+        val DECLICKER_MAX_WIDTH = intPreferencesKey("declicker_max_width")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -244,6 +248,14 @@ class SettingsDataStore(private val context: Context) {
                 tiltDb = prefs[PreferencesKeys.TILT_EQ_DB] ?: 0.0f,
                 pivotHz = prefs[PreferencesKeys.TILT_EQ_PIVOT_HZ] ?: 1000.0f,
                 loudnessCompensate = prefs[PreferencesKeys.TILT_EQ_LOUDNESS_COMPENSATE] ?: true
+            ),
+            deClickerConfig = DeClickerConfig(
+                isEnabled = prefs[PreferencesKeys.DECLICKER_ENABLED] ?: false,
+                mode = runCatching {
+                    DeClickerMode.valueOf(prefs[PreferencesKeys.DECLICKER_MODE] ?: DeClickerMode.TRANSPARENT_STREAM.name)
+                }.getOrDefault(DeClickerMode.TRANSPARENT_STREAM),
+                sensitivityMultiplier = prefs[PreferencesKeys.DECLICKER_SENSITIVITY] ?: 3.5f,
+                maxClickWidthSamples = prefs[PreferencesKeys.DECLICKER_MAX_WIDTH] ?: 8
             )
         )
     }
@@ -327,6 +339,10 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.TILT_EQ_DB] = config.tiltEqualizerConfig.tiltDb
             prefs[PreferencesKeys.TILT_EQ_PIVOT_HZ] = config.tiltEqualizerConfig.pivotHz
             prefs[PreferencesKeys.TILT_EQ_LOUDNESS_COMPENSATE] = config.tiltEqualizerConfig.loudnessCompensate
+            prefs[PreferencesKeys.DECLICKER_ENABLED] = config.deClickerConfig.isEnabled
+            prefs[PreferencesKeys.DECLICKER_MODE] = config.deClickerConfig.mode.name
+            prefs[PreferencesKeys.DECLICKER_SENSITIVITY] = config.deClickerConfig.sensitivityMultiplier
+            prefs[PreferencesKeys.DECLICKER_MAX_WIDTH] = config.deClickerConfig.maxClickWidthSamples
         }
     }
 
@@ -382,6 +398,15 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.TILT_EQ_DB] = config.tiltDb
             prefs[PreferencesKeys.TILT_EQ_PIVOT_HZ] = config.pivotHz
             prefs[PreferencesKeys.TILT_EQ_LOUDNESS_COMPENSATE] = config.loudnessCompensate
+        }
+    }
+
+    suspend fun updateDeClickerConfig(config: DeClickerConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.DECLICKER_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.DECLICKER_MODE] = config.mode.name
+            prefs[PreferencesKeys.DECLICKER_SENSITIVITY] = config.sensitivityMultiplier
+            prefs[PreferencesKeys.DECLICKER_MAX_WIDTH] = config.maxClickWidthSamples
         }
     }
 

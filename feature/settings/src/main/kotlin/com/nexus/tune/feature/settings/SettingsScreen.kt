@@ -1393,6 +1393,98 @@ fun SettingsScreen(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(10.dp))
+                ListItem(
+                    headlineContent = { Text("Audiophile Transient De-Clicker") },
+                    supportingContent = { Text("Suppresses micro-ticks, buffer dropouts, and vinyl scratch pops using cubic Hermite splines") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.deClickerConfig.isEnabled,
+                            onCheckedChange = { viewModel.setDeClickerEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.deClickerConfig.isEnabled) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Restoration Mode",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        DeClickerMode.entries.forEach { mode ->
+                            FilterChip(
+                                selected = themeConfig.deClickerConfig.mode == mode,
+                                onClick = { viewModel.setDeClickerMode(mode) },
+                                label = { Text(mode.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Detection Sensitivity: ${String.format(java.util.Locale.US, "%.1fx RMS", themeConfig.deClickerConfig.sensitivityMultiplier)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Max Width: ${themeConfig.deClickerConfig.maxClickWidthSamples} smp",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+
+                    Slider(
+                        value = themeConfig.deClickerConfig.sensitivityMultiplier,
+                        onValueChange = { viewModel.setDeClickerSensitivity(it) },
+                        valueRange = 1.5f..8.0f,
+                        steps = 12,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Text(
+                                text = themeConfig.deClickerConfig.mode.description,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Status: Active Guard",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Spline: C¹ Cubic Hermite",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+                        }
+                    }
+                }
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
                 // --- Gapless Buffer Pre-Loading ---

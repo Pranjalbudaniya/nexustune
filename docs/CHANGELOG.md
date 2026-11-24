@@ -5,6 +5,16 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.16.0] - 2026-11-24
+
+### Added
+- **Audiophile Transient De-Clicker & Micro-Discontinuity Suppressor Studio (`DeClickerEngine`)**: Added `DeClickerMode` (`OFF`, `TRANSPARENT_STREAM`, `VINYL_RESTORATION`, `HIGH_SENSITIVITY`), `DeClickerConfig`, and `DeClickerMetrics` in `:core:model`.
+- **Discrete 2nd-Derivative Impulsive Anomaly Detection & C¹ Cubic Hermite Spline Restoration**: Implemented `DeClickerEngine` in `:core:domain:audio` detecting micro-clicks ($1\dots 8$ samples, $\le 0.18\text{ ms}$) via 2nd-order discrete difference $\Delta^2 x[n] = x[n] - 2x[n-1] + x[n-2]$ against localized RMS floor, seamlessly interpolating through corrupted samples with continuous-tangent cubic Hermite splines to eliminate buffer glitches, packet drop ticks, and vinyl dust pops without touching legitimate musical attacks.
+- **DataStore Persistence**: Added `DECLICKER_ENABLED`, `DECLICKER_MODE`, `DECLICKER_SENSITIVITY`, and `DECLICKER_MAX_WIDTH` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen De-Clicker Studio**: Added interactive "Audiophile Transient De-Clicker" card in `SettingsScreen` under the Hi-Res Audio section with restoration mode chips, sensitivity slider, max click width selector, and live status summary.
+- **Unit Test Coverage**: Comprehensive test suites in `DeClickerEngineTest` in `:core:domain` and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.15.0] - 2026-11-24
 
 ### Added

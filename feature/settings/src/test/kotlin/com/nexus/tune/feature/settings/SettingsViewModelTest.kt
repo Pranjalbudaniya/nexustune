@@ -960,4 +960,31 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { !it.tiltEqualizerConfig.loudnessCompensate })
         }
     }
+
+    @Test
+    fun `de-clicker settings update theme config`() = runTest {
+        viewModel.setDeClickerEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.deClickerConfig.isEnabled })
+        }
+
+        viewModel.setDeClickerMode(DeClickerMode.VINYL_RESTORATION)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.deClickerConfig.mode == DeClickerMode.VINYL_RESTORATION })
+        }
+
+        viewModel.setDeClickerSensitivity(4.5f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.deClickerConfig.sensitivityMultiplier == 4.5f })
+        }
+
+        viewModel.setDeClickerMaxWidth(6)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.deClickerConfig.maxClickWidthSamples == 6 })
+        }
+    }
 }

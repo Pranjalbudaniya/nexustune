@@ -749,4 +749,24 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(tiltEqualizerConfig = current.tiltEqualizerConfig.copy(loudnessCompensate = compensate)))
     }
+
+    fun setDeClickerEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(deClickerConfig = current.deClickerConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setDeClickerMode(mode: DeClickerMode) {
+        val current = themeConfig.value
+        updateTheme(current.copy(deClickerConfig = current.deClickerConfig.copy(mode = mode, sensitivityMultiplier = mode.defaultSensitivity)))
+    }
+
+    fun setDeClickerSensitivity(sensitivity: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(deClickerConfig = current.deClickerConfig.copy(sensitivityMultiplier = sensitivity.coerceIn(1.5f, 10.0f))))
+    }
+
+    fun setDeClickerMaxWidth(maxWidth: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(deClickerConfig = current.deClickerConfig.copy(maxClickWidthSamples = maxWidth.coerceIn(1, 16))))
+    }
 }

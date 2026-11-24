@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 65 (v6.15.0 Audiophile Tilt Equalizer & Tonal Balance Shifter Studio)
+- Active Phase: Post-v1.0 Improvement Loop 66 (v6.16.0 Audiophile Transient De-Clicker & Micro-Discontinuity Suppressor Studio)
 - In Flight: Quality gate execution and release qualification
 - Branches: `main`
 
@@ -623,6 +623,17 @@
     - [x] Comprehensive test suites in `TiltEqualizerEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.15-1`
+
+- [x] Improvement Loop 66 (v6.16 Milestone - Tagged `v6.16-1`)
+  - [x] Audiophile Transient De-Clicker & Micro-Discontinuity Suppressor Studio (`DeClickerEngine`):
+    - [x] `DeClickerMode`, `DeClickerConfig`, and `DeClickerMetrics` in `:core:model`
+    - [x] `DeClickerEngine` in `:core:domain:audio` with 2nd-derivative impulsive peak detection ($\Delta^2 x[n]$), dynamic localized RMS noise floor tracking, and $C^1$ cubic Hermite spline reconstruction
+    - [x] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
+    - [x] `SettingsViewModel` de-clicker control methods
+    - [x] Interactive "Audiophile Transient De-Clicker" studio card in `SettingsScreen`
+    - [x] Comprehensive test suites in `DeClickerEngineTest` and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v6.16-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.
