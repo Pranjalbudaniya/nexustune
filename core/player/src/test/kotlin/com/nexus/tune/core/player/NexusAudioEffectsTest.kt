@@ -256,5 +256,14 @@ class NexusAudioEffectsTest {
         audioEffects.clearHornDiffuserOffset()
         assertEquals(0, audioEffects.getHornDiffuserOffset())
     }
+
+    @Test
+    fun `bass attack offset can be applied and cleared`() {
+        audioEffects.applyBassAttackOffset(125)
+        assertEquals(125, audioEffects.getBassAttackOffset())
+
+        audioEffects.clearBassAttackOffset()
+        assertEquals(0, audioEffects.getBassAttackOffset())
+    }
 }
 

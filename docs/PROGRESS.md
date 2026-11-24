@@ -860,17 +860,29 @@
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.35-1`
 
-- [ ] Improvement Loop 86 (v6.36 Milestone - In Flight)
-  - [ ] Audiophile Dynamic Multiband Sub-Bass Transient Punch & Attack Reshaper Studio (`BassAttackReshaperEngine`):
-    - [ ] `BassAttackTarget`, `BassReshaperMode`, `BassAttackPreset`, `BassAttackReshaperConfig`, and `BassAttackReshaperMetrics` in `:core:model`
-    - [ ] `BassAttackReshaperEngine` in `:core:domain:audio` with 2nd-order Linkwitz-Riley lowpass crossover (<160 Hz), dual envelope detection (attack $\tau_{att}\approx 6\text{ ms}$, sustain $\tau_{rel}\approx 180\text{ ms}$), dynamic attack ratio multiplier, and sustain tail damping
-    - [ ] Hardware equalizer integration in `NexusAudioEffects` (`applyBassAttackOffset`, `clearBassAttackOffset`, `getBassAttackOffset`) targeting Bands 0 & 1
+- [x] Improvement Loop 86 (v6.36 Milestone - Tagged `v6.36-1`)
+  - [x] Audiophile Dynamic Multiband Sub-Bass Transient Punch & Attack Reshaper Studio (`BassAttackReshaperEngine`):
+    - [x] `BassAttackTarget`, `BassReshaperMode`, `BassAttackPreset`, `BassAttackReshaperConfig`, and `BassAttackReshaperMetrics` in `:core:model`
+    - [x] `BassAttackReshaperEngine` in `:core:domain:audio` with 2nd-order Linkwitz-Riley lowpass crossover (<160 Hz), dual envelope detection (attack $\tau_{att}\approx 6\text{ ms}$, sustain $\tau_{rel}\approx 180\text{ ms}$), dynamic attack ratio multiplier, and sustain tail damping
+    - [x] Hardware equalizer integration in `NexusAudioEffects` (`applyBassAttackOffset`, `clearBassAttackOffset`, `getBassAttackOffset`) targeting Bands 0 & 1
+    - [x] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
+    - [x] `SettingsViewModel` bass attack reshaper control methods
+    - [x] Interactive "Dynamic Sub-Bass Transient Punch & Attack Reshaper Studio" card in `SettingsScreen` in dedicated `item { ... }` block
+    - [x] Comprehensive test suites in `BassAttackReshaperEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v6.36-1`
+
+- [ ] Improvement Loop 87 (v6.37 Milestone - In Flight)
+  - [ ] Audiophile Dynamic Mid-Side Spatial Phase Decorrelator & Ambience Diffuser Studio (`SpatialDecorrelatorEngine`):
+    - [ ] `DecorrelatorStage`, `DecorrelatorMode`, `DecorrelatorPreset`, `SpatialDecorrelatorConfig`, and `SpatialDecorrelatorMetrics` in `:core:model`
+    - [ ] `SpatialDecorrelatorEngine` in `:core:domain:audio` with mid/side matrix separation, prime-number delay all-pass filter cascade, dynamic mono-compatibility safeguarding, and correlation index estimation
+    - [ ] Hardware equalizer integration in `NexusAudioEffects` (`applyDecorrelatorOffset`, `clearDecorrelatorOffset`, `getDecorrelatorOffset`) targeting Bands 1 & 3
     - [ ] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
-    - [ ] `SettingsViewModel` bass attack reshaper control methods
-    - [ ] Interactive "Dynamic Sub-Bass Transient Punch & Attack Reshaper Studio" card in `SettingsScreen` in dedicated `item { ... }` block
-    - [ ] Comprehensive test suites in `BassAttackReshaperEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
+    - [ ] `SettingsViewModel` spatial decorrelator control methods
+    - [ ] Interactive "Dynamic Mid-Side Spatial Phase Decorrelator & Ambience Diffuser Studio" card in `SettingsScreen` in dedicated `item { ... }` block
+    - [ ] Comprehensive test suites in `SpatialDecorrelatorEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
   - [ ] Slice gate passed
-  - [ ] Final gate passed & tagged: `v6.36-1`
+  - [ ] Final gate passed & tagged: `v6.37-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

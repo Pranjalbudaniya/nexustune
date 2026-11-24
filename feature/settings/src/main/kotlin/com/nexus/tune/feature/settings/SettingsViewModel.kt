@@ -1580,4 +1580,67 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(hornDiffuserConfig = current.hornDiffuserConfig.copy(horizontalCoverageAngle = angle.coerceIn(45, 120))))
     }
+
+    fun setBassAttackReshaperEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(bassAttackReshaperConfig = current.bassAttackReshaperConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setBassAttackPreset(preset: BassAttackPreset) {
+        val current = themeConfig.value
+        val isEnabled = preset != BassAttackPreset.OFF
+        val engine = com.nexus.tune.core.domain.audio.BassAttackReshaperEngine()
+        val mapped = engine.presetToConfig(preset)
+        updateTheme(
+            current.copy(
+                bassAttackReshaperConfig = current.bassAttackReshaperConfig.copy(
+                    isEnabled = isEnabled,
+                    preset = preset,
+                    target = mapped.target,
+                    mode = mapped.mode,
+                    attackPunchMultiplier = mapped.attackPunchMultiplier,
+                    sustainDampingPercent = mapped.sustainDampingPercent,
+                    crossoverFrequencyHz = mapped.crossoverFrequencyHz,
+                    soloAttackTransient = mapped.soloAttackTransient
+                )
+            )
+        )
+    }
+
+    fun setBassAttackTarget(target: BassAttackTarget) {
+        val current = themeConfig.value
+        updateTheme(
+            current.copy(
+                bassAttackReshaperConfig = current.bassAttackReshaperConfig.copy(
+                    target = target,
+                    crossoverFrequencyHz = target.cutoffHz
+                )
+            )
+        )
+    }
+
+    fun setBassReshaperMode(mode: BassReshaperMode) {
+        val current = themeConfig.value
+        updateTheme(current.copy(bassAttackReshaperConfig = current.bassAttackReshaperConfig.copy(mode = mode)))
+    }
+
+    fun setBassAttackPunchMultiplier(multiplier: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(bassAttackReshaperConfig = current.bassAttackReshaperConfig.copy(attackPunchMultiplier = multiplier.coerceIn(1.0f, 2.5f))))
+    }
+
+    fun setBassSustainDampingPercent(percent: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(bassAttackReshaperConfig = current.bassAttackReshaperConfig.copy(sustainDampingPercent = percent.coerceIn(0, 100))))
+    }
+
+    fun setBassCrossoverFrequencyHz(freqHz: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(bassAttackReshaperConfig = current.bassAttackReshaperConfig.copy(crossoverFrequencyHz = freqHz.coerceIn(30.0f, 250.0f))))
+    }
+
+    fun setBassSoloAttackTransient(solo: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(bassAttackReshaperConfig = current.bassAttackReshaperConfig.copy(soloAttackTransient = solo)))
+    }
 }

@@ -5,6 +5,17 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.36.0] - 2026-11-24
+
+### Added
+- **Audiophile Dynamic Multiband Sub-Bass Transient Punch & Attack Reshaper Studio (`BassAttackReshaperEngine`)**: Added `BassAttackTarget` (`SUB_KICK_60HZ`, `PUNCHY_BASS_80HZ`, `ACOUSTIC_UPRIGHT_100HZ`, `SLAP_BASS_120HZ`, `FULL_LOW_160HZ`), `BassReshaperMode` (`DYNAMIC_ATTACK_BOOST`, `SUSTAIN_TAIL_DAMP`, `BALANCED_TRANSIENT_PUNCH`, `SOLO_ATTACK_TRANSIENT`), `BassAttackPreset` (`OFF`, `TIGHT_KICK_IMPACT`, `DE_BOOM_SUSTAIN`, `ACOUSTIC_JAZZ_BASS`, `HARDSTYLE_SUB_SLAP`), `BassAttackReshaperConfig`, and `BassAttackReshaperMetrics` in `:core:model`.
+- **Sub-Bass Transient Punch & Sustain Damping DSP**: Implemented `BassAttackReshaperEngine` in `:core:domain:audio`. Features a discrete 2nd-order Linkwitz-Riley lowpass crossover isolating the sub-bass spectrum ($<160\text{ Hz}$), a dual envelope follower architecture tracking fast transient attack onset ($\tau_{att} \approx 6\text{ ms}$) and slow resonant sustain tail decay ($\tau_{rel} \approx 180\text{ ms}$), dynamic attack velocity multiplier boosting low-end punch without boomy mud, sustain tail resonance damping, and solo audition mode for isolated sub-bass transient impact.
+- **Hardware Equalizer Integration**: Added `applyBassAttackOffset`, `clearBassAttackOffset`, and `getBassAttackOffset` targeting Bands 0 & 1 in `NexusAudioEffects` in `:core:player` for physical hardware sub-bass impact amplification.
+- **DataStore Persistence**: Added `BASS_ATTACK_ENABLED`, `BASS_ATTACK_PRESET`, `BASS_ATTACK_TARGET`, `BASS_ATTACK_MODE`, `BASS_ATTACK_PUNCH_MULTIPLIER`, `BASS_ATTACK_SUSTAIN_DAMPING`, `BASS_ATTACK_CROSSOVER_HZ`, and `BASS_ATTACK_SOLO` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Bass Attack Reshaper Studio**: Added interactive "Sub-Bass Punch & Attack Reshaper" card in its own dedicated `item { ... }` block in `SettingsScreen` with preset chips, target sub-bass frequency chips, mode chips, attack punch velocity slider, sustain resonance damping slider, crossover frequency slider, solo audition toggle, and real-time sub-bass transient attack & sustain HUD.
+- **Unit Test Coverage**: Comprehensive test suites in `BassAttackReshaperEngineTest` in `:core:domain`, `NexusAudioEffectsTest` in `:core:player`, and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.35.0] - 2026-11-24
 
 ### Added

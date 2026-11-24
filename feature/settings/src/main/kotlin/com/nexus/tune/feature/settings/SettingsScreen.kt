@@ -32,6 +32,7 @@ import com.nexus.tune.core.domain.audio.MonoBassAlignEngine
 import com.nexus.tune.core.domain.audio.PreampNoiseFlattenerEngine
 import com.nexus.tune.core.domain.audio.SlewRateLimiterEngine
 import com.nexus.tune.core.domain.audio.HornDiffuserEngine
+import com.nexus.tune.core.domain.audio.BassAttackReshaperEngine
 import com.nexus.tune.core.ui.EqCurveVisualizer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -4553,6 +4554,217 @@ fun SettingsScreen(
                                 )
                                 Text(
                                     text = "Coverage: ${hornMetrics.horizontalCoverageAngle}°",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            }
+
+            item {
+                // --- Dynamic Sub-Bass Transient Punch & Attack Reshaper Studio ---
+                Text(
+                    text = "Sub-Bass Punch & Attack Reshaper",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                ListItem(
+                    headlineContent = { Text("Sub-Bass Transient Punch & Attack Reshaper") },
+                    supportingContent = { Text("Multiband Linkwitz-Riley crossover, transient onset punch amplifier, and resonant sustain damping") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.bassAttackReshaperConfig.isEnabled,
+                            onCheckedChange = { viewModel.setBassAttackReshaperEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.bassAttackReshaperConfig.isEnabled) {
+                    val bassMetrics = remember(themeConfig.bassAttackReshaperConfig) {
+                        BassAttackReshaperEngine().estimateMetrics(
+                            floatArrayOf(0.7f, -0.5f, 0.3f, 0.05f),
+                            themeConfig.bassAttackReshaperConfig
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Sub-Bass Attack Preset",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        BassAttackPreset.entries.forEach { preset ->
+                            FilterChip(
+                                selected = themeConfig.bassAttackReshaperConfig.preset == preset,
+                                onClick = { viewModel.setBassAttackPreset(preset) },
+                                label = { Text(preset.label) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Target Sub-Bass Frequency",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        BassAttackTarget.entries.forEach { target ->
+                            FilterChip(
+                                selected = themeConfig.bassAttackReshaperConfig.target == target,
+                                onClick = { viewModel.setBassAttackTarget(target) },
+                                label = { Text(target.label) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Reshaper Processing Mode",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        BassReshaperMode.entries.forEach { mode ->
+                            FilterChip(
+                                selected = themeConfig.bassAttackReshaperConfig.mode == mode,
+                                onClick = { viewModel.setBassReshaperMode(mode) },
+                                label = { Text(mode.label) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Attack Punch Velocity: ${String.format(java.util.Locale.US, "%.2fx", themeConfig.bassAttackReshaperConfig.attackPunchMultiplier)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Ratio: ${bassMetrics.attackVelocityRatio}x",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.bassAttackReshaperConfig.attackPunchMultiplier,
+                        onValueChange = { viewModel.setBassAttackPunchMultiplier(it) },
+                        valueRange = 1.0f..2.5f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Sustain Tail Resonance Damping: ${themeConfig.bassAttackReshaperConfig.sustainDampingPercent}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "-${bassMetrics.sustainDampingDb} dB",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.bassAttackReshaperConfig.sustainDampingPercent.toFloat(),
+                        onValueChange = { viewModel.setBassSustainDampingPercent(it.toInt()) },
+                        valueRange = 0.0f..100.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Sub-Bass Crossover Frequency: ${themeConfig.bassAttackReshaperConfig.crossoverFrequencyHz.toInt()} Hz",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.bassAttackReshaperConfig.crossoverFrequencyHz,
+                        onValueChange = { viewModel.setBassCrossoverFrequencyHz(it) },
+                        valueRange = 30.0f..250.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    ListItem(
+                        headlineContent = { Text("Solo Transient Attack Audition") },
+                        supportingContent = { Text("Isolate and listen only to the dynamic transient kick impact") },
+                        trailingContent = {
+                            Switch(
+                                checked = themeConfig.bassAttackReshaperConfig.soloAttackTransient,
+                                onCheckedChange = { viewModel.setBassSoloAttackTransient(it) }
+                            )
+                        }
+                    )
+
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = "SUB-BASS TRANSIENT ATTACK & SUSTAIN HUD",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Impact: ${bassMetrics.transientPunchRating}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Tail Damping: -${bassMetrics.sustainDampingDb} dB",
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.secondary

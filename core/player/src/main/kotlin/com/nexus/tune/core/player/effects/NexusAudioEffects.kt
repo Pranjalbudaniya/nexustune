@@ -39,6 +39,7 @@ class NexusAudioEffects {
     private var preampTiltOffset: Int = 0
     private var slewRateOffset: Int = 0
     private var hornDiffuserOffset: Int = 0
+    private var bassAttackOffset: Int = 0
 
     fun attachToAudioSession(sessionId: Int) {
         if (sessionId == 0 || sessionId == currentSessionId) return
@@ -467,6 +468,18 @@ class NexusAudioEffects {
 
     fun getHornDiffuserOffset(): Int = hornDiffuserOffset
 
+    fun applyBassAttackOffset(offset: Int) {
+        bassAttackOffset = offset
+        refreshBands()
+    }
+
+    fun clearBassAttackOffset() {
+        bassAttackOffset = 0
+        refreshBands()
+    }
+
+    fun getBassAttackOffset(): Int = bassAttackOffset
+
     fun setBassBoostStrength(strength: Short) {
         try {
             bassBoost?.setStrength(strength)
@@ -501,7 +514,8 @@ class NexusAudioEffects {
                 val preampOffset = if (i == 4) preampTiltOffset else 0
                 val slewOffset = if (i == 3 || i == 4) (slewRateOffset * (if (i == 4) 1.0f else 0.7f)).toInt() else 0
                 val hornOffset = if (i == 2 || i == 4) (hornDiffuserOffset * (if (i == 2) 1.0f else 0.8f)).toInt() else 0
-                val combined = (base + kOffset + hOffset + sOffset + dOffset + tOffset + mOffset + aOffset + sHarmonicOffset + deEssOffset + tubeOffset + transientOffset + spatialOffset + tapeOffset + humOffset + feedbackOffset + elevationOffset + monoBassOffset + preampOffset + slewOffset + hornOffset).coerceIn(-1500, 1500)
+                val bassAttack = if (i == 0 || i == 1) (bassAttackOffset * (if (i == 0) 1.0f else 0.7f)).toInt() else 0
+                val combined = (base + kOffset + hOffset + sOffset + dOffset + tOffset + mOffset + aOffset + sHarmonicOffset + deEssOffset + tubeOffset + transientOffset + spatialOffset + tapeOffset + humOffset + feedbackOffset + elevationOffset + monoBassOffset + preampOffset + slewOffset + hornOffset + bassAttack).coerceIn(-1500, 1500)
                 eq.setBandLevel(i.toShort(), combined.toShort())
             }
         } catch (e: Exception) {

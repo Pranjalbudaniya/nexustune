@@ -251,7 +251,8 @@ data class ThemeConfig(
     val monoBassAlignConfig: MonoBassAlignConfig = MonoBassAlignConfig(),
     val preampNoiseFlattenerConfig: PreampNoiseFlattenerConfig = PreampNoiseFlattenerConfig(),
     val slewRateLimiterConfig: SlewRateLimiterConfig = SlewRateLimiterConfig(),
-    val hornDiffuserConfig: HornDiffuserConfig = HornDiffuserConfig()
+    val hornDiffuserConfig: HornDiffuserConfig = HornDiffuserConfig(),
+    val bassAttackReshaperConfig: BassAttackReshaperConfig = BassAttackReshaperConfig()
 )
 
 data class SoundDoseInfo(
@@ -1915,6 +1916,48 @@ data class HornDiffuserMetrics(
     val horizontalCoverageAngle: Int,
     val hornLoadingRating: String
 )
+
+enum class BassAttackTarget(val label: String, val cutoffHz: Float) {
+    SUB_KICK_60HZ("Sub Kick (60 Hz)", 60.0f),
+    PUNCHY_BASS_80HZ("Punchy Bass (80 Hz)", 80.0f),
+    ACOUSTIC_UPRIGHT_100HZ("Acoustic Upright (100 Hz)", 100.0f),
+    SLAP_BASS_120HZ("Slap Bass (120 Hz)", 120.0f),
+    FULL_LOW_160HZ("Full Low-End (160 Hz)", 160.0f)
+}
+
+enum class BassReshaperMode(val label: String) {
+    DYNAMIC_ATTACK_BOOST("Dynamic Attack Boost"),
+    SUSTAIN_TAIL_DAMP("Sustain Tail Damping"),
+    BALANCED_TRANSIENT_PUNCH("Balanced Transient Punch"),
+    SOLO_ATTACK_TRANSIENT("Solo Attack Transient Audition")
+}
+
+enum class BassAttackPreset(val label: String) {
+    OFF("Bypass / Off"),
+    TIGHT_KICK_IMPACT("Tight Kick Impact"),
+    DE_BOOM_SUSTAIN("De-Boom & Tighten"),
+    ACOUSTIC_JAZZ_BASS("Acoustic Jazz Definition"),
+    HARDSTYLE_SUB_SLAP("Hardstyle Sub Slap")
+}
+
+data class BassAttackReshaperConfig(
+    val isEnabled: Boolean = false,
+    val preset: BassAttackPreset = BassAttackPreset.OFF,
+    val target: BassAttackTarget = BassAttackTarget.SUB_KICK_60HZ,
+    val mode: BassReshaperMode = BassReshaperMode.BALANCED_TRANSIENT_PUNCH,
+    val attackPunchMultiplier: Float = 1.35f,
+    val sustainDampingPercent: Int = 45,
+    val crossoverFrequencyHz: Float = 90.0f,
+    val soloAttackTransient: Boolean = false
+)
+
+data class BassAttackReshaperMetrics(
+    val attackVelocityRatio: Float,
+    val sustainDampingDb: Float,
+    val transientPunchRating: String,
+    val isTransientActive: Boolean
+)
+
 
 
 

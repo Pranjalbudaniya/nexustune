@@ -1725,4 +1725,58 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.hornDiffuserConfig.horizontalCoverageAngle == 105 })
         }
     }
+
+    @Test
+    fun `bass attack reshaper controls update theme config properly`() = runTest {
+        viewModel.setBassAttackReshaperEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.bassAttackReshaperConfig.isEnabled })
+        }
+
+        viewModel.setBassAttackPreset(BassAttackPreset.TIGHT_KICK_IMPACT)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match {
+                it.bassAttackReshaperConfig.preset == BassAttackPreset.TIGHT_KICK_IMPACT &&
+                        it.bassAttackReshaperConfig.target == BassAttackTarget.SUB_KICK_60HZ
+            })
+        }
+
+        viewModel.setBassAttackTarget(BassAttackTarget.PUNCHY_BASS_80HZ)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.bassAttackReshaperConfig.target == BassAttackTarget.PUNCHY_BASS_80HZ })
+        }
+
+        viewModel.setBassReshaperMode(BassReshaperMode.SUSTAIN_TAIL_DAMP)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.bassAttackReshaperConfig.mode == BassReshaperMode.SUSTAIN_TAIL_DAMP })
+        }
+
+        viewModel.setBassAttackPunchMultiplier(1.75f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.bassAttackReshaperConfig.attackPunchMultiplier == 1.75f })
+        }
+
+        viewModel.setBassSustainDampingPercent(60)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.bassAttackReshaperConfig.sustainDampingPercent == 60 })
+        }
+
+        viewModel.setBassCrossoverFrequencyHz(110.0f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.bassAttackReshaperConfig.crossoverFrequencyHz == 110.0f })
+        }
+
+        viewModel.setBassSoloAttackTransient(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.bassAttackReshaperConfig.soloAttackTransient })
+        }
+    }
 }

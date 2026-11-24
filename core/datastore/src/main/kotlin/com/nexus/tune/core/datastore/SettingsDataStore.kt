@@ -216,6 +216,14 @@ class SettingsDataStore(private val context: Context) {
         val HORN_DIFFUSER_INTENSITY = floatPreferencesKey("horn_diffuser_intensity")
         val HORN_DIFFUSER_ANTI_RESONANCE_DB = floatPreferencesKey("horn_diffuser_anti_resonance_db")
         val HORN_DIFFUSER_COVERAGE_ANGLE = intPreferencesKey("horn_diffuser_coverage_angle")
+        val BASS_ATTACK_ENABLED = booleanPreferencesKey("bass_attack_enabled")
+        val BASS_ATTACK_PRESET = stringPreferencesKey("bass_attack_preset")
+        val BASS_ATTACK_TARGET = stringPreferencesKey("bass_attack_target")
+        val BASS_ATTACK_MODE = stringPreferencesKey("bass_attack_mode")
+        val BASS_ATTACK_PUNCH_MULTIPLIER = floatPreferencesKey("bass_attack_punch_multiplier")
+        val BASS_ATTACK_SUSTAIN_DAMPING = intPreferencesKey("bass_attack_sustain_damping")
+        val BASS_ATTACK_CROSSOVER_HZ = floatPreferencesKey("bass_attack_crossover_hz")
+        val BASS_ATTACK_SOLO = booleanPreferencesKey("bass_attack_solo")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -602,6 +610,22 @@ class SettingsDataStore(private val context: Context) {
                 flareIntensity = prefs[PreferencesKeys.HORN_DIFFUSER_INTENSITY] ?: 0.7f,
                 throatAntiResonanceDb = prefs[PreferencesKeys.HORN_DIFFUSER_ANTI_RESONANCE_DB] ?: -3.0f,
                 horizontalCoverageAngle = prefs[PreferencesKeys.HORN_DIFFUSER_COVERAGE_ANGLE] ?: 90
+            ),
+            bassAttackReshaperConfig = BassAttackReshaperConfig(
+                isEnabled = prefs[PreferencesKeys.BASS_ATTACK_ENABLED] ?: false,
+                preset = runCatching {
+                    BassAttackPreset.valueOf(prefs[PreferencesKeys.BASS_ATTACK_PRESET] ?: BassAttackPreset.OFF.name)
+                }.getOrDefault(BassAttackPreset.OFF),
+                target = runCatching {
+                    BassAttackTarget.valueOf(prefs[PreferencesKeys.BASS_ATTACK_TARGET] ?: BassAttackTarget.SUB_KICK_60HZ.name)
+                }.getOrDefault(BassAttackTarget.SUB_KICK_60HZ),
+                mode = runCatching {
+                    BassReshaperMode.valueOf(prefs[PreferencesKeys.BASS_ATTACK_MODE] ?: BassReshaperMode.BALANCED_TRANSIENT_PUNCH.name)
+                }.getOrDefault(BassReshaperMode.BALANCED_TRANSIENT_PUNCH),
+                attackPunchMultiplier = prefs[PreferencesKeys.BASS_ATTACK_PUNCH_MULTIPLIER] ?: 1.35f,
+                sustainDampingPercent = prefs[PreferencesKeys.BASS_ATTACK_SUSTAIN_DAMPING] ?: 45,
+                crossoverFrequencyHz = prefs[PreferencesKeys.BASS_ATTACK_CROSSOVER_HZ] ?: 90.0f,
+                soloAttackTransient = prefs[PreferencesKeys.BASS_ATTACK_SOLO] ?: false
             )
         )
     }
@@ -801,6 +825,14 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.HORN_DIFFUSER_INTENSITY] = config.hornDiffuserConfig.flareIntensity
             prefs[PreferencesKeys.HORN_DIFFUSER_ANTI_RESONANCE_DB] = config.hornDiffuserConfig.throatAntiResonanceDb
             prefs[PreferencesKeys.HORN_DIFFUSER_COVERAGE_ANGLE] = config.hornDiffuserConfig.horizontalCoverageAngle
+            prefs[PreferencesKeys.BASS_ATTACK_ENABLED] = config.bassAttackReshaperConfig.isEnabled
+            prefs[PreferencesKeys.BASS_ATTACK_PRESET] = config.bassAttackReshaperConfig.preset.name
+            prefs[PreferencesKeys.BASS_ATTACK_TARGET] = config.bassAttackReshaperConfig.target.name
+            prefs[PreferencesKeys.BASS_ATTACK_MODE] = config.bassAttackReshaperConfig.mode.name
+            prefs[PreferencesKeys.BASS_ATTACK_PUNCH_MULTIPLIER] = config.bassAttackReshaperConfig.attackPunchMultiplier
+            prefs[PreferencesKeys.BASS_ATTACK_SUSTAIN_DAMPING] = config.bassAttackReshaperConfig.sustainDampingPercent
+            prefs[PreferencesKeys.BASS_ATTACK_CROSSOVER_HZ] = config.bassAttackReshaperConfig.crossoverFrequencyHz
+            prefs[PreferencesKeys.BASS_ATTACK_SOLO] = config.bassAttackReshaperConfig.soloAttackTransient
         }
     }
 
@@ -1072,6 +1104,19 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.HORN_DIFFUSER_INTENSITY] = config.flareIntensity
             prefs[PreferencesKeys.HORN_DIFFUSER_ANTI_RESONANCE_DB] = config.throatAntiResonanceDb
             prefs[PreferencesKeys.HORN_DIFFUSER_COVERAGE_ANGLE] = config.horizontalCoverageAngle
+        }
+    }
+
+    suspend fun updateBassAttackReshaperConfig(config: BassAttackReshaperConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.BASS_ATTACK_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.BASS_ATTACK_PRESET] = config.preset.name
+            prefs[PreferencesKeys.BASS_ATTACK_TARGET] = config.target.name
+            prefs[PreferencesKeys.BASS_ATTACK_MODE] = config.mode.name
+            prefs[PreferencesKeys.BASS_ATTACK_PUNCH_MULTIPLIER] = config.attackPunchMultiplier
+            prefs[PreferencesKeys.BASS_ATTACK_SUSTAIN_DAMPING] = config.sustainDampingPercent
+            prefs[PreferencesKeys.BASS_ATTACK_CROSSOVER_HZ] = config.crossoverFrequencyHz
+            prefs[PreferencesKeys.BASS_ATTACK_SOLO] = config.soloAttackTransient
         }
     }
 
