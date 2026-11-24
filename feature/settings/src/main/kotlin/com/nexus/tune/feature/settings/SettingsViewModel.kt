@@ -557,4 +557,24 @@ class SettingsViewModel(
     fun setDjRememberAcrossTracks(remember: Boolean) {
         updateTheme(themeConfig.value.copy(djRememberAcrossTracks = remember))
     }
+
+    fun setAutoStashEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(autoStashConfig = current.autoStashConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setAutoStashBudgetMb(budgetMb: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(autoStashConfig = current.autoStashConfig.copy(storageBudgetMb = budgetMb)))
+    }
+
+    fun setAutoStashStrategy(strategy: AutoStashStrategy) {
+        val current = themeConfig.value
+        updateTheme(current.copy(autoStashConfig = current.autoStashConfig.copy(strategy = strategy)))
+    }
+
+    fun setAutoStashWifiOnly(wifiOnly: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(autoStashConfig = current.autoStashConfig.copy(wifiOnly = wifiOnly)))
+    }
 }

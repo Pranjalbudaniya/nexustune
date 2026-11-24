@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 52 (v6.2.0 Real-Time Center-Channel Vocal Attenuation & Karaoke Sing-Along Studio)
+- Active Phase: Post-v1.0 Improvement Loop 53 (v6.3.0 Smart Offline Cache Auto-Stash & Predictive Storage Budget Optimization Engine)
 - In Flight: Quality gate execution and release qualification
 - Branches: `main`
 
@@ -465,7 +465,7 @@
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.1-1`
 
-- [x] Improvement Loop 52 (v6.2 Milestone - In Progress)
+- [x] Improvement Loop 52 (v6.2 Milestone - Tagged `v6.2-1`)
   - [x] Real-Time Center-Channel Vocal Attenuation & Karaoke Sing-Along Studio:
     - [x] `VocalCutLevel`, `KaraokeReverb`, `KaraokeConfig`, and `KaraokeLyricProgress` in `:core:model`
     - [x] `KaraokeEngine` in `:core:domain:audio` with linear gain conversions, 5-band vocal notch EQ offsets, chromatic pitch conversion, and real-time lyric progress calculation
@@ -474,8 +474,19 @@
     - [x] Interactive top-bar `🎤` action and `ModalBottomSheet` Karaoke Studio Console in `PlayerScreen`
     - [x] Settings integration card in `SettingsScreen`
     - [x] Comprehensive test suites in `KaraokeEngineTest` and `PlayerViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v6.2-1`
+
+- [x] Improvement Loop 53 (v6.3 Milestone - In Progress)
+  - [x] Smart Offline Cache Auto-Stash & Predictive Storage Budget Optimization Engine:
+    - [x] `AutoStashStrategy`, `AutoStashNetworkPolicy`, `AutoStashCandidate`, `AutoStashConfig`, and `AutoStashReport` in `:core:model`
+    - [x] `AutoStashEvaluator` in `:core:domain:offline` with candidate scoring, knapsack byte budget packing, and eviction identification
+    - [x] `SettingsDataStore` preferences and persistence in `ThemeConfig`
+    - [x] `SettingsViewModel` auto-stash configuration methods
+    - [x] Interactive "⚡ Smart Offline Auto-Stash" dashboard card in `SettingsScreen`
+    - [x] Unit test suites in `AutoStashEvaluatorTest` and `SettingsViewModelTest`
   - [ ] Slice gate
-  - [ ] Final gate & tag: `v6.2-1`
+  - [ ] Final gate & tag: `v6.3-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

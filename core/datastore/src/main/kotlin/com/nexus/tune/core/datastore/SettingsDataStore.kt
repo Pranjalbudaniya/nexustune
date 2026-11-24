@@ -66,6 +66,10 @@ class SettingsDataStore(private val context: Context) {
         val CUSTOM_SMART_PLAYLISTS = stringPreferencesKey("custom_smart_playlists_json")
         val VISUALIZER_MODE = stringPreferencesKey("theme_visualizer_mode")
         val VISUALIZER_PALETTE = stringPreferencesKey("theme_visualizer_palette")
+        val AUTO_STASH_ENABLED = booleanPreferencesKey("auto_stash_enabled")
+        val AUTO_STASH_BUDGET_MB = intPreferencesKey("auto_stash_budget_mb")
+        val AUTO_STASH_STRATEGY = stringPreferencesKey("auto_stash_strategy")
+        val AUTO_STASH_WIFI_ONLY = booleanPreferencesKey("auto_stash_wifi_only")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -138,7 +142,15 @@ class SettingsDataStore(private val context: Context) {
             }.getOrDefault(VisualizerMode.SPECTRUM_BARS),
             visualizerPalette = runCatching {
                 VisualizerPalette.valueOf(prefs[PreferencesKeys.VISUALIZER_PALETTE] ?: VisualizerPalette.DYNAMIC.name)
-            }.getOrDefault(VisualizerPalette.DYNAMIC)
+            }.getOrDefault(VisualizerPalette.DYNAMIC),
+            autoStashConfig = AutoStashConfig(
+                isEnabled = prefs[PreferencesKeys.AUTO_STASH_ENABLED] ?: false,
+                storageBudgetMb = prefs[PreferencesKeys.AUTO_STASH_BUDGET_MB] ?: 1000,
+                strategy = runCatching {
+                    AutoStashStrategy.valueOf(prefs[PreferencesKeys.AUTO_STASH_STRATEGY] ?: AutoStashStrategy.BALANCED_HYBRID.name)
+                }.getOrDefault(AutoStashStrategy.BALANCED_HYBRID),
+                wifiOnly = prefs[PreferencesKeys.AUTO_STASH_WIFI_ONLY] ?: true
+            )
         )
     }
 
@@ -187,6 +199,10 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.DJ_REMEMBER_ACROSS_TRACKS] = config.djRememberAcrossTracks
             prefs[PreferencesKeys.VISUALIZER_MODE] = config.visualizerMode.name
             prefs[PreferencesKeys.VISUALIZER_PALETTE] = config.visualizerPalette.name
+            prefs[PreferencesKeys.AUTO_STASH_ENABLED] = config.autoStashConfig.isEnabled
+            prefs[PreferencesKeys.AUTO_STASH_BUDGET_MB] = config.autoStashConfig.storageBudgetMb
+            prefs[PreferencesKeys.AUTO_STASH_STRATEGY] = config.autoStashConfig.strategy.name
+            prefs[PreferencesKeys.AUTO_STASH_WIFI_ONLY] = config.autoStashConfig.wifiOnly
         }
     }
 

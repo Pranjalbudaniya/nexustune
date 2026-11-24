@@ -1860,6 +1860,100 @@ fun SettingsScreen(
                     modifier = Modifier.padding(vertical = 12.dp)
                 )
 
+                // Smart Offline Auto-Stash Card
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Text(
+                        text = "Smart Offline Auto-Stash",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Predictively auto-downloads favorite and high-rotation tracks within a dedicated offline storage quota",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    ListItem(
+                        headlineContent = { Text("Enable Auto-Stash") },
+                        supportingContent = { Text("Automatically download top tracks for offline commutes and travel") },
+                        trailingContent = {
+                            Switch(
+                                checked = themeConfig.autoStashConfig.isEnabled,
+                                onCheckedChange = { viewModel.setAutoStashEnabled(it) }
+                            )
+                        }
+                    )
+
+                    if (themeConfig.autoStashConfig.isEnabled) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Auto-Stash Storage Quota",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState()),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            listOf(500 to "500MB", 1000 to "1GB", 2000 to "2GB", 5000 to "5GB").forEach { (budget, label) ->
+                                val isSelected = themeConfig.autoStashConfig.storageBudgetMb == budget
+                                FilterChip(
+                                    selected = isSelected,
+                                    onClick = { viewModel.setAutoStashBudgetMb(budget) },
+                                    label = { Text(label) }
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "Stash Strategy",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState()),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            com.nexus.tune.core.model.AutoStashStrategy.entries.forEach { strat ->
+                                val isSelected = themeConfig.autoStashConfig.strategy == strat
+                                FilterChip(
+                                    selected = isSelected,
+                                    onClick = { viewModel.setAutoStashStrategy(strat) },
+                                    label = { Text(strat.displayName) }
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        ListItem(
+                            headlineContent = { Text("Wi-Fi Only Sync") },
+                            supportingContent = { Text("Only auto-stash tracks when connected to unmetered Wi-Fi") },
+                            trailingContent = {
+                                Switch(
+                                    checked = themeConfig.autoStashConfig.wifiOnly,
+                                    onCheckedChange = { viewModel.setAutoStashWifiOnly(it) }
+                                )
+                            }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
                 ListItem(
                     headlineContent = { Text("Cache Size Budget") },
                     supportingContent = { Text("Automatically prune oldest stream cache when exceeding budget") }

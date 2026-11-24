@@ -217,7 +217,8 @@ data class ThemeConfig(
     val djFxConfig: DjFxConfig = DjFxConfig(),
     val djRememberAcrossTracks: Boolean = false,
     val harmonicMixingEnabled: Boolean = true,
-    val visualizerPalette: VisualizerPalette = VisualizerPalette.DYNAMIC
+    val visualizerPalette: VisualizerPalette = VisualizerPalette.DYNAMIC,
+    val autoStashConfig: AutoStashConfig = AutoStashConfig()
 )
 
 data class SoundDoseInfo(
@@ -660,6 +661,50 @@ data class KaraokeLyricProgress(
     val timeRemainingInLineMs: Long = 0L,
     val isVocalActive: Boolean = false
 )
+
+enum class AutoStashStrategy(val displayName: String, val description: String) {
+    BALANCED_HYBRID("Balanced Hybrid", "Mix of liked tracks, high rotation, and recent plays"),
+    FAVORITES_PRIORITY("Favorites First", "Prioritizes all starred and liked library tracks"),
+    HEAVY_ROTATION("Heavy Rotation", "Prioritizes songs with the highest playback frequency"),
+    OFFLINE_ESSENTIALS("Max Track Stash", "Packs shorter tracks first to maximize offline song count")
+}
+
+enum class AutoStashNetworkPolicy(val label: String) {
+    WIFI_ONLY("Wi-Fi Only"),
+    ANY_NETWORK("Wi-Fi + Cellular")
+}
+
+data class AutoStashCandidate(
+    val track: Track,
+    val playCount: Int = 0,
+    val isLiked: Boolean = false,
+    val estimatedSizeBytes: Long = (track.durationSeconds * 20_000L).coerceAtLeast(1_000_000L), // ~160kbps Opus (~1.2MB/min)
+    val priorityScore: Float = 0f,
+    val reasonTag: String = "Candidate"
+)
+
+data class AutoStashConfig(
+    val isEnabled: Boolean = false,
+    val storageBudgetMb: Int = 1000, // 1 GB default
+    val strategy: AutoStashStrategy = AutoStashStrategy.BALANCED_HYBRID,
+    val wifiOnly: Boolean = true,
+    val preserveStoragePercent: Int = 10
+) {
+    val budgetBytes: Long get() = storageBudgetMb * 1024L * 1024L
+}
+
+data class AutoStashReport(
+    val stashedCount: Int = 0,
+    val totalUsedBytes: Long = 0L,
+    val budgetBytes: Long = 1000L * 1024L * 1024L,
+    val estimatedOfflineHours: Float = 0f,
+    val stashedTracks: List<Track> = emptyList(),
+    val evictionTrackIds: Set<String> = emptySet(),
+    val strategy: AutoStashStrategy = AutoStashStrategy.BALANCED_HYBRID
+) {
+    val usageRatio: Float get() = if (budgetBytes > 0L) (totalUsedBytes.toFloat() / budgetBytes.toFloat()).coerceIn(0f, 1f) else 0f
+}
+
 
 
 

@@ -730,4 +730,31 @@ class SettingsViewModelTest {
         assertTrue(summary.contains("Nocturnal Voyager"))
         assertTrue(summary.contains("M83"))
     }
+
+    @Test
+    fun `autoStash configuration updates persist via settingsRepository`() = runTest {
+        viewModel.setAutoStashEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.autoStashConfig.isEnabled })
+        }
+
+        viewModel.setAutoStashBudgetMb(2000)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.autoStashConfig.storageBudgetMb == 2000 })
+        }
+
+        viewModel.setAutoStashStrategy(com.nexus.tune.core.model.AutoStashStrategy.HEAVY_ROTATION)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.autoStashConfig.strategy == com.nexus.tune.core.model.AutoStashStrategy.HEAVY_ROTATION })
+        }
+
+        viewModel.setAutoStashWifiOnly(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.autoStashConfig.wifiOnly })
+        }
+    }
 }

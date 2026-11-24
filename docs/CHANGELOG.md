@@ -5,6 +5,15 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.3.0] - 2026-11-24
+
+### Added
+- **Smart Offline Cache Auto-Stash & Predictive Storage Budget Optimization Engine**: Added `AutoStashStrategy` (`BALANCED_HYBRID`, `FAVORITES_PRIORITY`, `HEAVY_ROTATION`, `OFFLINE_ESSENTIALS`), `AutoStashNetworkPolicy`, `AutoStashCandidate`, `AutoStashConfig`, and `AutoStashReport` in `:core:model`.
+- **Auto-Stash Scoring & Knapsack Byte Packing**: Implemented `AutoStashEvaluator` in `:core:domain:offline` scoring candidates across play frequency, favorite marks, and recency, allocating bytes to stay strictly within user storage quotas, determining eviction candidates, and calculating offline listening duration.
+- **DataStore Preferences & Persistence**: Added `AUTO_STASH_ENABLED`, `AUTO_STASH_BUDGET_MB`, `AUTO_STASH_STRATEGY`, and `AUTO_STASH_WIFI_ONLY` preferences in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Auto-Stash Control Console**: Added interactive "⚡ Smart Offline Auto-Stash" card in `SettingsScreen` featuring master switch, storage budget chip selector (500MB, 1GB, 2GB, 5GB), strategy selector, and Wi-Fi only toggle.
+- **Unit Test Coverage**: Comprehensive test suites in `AutoStashEvaluatorTest` in `:core:domain` and `SettingsViewModelTest` in `:feature:settings`.
+
 ## [6.2.0] - 2026-11-24
 
 ### Added
