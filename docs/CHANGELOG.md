@@ -5,6 +5,17 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.34.0] - 2026-11-24
+
+### Added
+- **Audiophile Dynamic Transient Peak Slew-Rate Limiter & Electrostatic Diaphragm Protector Studio (`SlewRateLimiterEngine`)**: Added `SlewRateSpeed` (`FAST_100V_US`, `STUDIO_50V_US`, `ELECTROSTATIC_25V_US`, `PLANAR_15V_US`, `VINTAGE_5V_US`), `SlewLimiterMode` (`TRANSPARENT_TIM_GUARD`, `STATOR_ARC_PROTECT`, `ANALOG_WARMTH_ROLLOFF`, `SOLO_CLAMPED_EDGES`), `SlewRateLimiterPreset` (`OFF`, `ELECTROSTATIC_STAX_GUARD`, `PLANAR_MAGNETIC_SAFE`, `STUDIO_MASTER_TIM_CURE`, `VINTAGE_WARM_ROLLOFF`), `SlewRateLimiterConfig`, and `SlewRateLimiterMetrics` in `:core:model`.
+- **Precision $\frac{dV}{dt}$ Voltage Slew Damping & TIM Distortion Suppression DSP**: Implemented `SlewRateLimiterEngine` in `:core:domain:audio`. Clamps extreme instantaneous rate of voltage change ($\Delta s$) between audio samples without dulling high-frequency bandwidth, computes second-order sample acceleration ($\Delta^2 s$) to identify and eliminate Transient Intermodulation (TIM) distortion from digital clipping edges, provides electrostatic stator arc protection via soft-knee ceiling compression, and features solo audition mode for isolated clamped transient edges.
+- **Hardware Equalizer Integration**: Added `applySlewRateOffset`, `clearSlewRateOffset`, and `getSlewRateOffset` targeting Bands 3 & 4 in `NexusAudioEffects` in `:core:player` for physical hardware high-frequency slew smoothing.
+- **DataStore Persistence**: Added `SLEW_RATE_LIMITER_ENABLED`, `SLEW_RATE_LIMITER_PRESET`, `SLEW_RATE_LIMITER_SPEED`, `SLEW_RATE_LIMITER_MODE`, `SLEW_RATE_LIMITER_DAMPING`, and `SLEW_RATE_LIMITER_PEAK_THRESHOLD` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Slew Rate Studio**: Added interactive "Dynamic Slew-Rate Limiter & Electrostatic Protector Studio" card in its own dedicated `item { ... }` block in `SettingsScreen` with preset chips, slew speed chips, limiter mode chips, damping intensity slider, diaphragm arc protection ceiling slider, and real-time slew rate & diaphragm safety HUD.
+- **Unit Test Coverage**: Comprehensive test suites in `SlewRateLimiterEngineTest` in `:core:domain`, `NexusAudioEffectsTest` in `:core:player`, and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.33.0] - 2026-11-24
 
 ### Added

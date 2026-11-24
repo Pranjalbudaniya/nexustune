@@ -1484,4 +1484,46 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(preampNoiseFlattenerConfig = current.preampNoiseFlattenerConfig.copy(hfTiltDb = tiltDb.coerceIn(-6.0f, 6.0f))))
     }
+
+    fun setSlewRateLimiterEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(slewRateLimiterConfig = current.slewRateLimiterConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setSlewRateLimiterPreset(preset: SlewRateLimiterPreset) {
+        val current = themeConfig.value
+        val isEnabled = preset != SlewRateLimiterPreset.OFF
+        updateTheme(
+            current.copy(
+                slewRateLimiterConfig = current.slewRateLimiterConfig.copy(
+                    isEnabled = isEnabled,
+                    preset = preset,
+                    speed = preset.speed,
+                    mode = preset.mode,
+                    dampingRatio = preset.dampingRatio,
+                    peakThreshold = preset.peakThreshold
+                )
+            )
+        )
+    }
+
+    fun setSlewRateSpeed(speed: SlewRateSpeed) {
+        val current = themeConfig.value
+        updateTheme(current.copy(slewRateLimiterConfig = current.slewRateLimiterConfig.copy(speed = speed)))
+    }
+
+    fun setSlewLimiterMode(mode: SlewLimiterMode) {
+        val current = themeConfig.value
+        updateTheme(current.copy(slewRateLimiterConfig = current.slewRateLimiterConfig.copy(mode = mode)))
+    }
+
+    fun setSlewDampingRatio(damping: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(slewRateLimiterConfig = current.slewRateLimiterConfig.copy(dampingRatio = damping.coerceIn(0.0f, 1.0f))))
+    }
+
+    fun setSlewPeakThreshold(threshold: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(slewRateLimiterConfig = current.slewRateLimiterConfig.copy(peakThreshold = threshold.coerceIn(0.5f, 1.0f))))
+    }
 }

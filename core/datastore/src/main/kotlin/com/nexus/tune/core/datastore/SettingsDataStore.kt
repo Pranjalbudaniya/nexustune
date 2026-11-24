@@ -202,6 +202,12 @@ class SettingsDataStore(private val context: Context) {
         val PREAMP_NOISE_FLATTENER_THRESHOLD_DB = floatPreferencesKey("preamp_noise_flattener_threshold_db")
         val PREAMP_NOISE_FLATTENER_DITHER_LEVEL = floatPreferencesKey("preamp_noise_flattener_dither_level")
         val PREAMP_NOISE_FLATTENER_HF_TILT_DB = floatPreferencesKey("preamp_noise_flattener_hf_tilt_db")
+        val SLEW_RATE_LIMITER_ENABLED = booleanPreferencesKey("slew_rate_limiter_enabled")
+        val SLEW_RATE_LIMITER_PRESET = stringPreferencesKey("slew_rate_limiter_preset")
+        val SLEW_RATE_LIMITER_SPEED = stringPreferencesKey("slew_rate_limiter_speed")
+        val SLEW_RATE_LIMITER_MODE = stringPreferencesKey("slew_rate_limiter_mode")
+        val SLEW_RATE_LIMITER_DAMPING = floatPreferencesKey("slew_rate_limiter_damping")
+        val SLEW_RATE_LIMITER_PEAK_THRESHOLD = floatPreferencesKey("slew_rate_limiter_peak_threshold")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -550,6 +556,20 @@ class SettingsDataStore(private val context: Context) {
                 downwardThresholdDb = prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_THRESHOLD_DB] ?: -45.0f,
                 thermalDitherLevel = prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_DITHER_LEVEL] ?: 0.0f,
                 hfTiltDb = prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_HF_TILT_DB] ?: 0.0f
+            ),
+            slewRateLimiterConfig = SlewRateLimiterConfig(
+                isEnabled = prefs[PreferencesKeys.SLEW_RATE_LIMITER_ENABLED] ?: false,
+                preset = runCatching {
+                    SlewRateLimiterPreset.valueOf(prefs[PreferencesKeys.SLEW_RATE_LIMITER_PRESET] ?: SlewRateLimiterPreset.OFF.name)
+                }.getOrDefault(SlewRateLimiterPreset.OFF),
+                speed = runCatching {
+                    SlewRateSpeed.valueOf(prefs[PreferencesKeys.SLEW_RATE_LIMITER_SPEED] ?: SlewRateSpeed.STUDIO_50V_US.name)
+                }.getOrDefault(SlewRateSpeed.STUDIO_50V_US),
+                mode = runCatching {
+                    SlewLimiterMode.valueOf(prefs[PreferencesKeys.SLEW_RATE_LIMITER_MODE] ?: SlewLimiterMode.TRANSPARENT_TIM_GUARD.name)
+                }.getOrDefault(SlewLimiterMode.TRANSPARENT_TIM_GUARD),
+                dampingRatio = prefs[PreferencesKeys.SLEW_RATE_LIMITER_DAMPING] ?: 0.5f,
+                peakThreshold = prefs[PreferencesKeys.SLEW_RATE_LIMITER_PEAK_THRESHOLD] ?: 0.9f
             )
         )
     }
@@ -735,6 +755,12 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_THRESHOLD_DB] = config.preampNoiseFlattenerConfig.downwardThresholdDb
             prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_DITHER_LEVEL] = config.preampNoiseFlattenerConfig.thermalDitherLevel
             prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_HF_TILT_DB] = config.preampNoiseFlattenerConfig.hfTiltDb
+            prefs[PreferencesKeys.SLEW_RATE_LIMITER_ENABLED] = config.slewRateLimiterConfig.isEnabled
+            prefs[PreferencesKeys.SLEW_RATE_LIMITER_PRESET] = config.slewRateLimiterConfig.preset.name
+            prefs[PreferencesKeys.SLEW_RATE_LIMITER_SPEED] = config.slewRateLimiterConfig.speed.name
+            prefs[PreferencesKeys.SLEW_RATE_LIMITER_MODE] = config.slewRateLimiterConfig.mode.name
+            prefs[PreferencesKeys.SLEW_RATE_LIMITER_DAMPING] = config.slewRateLimiterConfig.dampingRatio
+            prefs[PreferencesKeys.SLEW_RATE_LIMITER_PEAK_THRESHOLD] = config.slewRateLimiterConfig.peakThreshold
         }
     }
 
@@ -982,6 +1008,17 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_THRESHOLD_DB] = config.downwardThresholdDb
             prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_DITHER_LEVEL] = config.thermalDitherLevel
             prefs[PreferencesKeys.PREAMP_NOISE_FLATTENER_HF_TILT_DB] = config.hfTiltDb
+        }
+    }
+
+    suspend fun updateSlewRateLimiterConfig(config: SlewRateLimiterConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.SLEW_RATE_LIMITER_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.SLEW_RATE_LIMITER_PRESET] = config.preset.name
+            prefs[PreferencesKeys.SLEW_RATE_LIMITER_SPEED] = config.speed.name
+            prefs[PreferencesKeys.SLEW_RATE_LIMITER_MODE] = config.mode.name
+            prefs[PreferencesKeys.SLEW_RATE_LIMITER_DAMPING] = config.dampingRatio
+            prefs[PreferencesKeys.SLEW_RATE_LIMITER_PEAK_THRESHOLD] = config.peakThreshold
         }
     }
 

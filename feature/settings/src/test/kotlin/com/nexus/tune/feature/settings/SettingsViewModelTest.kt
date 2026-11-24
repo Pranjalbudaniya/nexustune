@@ -1629,4 +1629,46 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.preampNoiseFlattenerConfig.hfTiltDb == -2.5f })
         }
     }
+
+    @Test
+    fun `slew rate limiter settings update theme config`() = runTest {
+        viewModel.setSlewRateLimiterEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.slewRateLimiterConfig.isEnabled })
+        }
+
+        viewModel.setSlewRateLimiterPreset(SlewRateLimiterPreset.ELECTROSTATIC_STAX_GUARD)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match {
+                it.slewRateLimiterConfig.preset == SlewRateLimiterPreset.ELECTROSTATIC_STAX_GUARD &&
+                        it.slewRateLimiterConfig.speed == SlewRateSpeed.ELECTROSTATIC_25V_US
+            })
+        }
+
+        viewModel.setSlewRateSpeed(SlewRateSpeed.PLANAR_15V_US)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.slewRateLimiterConfig.speed == SlewRateSpeed.PLANAR_15V_US })
+        }
+
+        viewModel.setSlewLimiterMode(SlewLimiterMode.STATOR_ARC_PROTECT)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.slewRateLimiterConfig.mode == SlewLimiterMode.STATOR_ARC_PROTECT })
+        }
+
+        viewModel.setSlewDampingRatio(0.75f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.slewRateLimiterConfig.dampingRatio == 0.75f })
+        }
+
+        viewModel.setSlewPeakThreshold(0.88f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.slewRateLimiterConfig.peakThreshold == 0.88f })
+        }
+    }
 }

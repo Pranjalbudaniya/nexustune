@@ -37,6 +37,7 @@ class NexusAudioEffects {
     private var soundstageElevationOffset: Int = 0
     private var monoBassPunchOffset: Int = 0
     private var preampTiltOffset: Int = 0
+    private var slewRateOffset: Int = 0
 
     fun attachToAudioSession(sessionId: Int) {
         if (sessionId == 0 || sessionId == currentSessionId) return
@@ -441,6 +442,18 @@ class NexusAudioEffects {
 
     fun getPreampTiltOffset(): Int = preampTiltOffset
 
+    fun applySlewRateOffset(offset: Int) {
+        slewRateOffset = offset
+        refreshBands()
+    }
+
+    fun clearSlewRateOffset() {
+        slewRateOffset = 0
+        refreshBands()
+    }
+
+    fun getSlewRateOffset(): Int = slewRateOffset
+
     fun setBassBoostStrength(strength: Short) {
         try {
             bassBoost?.setStrength(strength)
@@ -473,7 +486,8 @@ class NexusAudioEffects {
                 val elevationOffset = if (i == 4) soundstageElevationOffset else 0
                 val monoBassOffset = if (i == 0 || i == 1) (monoBassPunchOffset * (if (i == 0) 1.0f else 0.6f)).toInt() else 0
                 val preampOffset = if (i == 4) preampTiltOffset else 0
-                val combined = (base + kOffset + hOffset + sOffset + dOffset + tOffset + mOffset + aOffset + sHarmonicOffset + deEssOffset + tubeOffset + transientOffset + spatialOffset + tapeOffset + humOffset + feedbackOffset + elevationOffset + monoBassOffset + preampOffset).coerceIn(-1500, 1500)
+                val slewOffset = if (i == 3 || i == 4) (slewRateOffset * (if (i == 4) 1.0f else 0.7f)).toInt() else 0
+                val combined = (base + kOffset + hOffset + sOffset + dOffset + tOffset + mOffset + aOffset + sHarmonicOffset + deEssOffset + tubeOffset + transientOffset + spatialOffset + tapeOffset + humOffset + feedbackOffset + elevationOffset + monoBassOffset + preampOffset + slewOffset).coerceIn(-1500, 1500)
                 eq.setBandLevel(i.toShort(), combined.toShort())
             }
         } catch (e: Exception) {

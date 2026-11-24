@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 84 (v6.34.0 Audiophile Dynamic Transient Peak Slew-Rate Limiter & Electrostatic Diaphragm Protector Studio)
+- Active Phase: Post-v1.0 Improvement Loop 85 (v6.35.0 Audiophile Dynamic Acoustic Resonator & Cabinet Horn Diffuser Studio)
 - In Flight: Domain engine, models, audio effects, datastore, viewmodel, and settings studio card implementation
 - Branches: `main`
 
@@ -835,17 +835,29 @@
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.33-1`
 
-- [ ] Improvement Loop 84 (v6.34 Milestone - In Flight)
-  - [ ] Audiophile Dynamic Transient Peak Slew-Rate Limiter & Electrostatic Diaphragm Protector Studio (`SlewRateLimiterEngine`):
-    - [ ] `SlewRateSpeed`, `SlewLimiterMode`, `SlewRateLimiterPreset`, `SlewRateLimiterConfig`, and `SlewRateLimiterMetrics` in `:core:model`
-    - [ ] `SlewRateLimiterEngine` in `:core:domain:audio` with discrete $\frac{dV}{dt}$ tracker, second-order sample acceleration (TIM distortion index) detector, electrostatic stator arc soft-knee limiting curve, and solo clamped transient audition mode
-    - [ ] Hardware equalizer integration in `NexusAudioEffects` (`applySlewRateOffset`, `clearSlewRateOffset`, `getSlewRateOffset`) targeting Bands 3 & 4
+- [x] Improvement Loop 84 (v6.34 Milestone - Tagged `v6.34-1`)
+  - [x] Audiophile Dynamic Transient Peak Slew-Rate Limiter & Electrostatic Diaphragm Protector Studio (`SlewRateLimiterEngine`):
+    - [x] `SlewRateSpeed`, `SlewLimiterMode`, `SlewRateLimiterPreset`, `SlewRateLimiterConfig`, and `SlewRateLimiterMetrics` in `:core:model`
+    - [x] `SlewRateLimiterEngine` in `:core:domain:audio` with discrete $\frac{dV}{dt}$ tracker, second-order sample acceleration (TIM distortion index) detector, electrostatic stator arc soft-knee limiting curve, and solo clamped transient audition mode
+    - [x] Hardware equalizer integration in `NexusAudioEffects` (`applySlewRateOffset`, `clearSlewRateOffset`, `getSlewRateOffset`) targeting Bands 3 & 4
+    - [x] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
+    - [x] `SettingsViewModel` slew rate limiter control methods
+    - [x] Interactive "Dynamic Transient Peak Slew-Rate Limiter & Electrostatic Protector Studio" card in `SettingsScreen` in dedicated `item { ... }` block
+    - [x] Comprehensive test suites in `SlewRateLimiterEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v6.34-1`
+
+- [ ] Improvement Loop 85 (v6.35 Milestone - In Flight)
+  - [ ] Audiophile Dynamic Acoustic Resonator & Cabinet Horn Diffuser Studio (`HornDiffuserEngine`):
+    - [ ] `HornFlareGeometry`, `HornDiffuserMode`, `HornDiffuserPreset`, `HornDiffuserConfig`, and `HornDiffuserMetrics` in `:core:model`
+    - [ ] `HornDiffuserEngine` in `:core:domain:audio` with Tractrix / Exponential flare loading impedance matcher, throat anti-resonance notch biquad ($1.2\dots 2.8\text{ kHz}$), horizontal QRD flare dispersion matrix, and compression driver air viscosity simulation
+    - [ ] Hardware equalizer integration in `NexusAudioEffects` (`applyHornDiffuserOffset`, `clearHornDiffuserOffset`, `getHornDiffuserOffset`) targeting Bands 2 & 4
     - [ ] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
-    - [ ] `SettingsViewModel` slew rate limiter control methods
-    - [ ] Interactive "Dynamic Transient Peak Slew-Rate Limiter & Electrostatic Protector Studio" card in `SettingsScreen` in dedicated `item { ... }` block
-    - [ ] Comprehensive test suites in `SlewRateLimiterEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
+    - [ ] `SettingsViewModel` horn diffuser control methods
+    - [ ] Interactive "Dynamic Acoustic Resonator & Cabinet Horn Diffuser Studio" card in `SettingsScreen` in dedicated `item { ... }` block
+    - [ ] Comprehensive test suites in `HornDiffuserEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
   - [ ] Slice gate passed
-  - [ ] Final gate passed & tagged: `v6.34-1`
+  - [ ] Final gate passed & tagged: `v6.35-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

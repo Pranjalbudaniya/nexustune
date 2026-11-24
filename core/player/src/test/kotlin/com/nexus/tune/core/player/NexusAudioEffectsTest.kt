@@ -238,5 +238,14 @@ class NexusAudioEffectsTest {
         audioEffects.clearPreampTiltOffset()
         assertEquals(0, audioEffects.getPreampTiltOffset())
     }
+
+    @Test
+    fun `slew rate offset can be applied and cleared`() {
+        audioEffects.applySlewRateOffset(-80)
+        assertEquals(-80, audioEffects.getSlewRateOffset())
+
+        audioEffects.clearSlewRateOffset()
+        assertEquals(0, audioEffects.getSlewRateOffset())
+    }
 }
 

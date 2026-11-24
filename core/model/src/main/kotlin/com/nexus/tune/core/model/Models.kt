@@ -249,7 +249,8 @@ data class ThemeConfig(
     val acousticFeedbackConfig: AcousticFeedbackConfig = AcousticFeedbackConfig(),
     val soundstageElevationConfig: SoundstageElevationConfig = SoundstageElevationConfig(),
     val monoBassAlignConfig: MonoBassAlignConfig = MonoBassAlignConfig(),
-    val preampNoiseFlattenerConfig: PreampNoiseFlattenerConfig = PreampNoiseFlattenerConfig()
+    val preampNoiseFlattenerConfig: PreampNoiseFlattenerConfig = PreampNoiseFlattenerConfig(),
+    val slewRateLimiterConfig: SlewRateLimiterConfig = SlewRateLimiterConfig()
 )
 
 data class SoundDoseInfo(
@@ -1723,6 +1724,94 @@ data class PreampNoiseFlattenerMetrics(
     val dynamicGainReductionDb: Float,
     val ditherActive: Boolean,
     val noiseFloorRating: String
+)
+
+enum class SlewRateSpeed(
+    val displayName: String,
+    val nominalVUs: Float,
+    val description: String
+) {
+    FAST_100V_US("100 V/µs (Ultra Fast)", 100.0f, "High-bandwidth discrete bipolar stages with minimal slew limiting"),
+    STUDIO_50V_US("50 V/µs (Studio Standard)", 50.0f, "Standard high-end studio monitoring amplifier slew rate"),
+    ELECTROSTATIC_25V_US("25 V/µs (Electrostatic Guard)", 25.0f, "Optimized for electrostatic stator charge limits (e.g. Stax SRM amplifiers)"),
+    PLANAR_15V_US("15 V/µs (Planar Magnetic Safe)", 15.0f, "Tames sharp transient snapping on ultra-thin planar magnetic diaphragms"),
+    VINTAGE_5V_US("5 V/µs (Warm Analog Rolloff)", 5.0f, "Gentle vintage slew rate adding smooth transient softening and tape-like saturation")
+}
+
+enum class SlewLimiterMode(
+    val displayName: String,
+    val description: String
+) {
+    TRANSPARENT_TIM_GUARD("Transparent TIM Guard", "Softens only extreme step discontinuities that cause TIM distortion"),
+    STATOR_ARC_PROTECT("Stator Arc Protect", "Dynamic peak compression on high-velocity transients to prevent electrostatic stator flashover"),
+    ANALOG_WARMTH_ROLLOFF("Analog Warmth Rolloff", "Applies progressive slew limiting that creates warm analog saturation and natural HF compression"),
+    SOLO_CLAMPED_EDGES("Solo Clamped Edges", "Auditions strictly the clamped transient voltage edges")
+}
+
+enum class SlewRateLimiterPreset(
+    val displayName: String,
+    val speed: SlewRateSpeed,
+    val mode: SlewLimiterMode,
+    val dampingRatio: Float,
+    val peakThreshold: Float,
+    val description: String
+) {
+    OFF(
+        "Off (Bypassed)",
+        SlewRateSpeed.STUDIO_50V_US,
+        SlewLimiterMode.TRANSPARENT_TIM_GUARD,
+        0.0f,
+        1.0f,
+        "Direct signal pass-through without slew rate limiting or transient damping"
+    ),
+    ELECTROSTATIC_STAX_GUARD(
+        "Electrostatic Stax Guard",
+        SlewRateSpeed.ELECTROSTATIC_25V_US,
+        SlewLimiterMode.STATOR_ARC_PROTECT,
+        0.75f,
+        0.85f,
+        "Protects delicate electrostatic mylar diaphragms from stator flashover on hot digital masters"
+    ),
+    PLANAR_MAGNETIC_SAFE(
+        "Planar Magnetic Safe",
+        SlewRateSpeed.PLANAR_15V_US,
+        SlewLimiterMode.TRANSPARENT_TIM_GUARD,
+        0.6f,
+        0.9f,
+        "Tames harsh square-wave edges and mechanical voice-coil overshoot on planar headphones"
+    ),
+    STUDIO_MASTER_TIM_CURE(
+        "Studio Master TIM Cure",
+        SlewRateSpeed.STUDIO_50V_US,
+        SlewLimiterMode.TRANSPARENT_TIM_GUARD,
+        0.45f,
+        0.95f,
+        "Eliminates Transient Intermodulation Distortion while preserving crisp cymbals and drum transients"
+    ),
+    VINTAGE_WARM_ROLLOFF(
+        "Vintage Console Rolloff",
+        SlewRateSpeed.VINTAGE_5V_US,
+        SlewLimiterMode.ANALOG_WARMTH_ROLLOFF,
+        0.85f,
+        0.75f,
+        "Rich, smooth high-frequency rolloff emulating early op-amp and transformer slew limitations"
+    )
+}
+
+data class SlewRateLimiterConfig(
+    val isEnabled: Boolean = false,
+    val preset: SlewRateLimiterPreset = SlewRateLimiterPreset.OFF,
+    val speed: SlewRateSpeed = SlewRateSpeed.STUDIO_50V_US,
+    val mode: SlewLimiterMode = SlewLimiterMode.TRANSPARENT_TIM_GUARD,
+    val dampingRatio: Float = 0.5f,
+    val peakThreshold: Float = 0.9f
+)
+
+data class SlewRateLimiterMetrics(
+    val peakSlewRateVUs: Float,
+    val timDistortionIndex: Float,
+    val clampedTransientsCount: Int,
+    val membraneSafetyRating: String
 )
 
 

@@ -30,6 +30,7 @@ import com.nexus.tune.core.domain.audio.AcousticFeedbackEngine
 import com.nexus.tune.core.domain.audio.SoundstageElevationEngine
 import com.nexus.tune.core.domain.audio.MonoBassAlignEngine
 import com.nexus.tune.core.domain.audio.PreampNoiseFlattenerEngine
+import com.nexus.tune.core.domain.audio.SlewRateLimiterEngine
 import com.nexus.tune.core.ui.EqCurveVisualizer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -4147,6 +4148,186 @@ fun SettingsScreen(
                                 )
                                 Text(
                                     text = "Reduct: -${String.format(java.util.Locale.US, "%.1f dB", preampMetrics.dynamicGainReductionDb)}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            }
+
+            item {
+                // --- Dynamic Transient Peak Slew-Rate Limiter & Electrostatic Protector Studio ---
+                Text(
+                    text = "Dynamic Slew-Rate Limiter & Electrostatic Protector Studio",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                ListItem(
+                    headlineContent = { Text("Transient Slew-Rate Limiter & Diaphragm Guard") },
+                    supportingContent = { Text("Precision dV/dt slew limiting, TIM distortion suppression, and electrostatic stator flashover prevention") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.slewRateLimiterConfig.isEnabled,
+                            onCheckedChange = { viewModel.setSlewRateLimiterEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.slewRateLimiterConfig.isEnabled) {
+                    val slewMetrics = remember(themeConfig.slewRateLimiterConfig) {
+                        SlewRateLimiterEngine.calculateMetrics(
+                            themeConfig.slewRateLimiterConfig,
+                            floatArrayOf(0.0f, 0.0f, 0.4f, 0.4f, -0.2f, -0.2f)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Slew Limiter Preset",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        SlewRateLimiterPreset.entries.forEach { preset ->
+                            FilterChip(
+                                selected = themeConfig.slewRateLimiterConfig.preset == preset,
+                                onClick = { viewModel.setSlewRateLimiterPreset(preset) },
+                                label = { Text(preset.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Nominal Slew Velocity (dV/dt)",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        SlewRateSpeed.entries.forEach { speed ->
+                            FilterChip(
+                                selected = themeConfig.slewRateLimiterConfig.speed == speed,
+                                onClick = { viewModel.setSlewRateSpeed(speed) },
+                                label = { Text(speed.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Limiter Mode",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        SlewLimiterMode.entries.forEach { mode ->
+                            FilterChip(
+                                selected = themeConfig.slewRateLimiterConfig.mode == mode,
+                                onClick = { viewModel.setSlewLimiterMode(mode) },
+                                label = { Text(mode.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Transient Damping Intensity: ${(themeConfig.slewRateLimiterConfig.dampingRatio * 100).toInt()}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Peak: ${String.format(java.util.Locale.US, "%.1f V/µs", slewMetrics.peakSlewRateVUs)}",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.slewRateLimiterConfig.dampingRatio,
+                        onValueChange = { viewModel.setSlewDampingRatio(it) },
+                        valueRange = 0.0f..1.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Diaphragm Arc Protection Ceiling: ${(themeConfig.slewRateLimiterConfig.peakThreshold * 100).toInt()}% FS",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "TIM: ${String.format(java.util.Locale.US, "%.1f", slewMetrics.timDistortionIndex)}",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.slewRateLimiterConfig.peakThreshold,
+                        onValueChange = { viewModel.setSlewPeakThreshold(it) },
+                        valueRange = 0.5f..1.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = "TRANSDUCER SLEW RATE & DIAPHRAGM SAFETY HUD",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Status: ${slewMetrics.membraneSafetyRating}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Clamped: ${slewMetrics.clampedTransientsCount} transients",
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.secondary
