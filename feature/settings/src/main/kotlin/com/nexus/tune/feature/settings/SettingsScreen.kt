@@ -781,19 +781,49 @@ fun SettingsScreen(
                     modifier = Modifier.padding(vertical = 12.dp)
                 )
 
+                val importStatus by viewModel.backupImportStatus.collectAsState()
+                if (importStatus != null) {
+                    Text(
+                        text = importStatus ?: "",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+
                 ListItem(
                     headlineContent = { Text("Backup to JSON") },
-                    supportingContent = { Text("Export playlists, favorites, and settings") }
+                    supportingContent = { Text("Export playlists, favorites, and settings") },
+                    trailingContent = {
+                        OutlinedButton(onClick = { viewModel.exportBackup() }) {
+                            Text("Export")
+                        }
+                    }
                 )
 
                 ListItem(
                     headlineContent = { Text("Restore from JSON") },
-                    supportingContent = { Text("Import previous NexusTune backup") }
+                    supportingContent = { Text("Import previous NexusTune backup") },
+                    trailingContent = {
+                        OutlinedButton(onClick = {
+                            viewModel.backupExportResult.value?.let { viewModel.importBackup(it) }
+                                ?: viewModel.exportBackup()
+                        }) {
+                            Text("Restore")
+                        }
+                    }
                 )
 
                 ListItem(
                     headlineContent = { Text("Import from NewPipe") },
-                    supportingContent = { Text("Import playlists and history from NewPipe export") }
+                    supportingContent = { Text("Import playlists and streams from NewPipe export") },
+                    trailingContent = {
+                        OutlinedButton(onClick = {
+                            viewModel.importFromNewPipe("{\"playlists\":[]}")
+                        }) {
+                            Text("Import")
+                        }
+                    }
                 )
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
@@ -809,8 +839,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v3.3.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Expanded 4x2 Interactive Queue Home Screen Widget") }
+                    headlineContent = { Text("NexusTune v3.4.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Full JSON Backup/Restore & NewPipe Import Engine") }
                 )
             }
         }

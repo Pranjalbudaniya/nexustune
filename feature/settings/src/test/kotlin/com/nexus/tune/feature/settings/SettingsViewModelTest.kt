@@ -5,10 +5,7 @@ import com.nexus.tune.core.domain.repository.SettingsRepository
 import com.nexus.tune.core.domain.usecase.GetListeningStatsUseCase
 import com.nexus.tune.core.model.*
 import com.nexus.tune.core.player.SleepTimerManager
-import io.mockk.coVerify
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +14,7 @@ import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -325,5 +323,37 @@ class SettingsViewModelTest {
         coVerify {
             settingsRepository.updateThemeConfig(match { it.crossfadeCurve == CrossfadeCurve.EXPONENTIAL })
         }
+    }
+
+    @Test
+    fun `exportBackup invokes backupManager`() = runTest {
+        val mockBackupManager = mockk<com.nexus.tune.core.data.backup.BackupManager>(relaxed = true)
+        coEvery { mockBackupManager.exportBackupJson() } returns "{}"
+
+        val vm = SettingsViewModel(
+            settingsRepository = settingsRepository,
+            backupManager = mockBackupManager
+        )
+        vm.exportBackup()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { mockBackupManager.exportBackupJson() }
+        assertEquals("{}", vm.backupExportResult.value)
+    }
+
+    @Test
+    fun `importFromNewPipe invokes backupManager`() = runTest {
+        val mockBackupManager = mockk<com.nexus.tune.core.data.backup.BackupManager>(relaxed = true)
+        coEvery { mockBackupManager.importFromNewPipeJson(any()) } returns com.nexus.tune.core.data.backup.NewPipeImportResult(1, 5, true)
+
+        val vm = SettingsViewModel(
+            settingsRepository = settingsRepository,
+            backupManager = mockBackupManager
+        )
+        vm.importFromNewPipe("{\"playlists\":[]}")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { mockBackupManager.importFromNewPipeJson(any()) }
+        assertTrue(vm.backupImportStatus.value?.contains("Imported 1 playlists") == true)
     }
 }

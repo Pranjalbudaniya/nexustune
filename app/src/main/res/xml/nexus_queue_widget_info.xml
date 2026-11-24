@@ -8,3 +8,4 @@
     android:initialLayout="@layout/widget_nexus_queue"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen" />
+

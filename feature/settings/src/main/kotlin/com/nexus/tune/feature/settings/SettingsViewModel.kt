@@ -19,8 +19,38 @@ class SettingsViewModel(
     private val storageManager: StorageManager? = null,
     private val audioOutputRouteManager: com.nexus.tune.core.player.routing.AudioOutputRouteManager? = null,
     private val musicRepository: com.nexus.tune.core.domain.repository.MusicRepository? = null,
-    private val safeListeningManager: com.nexus.tune.core.player.hearing.SafeListeningManager? = null
+    private val safeListeningManager: com.nexus.tune.core.player.hearing.SafeListeningManager? = null,
+    private val backupManager: com.nexus.tune.core.data.backup.BackupManager? = null
 ) : ViewModel() {
+
+    val backupExportResult = MutableStateFlow<String?>(null)
+    val backupImportStatus = MutableStateFlow<String?>(null)
+
+    fun exportBackup() {
+        viewModelScope.launch {
+            val json = backupManager?.exportBackupJson()
+            backupExportResult.value = json
+            backupImportStatus.value = if (json != null) "Backup exported successfully" else "Export failed"
+        }
+    }
+
+    fun importBackup(jsonString: String) {
+        viewModelScope.launch {
+            val success = backupManager?.importBackupJson(jsonString) ?: false
+            backupImportStatus.value = if (success) "Backup restored successfully" else "Import failed"
+        }
+    }
+
+    fun importFromNewPipe(jsonString: String) {
+        viewModelScope.launch {
+            val res = backupManager?.importFromNewPipeJson(jsonString)
+            backupImportStatus.value = if (res?.success == true) {
+                "Imported ${res.playlistsImported} playlists (${res.tracksImported} tracks) from NewPipe"
+            } else {
+                "NewPipe import completed or no streams found"
+            }
+        }
+    }
 
     val soundDoseInfo: StateFlow<SoundDoseInfo> = safeListeningManager?.soundDoseInfo
         ?: MutableStateFlow(SoundDoseInfo()).asStateFlow()

@@ -114,3 +114,4 @@ class NexusTuneQueueWidgetProvider : AppWidgetProvider() {
         }
     }
 }
+

@@ -69,7 +69,8 @@ class MainActivity : ComponentActivity() {
             sleepTimerManager = app.sleepTimerManager,
             audioOutputRouteManager = app.audioOutputRouteManager,
             musicRepository = app.musicRepository,
-            safeListeningManager = app.safeListeningManager
+            safeListeningManager = app.safeListeningManager,
+            backupManager = app.backupManager
         )
 
         lifecycleScope.launch {

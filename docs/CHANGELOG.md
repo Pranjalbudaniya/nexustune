@@ -5,6 +5,13 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.4.0] - 2026-11-24
+
+### Added
+- **Full JSON Backup & Restore Engine**: Enhanced `BackupManager` to serialize and restore user custom playlists alongside favorites and theme settings in versioned JSON.
+- **NewPipe Backup Migration**: Added `importFromNewPipeJson` in `BackupManager` parsing NewPipe playlist export formats and importing streams into local NexusTune playlists.
+- **Settings UI Integration**: Added interactive Export, Restore, and Import buttons in `SettingsScreen` under Data & Backup with real-time status messaging.
+
 ## [3.3.0] - 2026-11-24
 
 ### Added

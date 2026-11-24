@@ -63,6 +63,8 @@ class NexusTuneApplication : Application() {
         private set
     lateinit var safeListeningManager: com.nexus.tune.core.player.hearing.SafeListeningManager
         private set
+    lateinit var backupManager: com.nexus.tune.core.data.backup.BackupManager
+        private set
 
     override fun onCreate() {
         super.onCreate()
@@ -110,6 +112,7 @@ class NexusTuneApplication : Application() {
         )
         genreAdaptiveEqManager = com.nexus.tune.core.player.effects.GenreAdaptiveEqManager()
         safeListeningManager = com.nexus.tune.core.player.hearing.SafeListeningManager()
+        backupManager = com.nexus.tune.core.data.backup.BackupManager(database, settingsDataStore)
     }
 
     companion object {
