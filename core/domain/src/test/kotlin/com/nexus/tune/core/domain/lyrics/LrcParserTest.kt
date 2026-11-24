@@ -69,3 +69,4 @@ class LrcParserTest {
         assertEquals("Repeated Chorus", result.lines[1].text)
     }
 }
+

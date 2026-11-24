@@ -29,6 +29,8 @@ fun SettingsScreen(
     val preferredQuality by viewModel.preferredQuality.collectAsState()
     val isMeteredConnection by viewModel.isMeteredConnection.collectAsState()
     val ambientState by viewModel.ambientState.collectAsState()
+    val isAlarmRinging by viewModel.isAlarmRinging.collectAsState()
+    val alarmFadedVolume by viewModel.alarmFadedVolume.collectAsState()
 
     Scaffold(
         modifier = modifier,
@@ -921,6 +923,244 @@ fun SettingsScreen(
                                     onClick = { viewModel.setAmbientSound(soundType) },
                                     label = { Text(soundType.displayName) }
                                 )
+                            }
+                        }
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            }
+
+            // --- Gentle Morning Wake-Up Alarm ---
+            item {
+                Text(
+                    text = "Gentle Morning Wake-Up Alarm",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                val alarmConfig = themeConfig.wakeAlarmConfig
+
+                if (isAlarmRinging) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 12.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = "Alarm Ringing",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = MaterialTheme.colorScheme.onErrorContainer
+                                    )
+                                    Text(
+                                        text = "Fade-in Volume: ${(alarmFadedVolume * 100).toInt()}%",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onErrorContainer
+                                    )
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Button(
+                                        onClick = { viewModel.snoozeWakeAlarm(10) },
+                                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                                    ) {
+                                        Text("Snooze")
+                                    }
+                                    OutlinedButton(
+                                        onClick = { viewModel.stopWakeAlarm() }
+                                    ) {
+                                        Text("Dismiss")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                ListItem(
+                    headlineContent = { Text("Morning Wake-Up Alarm") },
+                    supportingContent = {
+                        Text(
+                            if (alarmConfig.isEnabled)
+                                String.format("Scheduled for %02d:%02d with %ds fade-in", alarmConfig.hour, alarmConfig.minute, alarmConfig.fadeInSeconds)
+                            else
+                                "Gradually wake up with ascending audio volume fade-in"
+                        )
+                    },
+                    trailingContent = {
+                        Switch(
+                            checked = alarmConfig.isEnabled,
+                            onCheckedChange = { isChecked ->
+                                viewModel.updateWakeAlarmConfig(alarmConfig.copy(isEnabled = isChecked))
+                            }
+                        )
+                    }
+                )
+
+                if (alarmConfig.isEnabled) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            // Alarm Time Selector
+                            Text(
+                                text = "Wake-Up Time",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .horizontalScroll(rememberScrollState())
+                                    .padding(vertical = 6.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                listOf(
+                                    6 to 0,
+                                    6 to 30,
+                                    7 to 0,
+                                    7 to 30,
+                                    8 to 0,
+                                    8 to 30
+                                ).forEach { (h, m) ->
+                                    val isSelected = alarmConfig.hour == h && alarmConfig.minute == m
+                                    FilterChip(
+                                        selected = isSelected,
+                                        onClick = {
+                                            viewModel.updateWakeAlarmConfig(alarmConfig.copy(hour = h, minute = m))
+                                        },
+                                        label = {
+                                            Text(String.format("%02d:%02d", h, m))
+                                        },
+                                        leadingIcon = if (isSelected) {
+                                            { Icon(Icons.Rounded.Alarm, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                                        } else null
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            // Fade-In Duration
+                            Text(
+                                text = "Volume Fade-In Duration",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 6.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                listOf(
+                                    30 to "30 sec",
+                                    60 to "1 min",
+                                    120 to "2 min",
+                                    300 to "5 min"
+                                ).forEach { (seconds, label) ->
+                                    FilterChip(
+                                        selected = alarmConfig.fadeInSeconds == seconds,
+                                        onClick = {
+                                            viewModel.updateWakeAlarmConfig(alarmConfig.copy(fadeInSeconds = seconds))
+                                        },
+                                        label = { Text(label) }
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            // Audio Source
+                            Text(
+                                text = "Audio Source",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 6.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                listOf(
+                                    WakeAlarmSource.CURRENT_QUEUE to "Queue",
+                                    WakeAlarmSource.LIKED_SONGS to "Favorites",
+                                    WakeAlarmSource.AMBIENT_SOUND to "Ambient"
+                                ).forEach { (src, label) ->
+                                    FilterChip(
+                                        selected = alarmConfig.source == src,
+                                        onClick = {
+                                            viewModel.updateWakeAlarmConfig(alarmConfig.copy(source = src))
+                                        },
+                                        label = { Text(label) }
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            // Target Volume Slider
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Rounded.VolumeUp,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Slider(
+                                    value = alarmConfig.targetVolume,
+                                    onValueChange = {
+                                        viewModel.updateWakeAlarmConfig(alarmConfig.copy(targetVolume = it))
+                                    },
+                                    valueRange = 0.2f..1.0f,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Text(
+                                    text = "${(alarmConfig.targetVolume * 100).toInt()}%",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            // Preview Button
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                if (isAlarmRinging) {
+                                    FilledTonalButton(onClick = { viewModel.stopWakeAlarm() }) {
+                                        Icon(Icons.Rounded.Stop, contentDescription = null, modifier = Modifier.size(16.dp))
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text("Stop Preview")
+                                    }
+                                } else {
+                                    OutlinedButton(onClick = { viewModel.testTriggerWakeAlarm() }) {
+                                        Icon(Icons.Rounded.PlayArrow, contentDescription = null, modifier = Modifier.size(16.dp))
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text("Preview Wake-Up")
+                                    }
+                                }
                             }
                         }
                     }

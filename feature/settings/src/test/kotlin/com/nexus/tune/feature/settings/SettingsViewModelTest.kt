@@ -25,6 +25,7 @@ class SettingsViewModelTest {
     private val settingsRepository = mockk<SettingsRepository>(relaxed = true)
     private val getListeningStatsUseCase = mockk<GetListeningStatsUseCase>(relaxed = true)
     private val sleepTimerManager = mockk<SleepTimerManager>(relaxed = true)
+    private val wakeAlarmManager = mockk<com.nexus.tune.core.player.alarm.WakeAlarmManager>(relaxed = true)
     private val themeFlow = MutableStateFlow(ThemeConfig())
 
     private lateinit var viewModel: SettingsViewModel
@@ -43,7 +44,8 @@ class SettingsViewModelTest {
         viewModel = SettingsViewModel(
             settingsRepository = settingsRepository,
             getListeningStatsUseCase = getListeningStatsUseCase,
-            sleepTimerManager = sleepTimerManager
+            sleepTimerManager = sleepTimerManager,
+            wakeAlarmManager = wakeAlarmManager
         )
     }
 
@@ -547,6 +549,48 @@ class SettingsViewModelTest {
 
         coVerify {
             settingsRepository.updateThemeConfig(match { !it.smartShuffleEnabled })
+        }
+    }
+
+    @Test
+    fun `updateWakeAlarmConfig updates config and schedules alarm`() = runTest {
+        val newConfig = WakeAlarmConfig(
+            isEnabled = true,
+            hour = 7,
+            minute = 15,
+            fadeInSeconds = 120,
+            targetVolume = 0.85f,
+            source = WakeAlarmSource.AMBIENT_SOUND
+        )
+        viewModel.updateWakeAlarmConfig(newConfig)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.wakeAlarmConfig == newConfig })
+        }
+        verify {
+            wakeAlarmManager.scheduleAlarm(newConfig)
+        }
+    }
+
+    @Test
+    fun `testTriggerWakeAlarm delegates to wakeAlarmManager`() = runTest {
+        viewModel.testTriggerWakeAlarm()
+        verify {
+            wakeAlarmManager.triggerWakeAlarm(any())
+        }
+    }
+
+    @Test
+    fun `stopWakeAlarm and snoozeWakeAlarm delegate to wakeAlarmManager`() = runTest {
+        viewModel.stopWakeAlarm()
+        verify {
+            wakeAlarmManager.stopAlarm()
+        }
+
+        viewModel.snoozeWakeAlarm(15)
+        verify {
+            wakeAlarmManager.snooze(15)
         }
     }
 }

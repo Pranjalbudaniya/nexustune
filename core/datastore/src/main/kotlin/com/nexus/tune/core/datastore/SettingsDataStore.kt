@@ -43,6 +43,12 @@ class SettingsDataStore(private val context: Context) {
         val SEEKBAR_STYLE = stringPreferencesKey("theme_seekbar_style")
         val RESET_PITCH_ON_TRACK_CHANGE = booleanPreferencesKey("reset_pitch_on_track_change")
         val SMART_SHUFFLE_ENABLED = booleanPreferencesKey("smart_shuffle_enabled")
+        val WAKE_ALARM_ENABLED = booleanPreferencesKey("wake_alarm_enabled")
+        val WAKE_ALARM_HOUR = intPreferencesKey("wake_alarm_hour")
+        val WAKE_ALARM_MINUTE = intPreferencesKey("wake_alarm_minute")
+        val WAKE_ALARM_FADE_SECONDS = intPreferencesKey("wake_alarm_fade_seconds")
+        val WAKE_ALARM_SOURCE = stringPreferencesKey("wake_alarm_source")
+        val WAKE_ALARM_VOLUME = floatPreferencesKey("wake_alarm_volume")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -81,7 +87,17 @@ class SettingsDataStore(private val context: Context) {
                 SeekbarStyle.valueOf(prefs[PreferencesKeys.SEEKBAR_STYLE] ?: SeekbarStyle.WAVEFORM.name)
             }.getOrDefault(SeekbarStyle.WAVEFORM),
             resetPitchOnTrackChange = prefs[PreferencesKeys.RESET_PITCH_ON_TRACK_CHANGE] ?: true,
-            smartShuffleEnabled = prefs[PreferencesKeys.SMART_SHUFFLE_ENABLED] ?: true
+            smartShuffleEnabled = prefs[PreferencesKeys.SMART_SHUFFLE_ENABLED] ?: true,
+            wakeAlarmConfig = WakeAlarmConfig(
+                isEnabled = prefs[PreferencesKeys.WAKE_ALARM_ENABLED] ?: false,
+                hour = prefs[PreferencesKeys.WAKE_ALARM_HOUR] ?: 7,
+                minute = prefs[PreferencesKeys.WAKE_ALARM_MINUTE] ?: 0,
+                fadeInSeconds = prefs[PreferencesKeys.WAKE_ALARM_FADE_SECONDS] ?: 120,
+                source = runCatching {
+                    WakeAlarmSource.valueOf(prefs[PreferencesKeys.WAKE_ALARM_SOURCE] ?: WakeAlarmSource.LIKED_SONGS.name)
+                }.getOrDefault(WakeAlarmSource.LIKED_SONGS),
+                targetVolume = prefs[PreferencesKeys.WAKE_ALARM_VOLUME] ?: 0.8f
+            )
         )
     }
 
@@ -112,6 +128,12 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.SEEKBAR_STYLE] = config.seekbarStyle.name
             prefs[PreferencesKeys.RESET_PITCH_ON_TRACK_CHANGE] = config.resetPitchOnTrackChange
             prefs[PreferencesKeys.SMART_SHUFFLE_ENABLED] = config.smartShuffleEnabled
+            prefs[PreferencesKeys.WAKE_ALARM_ENABLED] = config.wakeAlarmConfig.isEnabled
+            prefs[PreferencesKeys.WAKE_ALARM_HOUR] = config.wakeAlarmConfig.hour
+            prefs[PreferencesKeys.WAKE_ALARM_MINUTE] = config.wakeAlarmConfig.minute
+            prefs[PreferencesKeys.WAKE_ALARM_FADE_SECONDS] = config.wakeAlarmConfig.fadeInSeconds
+            prefs[PreferencesKeys.WAKE_ALARM_SOURCE] = config.wakeAlarmConfig.source.name
+            prefs[PreferencesKeys.WAKE_ALARM_VOLUME] = config.wakeAlarmConfig.targetVolume
         }
     }
 

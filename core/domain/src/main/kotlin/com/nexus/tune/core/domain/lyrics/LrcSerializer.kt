@@ -41,3 +41,4 @@ object LrcSerializer {
         return sb.toString().trimEnd()
     }
 }
+

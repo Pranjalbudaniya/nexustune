@@ -98,6 +98,19 @@ enum class SeekbarStyle {
     WAVEFORM
 }
 
+enum class WakeAlarmSource {
+    LIKED_SONGS, CURRENT_QUEUE, AMBIENT_SOUND
+}
+
+data class WakeAlarmConfig(
+    val isEnabled: Boolean = false,
+    val hour: Int = 7,
+    val minute: Int = 0,
+    val fadeInSeconds: Int = 120,
+    val source: WakeAlarmSource = WakeAlarmSource.LIKED_SONGS,
+    val targetVolume: Float = 0.8f
+)
+
 enum class SpatialAudioStage {
     OFF, STUDIO, LOUNGE, CONCERT_HALL, WIDE_ARENA
 }
@@ -171,7 +184,8 @@ data class ThemeConfig(
     val bedtimeHandoffDurationMinutes: Int = 60,
     val seekbarStyle: SeekbarStyle = SeekbarStyle.WAVEFORM,
     val resetPitchOnTrackChange: Boolean = true,
-    val smartShuffleEnabled: Boolean = true
+    val smartShuffleEnabled: Boolean = true,
+    val wakeAlarmConfig: WakeAlarmConfig = WakeAlarmConfig()
 )
 
 data class SoundDoseInfo(

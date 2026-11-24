@@ -38,3 +38,4 @@ class LrcSerializerTest {
         assertEquals("World", parsed.lines[1].text)
     }
 }
+

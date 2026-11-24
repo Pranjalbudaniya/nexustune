@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 37 (v4.7.0 Custom Synced LRC Lyrics Import, Export & Offline Storage Engine)
+- Active Phase: Post-v1.0 Improvement Loop 38 (v4.8.0 Gentle Morning Wake-Up Alarm & Audio Fade-In Engine)
 - In Flight: Running test suites and ./scripts/gate.sh slice
 - Branches: `main`
 
@@ -309,15 +309,27 @@
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v4.6-1`
 
-## Improvement Loop 37 (v4.7 Milestone - In Progress)
-- [x] Custom Synced LRC Lyrics Import, Export & Offline Storage Engine:
-  - [x] `LrcParser` and `LrcSerializer` in `:core:domain:lyrics` with full RFC timestamp and metadata support
-  - [x] `saveCustomLyrics` and `exportLyricsToLrc` in `MusicRepository` and `MusicRepositoryImpl`
-  - [x] `importCustomLrc` and `exportCurrentLyrics` in `PlayerViewModel`
-  - [x] Interactive Import LRC dialog and Export action in `PlayerScreen`
-  - [x] Unit test suites in `LrcParserTest`, `LrcSerializerTest`, and `PlayerViewModelTest`
-- [x] Slice gate passed
-- [ ] Final gate passed & tagged: `git tag v4.7-1`
+- [x] Improvement Loop 37 (v4.7 Milestone - Tagged `v4.7-1`)
+  - [x] Custom Synced LRC Lyrics Import, Export & Offline Storage Engine:
+    - [x] `LrcParser` and `LrcSerializer` in `:core:domain:lyrics` with full RFC timestamp and metadata support
+    - [x] `saveCustomLyrics` and `exportLyricsToLrc` in `MusicRepository` and `MusicRepositoryImpl`
+    - [x] `importCustomLrc` and `exportCurrentLyrics` in `PlayerViewModel`
+    - [x] Interactive Import LRC dialog and Export action in `PlayerScreen`
+    - [x] Unit test suites in `LrcParserTest`, `LrcSerializerTest`, and `PlayerViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v4.7-1`
+
+- [x] Improvement Loop 38 (v4.8 Milestone - Tagged `v4.8-1`)
+  - [x] Gentle Morning Wake-Up Alarm & Audio Fade-In Engine:
+    - [x] `WakeAlarmConfig` and `WakeAlarmSource` in `:core:model`
+    - [x] Preference storage and mapping in `SettingsDataStore`
+    - [x] `WakeAlarmManager` and `WakeAlarmReceiver` in `:core:player:alarm` with Android `AlarmManager` exact scheduling and smooth volume ramping
+    - [x] `SCHEDULE_EXACT_ALARM` permission and receiver declaration in `AndroidManifest.xml`
+    - [x] `WakeAlarmTriggerable` implementation in `NexusTuneApplication`
+    - [x] Interactive Morning Alarm settings card in `SettingsScreen` with time chips, fade duration chips, source selector, and test preview
+    - [x] Unit test suites in `WakeAlarmManagerTest` and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v4.8-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

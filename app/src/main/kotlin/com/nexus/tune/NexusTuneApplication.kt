@@ -17,8 +17,13 @@ import com.nexus.tune.core.extractor.FakeMusicSource
 import com.nexus.tune.core.extractor.MusicSource
 import com.nexus.tune.core.extractor.NewPipeMusicSource
 import com.nexus.tune.core.player.PlayerController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
-class NexusTuneApplication : Application() {
+class NexusTuneApplication : Application(), com.nexus.tune.core.player.alarm.WakeAlarmTriggerable {
 
     lateinit var database: NexusTuneDatabase
         private set
@@ -66,6 +71,8 @@ class NexusTuneApplication : Application() {
     lateinit var safeListeningManager: com.nexus.tune.core.player.hearing.SafeListeningManager
         private set
     lateinit var backupManager: com.nexus.tune.core.data.backup.BackupManager
+        private set
+    lateinit var wakeAlarmManager: com.nexus.tune.core.player.alarm.WakeAlarmManager
         private set
 
     override fun onCreate() {
@@ -127,6 +134,25 @@ class NexusTuneApplication : Application() {
         genreAdaptiveEqManager = com.nexus.tune.core.player.effects.GenreAdaptiveEqManager()
         safeListeningManager = com.nexus.tune.core.player.hearing.SafeListeningManager()
         backupManager = com.nexus.tune.core.data.backup.BackupManager(database, settingsDataStore)
+
+        wakeAlarmManager = com.nexus.tune.core.player.alarm.WakeAlarmManager(
+            context = this,
+            playerController = playerController,
+            ambientSynthesizer = com.nexus.tune.core.player.ambient.AmbientSoundSynthesizer.instance
+        )
+        val appScope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main + kotlinx.coroutines.SupervisorJob())
+        appScope.launch {
+            settingsDataStore.themeConfig.collect { config ->
+                wakeAlarmManager.scheduleAlarm(config.wakeAlarmConfig)
+            }
+        }
+    }
+
+    override fun triggerWakeAlarm() {
+        CoroutineScope(Dispatchers.Main).launch {
+            val config = settingsDataStore.themeConfig.first().wakeAlarmConfig
+            wakeAlarmManager.triggerWakeAlarm(config)
+        }
     }
 
     companion object {

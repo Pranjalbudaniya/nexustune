@@ -22,7 +22,8 @@ class SettingsViewModel(
     private val safeListeningManager: com.nexus.tune.core.player.hearing.SafeListeningManager? = null,
     private val backupManager: com.nexus.tune.core.data.backup.BackupManager? = null,
     private val isMeteredConnectionProvider: (() -> Boolean)? = null,
-    private val ambientSoundSynthesizer: com.nexus.tune.core.player.ambient.AmbientSoundSynthesizer? = null
+    private val ambientSoundSynthesizer: com.nexus.tune.core.player.ambient.AmbientSoundSynthesizer? = null,
+    private val wakeAlarmManager: com.nexus.tune.core.player.alarm.WakeAlarmManager? = null
 ) : ViewModel() {
 
     private val activeAmbientSynthesizer: com.nexus.tune.core.player.ambient.AmbientSoundSynthesizer by lazy {
@@ -136,6 +137,12 @@ class SettingsViewModel(
 
     val sleepTimerState: StateFlow<SleepTimerState> = sleepTimerManager?.timerState
         ?: MutableStateFlow(SleepTimerState()).asStateFlow()
+
+    val isAlarmRinging: StateFlow<Boolean> = wakeAlarmManager?.isAlarmActive
+        ?: MutableStateFlow(false).asStateFlow()
+
+    val alarmFadedVolume: StateFlow<Float> = wakeAlarmManager?.currentFadedVolume
+        ?: MutableStateFlow(0f).asStateFlow()
 
     private val _equalizerPreset = MutableStateFlow(EqualizerPreset.FLAT)
     val equalizerPreset: StateFlow<EqualizerPreset> = _equalizerPreset.asStateFlow()
@@ -436,5 +443,23 @@ class SettingsViewModel(
             val removed = musicRepository?.deduplicateLikedTracks() ?: 0
             backupImportStatus.value = if (removed > 0) "Removed $removed duplicate tracks" else "No duplicates found in library"
         }
+    }
+
+    fun updateWakeAlarmConfig(config: WakeAlarmConfig) {
+        val current = themeConfig.value
+        updateTheme(current.copy(wakeAlarmConfig = config))
+        wakeAlarmManager?.scheduleAlarm(config)
+    }
+
+    fun testTriggerWakeAlarm() {
+        wakeAlarmManager?.triggerWakeAlarm(themeConfig.value.wakeAlarmConfig)
+    }
+
+    fun stopWakeAlarm() {
+        wakeAlarmManager?.stopAlarm()
+    }
+
+    fun snoozeWakeAlarm(minutes: Int = 10) {
+        wakeAlarmManager?.snooze(minutes)
     }
 }

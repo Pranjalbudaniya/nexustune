@@ -5,6 +5,15 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.8.0] - 2026-11-24
+
+### Added
+- **Gentle Morning Wake-Up Alarm & Audio Fade-In Engine**: Implemented `WakeAlarmManager` and `WakeAlarmReceiver` in `:core:player:alarm` scheduling exact alarms using Android `AlarmManager` (`RTC_WAKEUP`) with compatibility fallbacks for Android 12+ (`SCHEDULE_EXACT_ALARM`).
+- **Configurable Audio Volume Ramping**: Ascends playback volume gently from `0.0f` to user-configured `targetVolume` over customizable durations (30s, 1m, 2m, 5m) in 500ms micro-increments.
+- **Multi-Source Alarm Audio**: Supports waking users to their current playback queue (`CURRENT_QUEUE`), favorite liked tracks (`LIKED_SONGS`), or soothing ambient synthesized soundscapes (`AMBIENT_SOUND`).
+- **Interactive Settings Alarm Console**: Added dedicated "Gentle Morning Wake-Up Alarm" section in `SettingsScreen` with time chips, fade duration chips, source selector, target volume slider, snooze/dismiss actions, and real-time wake-up preview.
+- **Application Lifecycle Orchestration**: Integrated `WakeAlarmTriggerable` into `NexusTuneApplication` for reactive background broadcast receiver execution and DataStore config synchronization.
+
 ## [4.7.0] - 2026-11-24
 
 ### Added

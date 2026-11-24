@@ -76,6 +76,7 @@ class MainActivity : ComponentActivity() {
             musicRepository = app.musicRepository,
             safeListeningManager = app.safeListeningManager,
             backupManager = app.backupManager,
+            wakeAlarmManager = app.wakeAlarmManager,
             isMeteredConnectionProvider = {
                 val cm = getSystemService(android.content.Context.CONNECTIVITY_SERVICE) as? android.net.ConnectivityManager
                 cm?.isActiveNetworkMetered ?: false
