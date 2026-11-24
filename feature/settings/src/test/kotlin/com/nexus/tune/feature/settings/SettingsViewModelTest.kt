@@ -276,4 +276,24 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.autoGenreEqEnabled })
         }
     }
+
+    @Test
+    fun `setVolumeLimit updates theme config`() = runTest {
+        viewModel.setVolumeLimit(80)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.volumeLimitPercent == 80 })
+        }
+    }
+
+    @Test
+    fun `toggleSafeListeningAlert updates theme config`() = runTest {
+        viewModel.toggleSafeListeningAlert(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.safeListeningAlertEnabled })
+        }
+    }
 }

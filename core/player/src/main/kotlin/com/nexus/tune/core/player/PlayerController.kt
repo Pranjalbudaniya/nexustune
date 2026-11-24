@@ -188,8 +188,19 @@ class PlayerController(private val context: Context) {
         }
     }
 
+    private var volumeLimitMultiplier: Float = 1.0f
+
+    fun setVolumeLimit(percent: Int) {
+        volumeLimitMultiplier = (percent.coerceIn(10, 100) / 100f)
+        val c = controller ?: return
+        if (c.volume > volumeLimitMultiplier) {
+            c.volume = volumeLimitMultiplier
+        }
+    }
+
     fun setVolume(volume: Float) {
-        controller?.volume = volume.coerceIn(0.0f, 1.0f)
+        val clamped = volume.coerceIn(0.0f, volumeLimitMultiplier)
+        controller?.volume = clamped
     }
 
     fun seekTo(positionMs: Long) {

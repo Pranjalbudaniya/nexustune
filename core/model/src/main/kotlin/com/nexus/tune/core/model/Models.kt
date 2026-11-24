@@ -132,7 +132,15 @@ data class ThemeConfig(
     val forceHiResSamplingRate: Int = 0,
     val gaplessPreloadEnabled: Boolean = true,
     val gaplessPreloadSeconds: Int = 5,
-    val autoGenreEqEnabled: Boolean = false
+    val autoGenreEqEnabled: Boolean = false,
+    val volumeLimitPercent: Int = 100,
+    val safeListeningAlertEnabled: Boolean = true
+)
+
+data class SoundDoseInfo(
+    val dosePercent: Float = 0f,
+    val isOverExposed: Boolean = false,
+    val listeningMinutes: Long = 0L
 )
 
 data class StorageUsage(

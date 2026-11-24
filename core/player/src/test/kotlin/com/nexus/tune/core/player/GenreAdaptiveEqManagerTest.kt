@@ -70,3 +70,4 @@ class GenreAdaptiveEqManagerTest {
         verify { audioEffects.applyPreset(EqualizerPreset.BASS_BOOST) }
     }
 }
+

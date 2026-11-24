@@ -18,8 +18,12 @@ class SettingsViewModel(
     private val sleepTimerManager: SleepTimerManager? = null,
     private val storageManager: StorageManager? = null,
     private val audioOutputRouteManager: com.nexus.tune.core.player.routing.AudioOutputRouteManager? = null,
-    private val musicRepository: com.nexus.tune.core.domain.repository.MusicRepository? = null
+    private val musicRepository: com.nexus.tune.core.domain.repository.MusicRepository? = null,
+    private val safeListeningManager: com.nexus.tune.core.player.hearing.SafeListeningManager? = null
 ) : ViewModel() {
+
+    val soundDoseInfo: StateFlow<SoundDoseInfo> = safeListeningManager?.soundDoseInfo
+        ?: MutableStateFlow(SoundDoseInfo()).asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -129,6 +133,20 @@ class SettingsViewModel(
     fun toggleAutoGenreEq(enabled: Boolean) {
         val current = themeConfig.value
         updateTheme(current.copy(autoGenreEqEnabled = enabled))
+    }
+
+    fun setVolumeLimit(percent: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(volumeLimitPercent = percent))
+    }
+
+    fun toggleSafeListeningAlert(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(safeListeningAlertEnabled = enabled))
+    }
+
+    fun resetSoundDose() {
+        safeListeningManager?.resetDose()
     }
 
     fun setGaplessPreloadSeconds(seconds: Int) {

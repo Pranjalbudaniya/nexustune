@@ -61,6 +61,8 @@ class NexusTuneApplication : Application() {
         private set
     lateinit var genreAdaptiveEqManager: com.nexus.tune.core.player.effects.GenreAdaptiveEqManager
         private set
+    lateinit var safeListeningManager: com.nexus.tune.core.player.hearing.SafeListeningManager
+        private set
 
     override fun onCreate() {
         super.onCreate()
@@ -107,6 +109,7 @@ class NexusTuneApplication : Application() {
             resolveStreamUseCase = resolveStreamUseCase
         )
         genreAdaptiveEqManager = com.nexus.tune.core.player.effects.GenreAdaptiveEqManager()
+        safeListeningManager = com.nexus.tune.core.player.hearing.SafeListeningManager()
     }
 
     companion object {

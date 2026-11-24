@@ -38,7 +38,9 @@ import com.nexus.tune.feature.search.SearchScreen
 import com.nexus.tune.feature.search.SearchViewModel
 import com.nexus.tune.feature.settings.SettingsScreen
 import com.nexus.tune.feature.settings.SettingsViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -66,7 +68,8 @@ class MainActivity : ComponentActivity() {
             getListeningStatsUseCase = app.getListeningStatsUseCase,
             sleepTimerManager = app.sleepTimerManager,
             audioOutputRouteManager = app.audioOutputRouteManager,
-            musicRepository = app.musicRepository
+            musicRepository = app.musicRepository,
+            safeListeningManager = app.safeListeningManager
         )
 
         lifecycleScope.launch {
@@ -114,6 +117,22 @@ class MainActivity : ComponentActivity() {
                 if (autoGenre && track != null) {
                     val preset = app.genreAdaptiveEqManager.applyAdaptivePreset(track)
                     settingsViewModel.setEqualizerPreset(preset)
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            settingsViewModel.themeConfig.collect { config ->
+                app.playerController.setVolumeLimit(config.volumeLimitPercent)
+            }
+        }
+
+        lifecycleScope.launch {
+            while (isActive) {
+                delay(5000L)
+                val state = app.playerController.playbackState.value
+                if (state.status == com.nexus.tune.core.model.PlaybackStatus.PLAYING) {
+                    app.safeListeningManager.recordExposure(5L, 0.85f)
                 }
             }
         }

@@ -24,6 +24,7 @@ fun SettingsScreen(
     val equalizerPreset by viewModel.equalizerPreset.collectAsState()
     val equalizerEnabled by viewModel.equalizerEnabled.collectAsState()
     val listeningStats by viewModel.listeningStats.collectAsState()
+    val soundDoseInfo by viewModel.soundDoseInfo.collectAsState()
 
     Scaffold(
         modifier = modifier,
@@ -241,6 +242,54 @@ fun SettingsScreen(
                             )
                         }
                     )
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+                // --- Hearing Protection & Safe Listening ---
+                Text(
+                    text = "Hearing Protection & Safe Listening",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                ListItem(
+                    headlineContent = { Text("Safe Sound Exposure Guard") },
+                    supportingContent = {
+                        val dose = soundDoseInfo.dosePercent.toInt()
+                        Text("Weekly sound dose: $dose% (WHO 80 dBA standard)")
+                    },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.safeListeningAlertEnabled,
+                            onCheckedChange = { viewModel.toggleSafeListeningAlert(it) }
+                        )
+                    }
+                )
+
+                Text(
+                    text = "Maximum Volume Limiter",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listOf(
+                        70 to "70% (Safe)",
+                        80 to "80%",
+                        90 to "90%",
+                        100 to "100% (Off)"
+                    ).forEach { (limit, label) ->
+                        FilterChip(
+                            selected = themeConfig.volumeLimitPercent == limit,
+                            onClick = { viewModel.setVolumeLimit(limit) },
+                            label = { Text(label) }
+                        )
+                    }
                 }
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
@@ -666,8 +715,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v2.8.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Parametric EQ & Auto-Genre DSP Profiles") }
+                    headlineContent = { Text("NexusTune v2.9.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Safe Listening Protection & Volume Limiter") }
                 )
             }
         }

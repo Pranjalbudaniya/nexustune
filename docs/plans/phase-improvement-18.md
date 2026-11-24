@@ -36,3 +36,4 @@ Implement **Parametric EQ Engine & Auto-Genre Profile Adaptation**:
    - Unit tests in `SettingsViewModelTest`.
    - Run `./scripts/gate.sh slice`.
    - Run `./scripts/gate.sh final` and tag `v2.8-1`.
+
