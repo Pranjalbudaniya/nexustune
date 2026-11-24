@@ -207,8 +207,32 @@ class SettingsViewModel(
 
     fun toggleVolumeNormalization(enabled: Boolean) {
         val current = themeConfig.value
-        updateTheme(current.copy(volumeNormalizationEnabled = enabled))
+        val newMode = if (enabled) LoudnessNormalizationMode.REPLAYGAIN_TRACK else LoudnessNormalizationMode.OFF
+        updateTheme(current.copy(
+            volumeNormalizationEnabled = enabled,
+            loudnessConfig = current.loudnessConfig.copy(mode = newMode)
+        ))
         NexusAudioEffects.instance.setLoudnessEnhancerEnabled(enabled)
+    }
+
+    fun setLoudnessMode(mode: LoudnessNormalizationMode) {
+        val current = themeConfig.value
+        val enabled = mode != LoudnessNormalizationMode.OFF
+        updateTheme(current.copy(
+            volumeNormalizationEnabled = enabled,
+            loudnessConfig = current.loudnessConfig.copy(mode = mode)
+        ))
+        NexusAudioEffects.instance.setLoudnessEnhancerEnabled(enabled)
+    }
+
+    fun setTargetLufs(targetLufs: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(loudnessConfig = current.loudnessConfig.copy(targetLufs = targetLufs)))
+    }
+
+    fun setPreAmpGainDb(preAmpGainDb: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(loudnessConfig = current.loudnessConfig.copy(preAmpGainDb = preAmpGainDb)))
     }
 
     fun setTargetGain(gainmB: Int) {

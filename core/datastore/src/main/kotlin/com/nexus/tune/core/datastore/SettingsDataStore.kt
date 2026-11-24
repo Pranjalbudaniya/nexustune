@@ -49,6 +49,9 @@ class SettingsDataStore(private val context: Context) {
         val WAKE_ALARM_FADE_SECONDS = intPreferencesKey("wake_alarm_fade_seconds")
         val WAKE_ALARM_SOURCE = stringPreferencesKey("wake_alarm_source")
         val WAKE_ALARM_VOLUME = floatPreferencesKey("wake_alarm_volume")
+        val LOUDNESS_MODE = stringPreferencesKey("loudness_normalization_mode")
+        val TARGET_LUFS = floatPreferencesKey("loudness_target_lufs")
+        val PRE_AMP_GAIN_DB = floatPreferencesKey("loudness_preamp_gain_db")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -97,6 +100,13 @@ class SettingsDataStore(private val context: Context) {
                     WakeAlarmSource.valueOf(prefs[PreferencesKeys.WAKE_ALARM_SOURCE] ?: WakeAlarmSource.LIKED_SONGS.name)
                 }.getOrDefault(WakeAlarmSource.LIKED_SONGS),
                 targetVolume = prefs[PreferencesKeys.WAKE_ALARM_VOLUME] ?: 0.8f
+            ),
+            loudnessConfig = LoudnessConfig(
+                mode = runCatching {
+                    LoudnessNormalizationMode.valueOf(prefs[PreferencesKeys.LOUDNESS_MODE] ?: LoudnessNormalizationMode.REPLAYGAIN_TRACK.name)
+                }.getOrDefault(LoudnessNormalizationMode.REPLAYGAIN_TRACK),
+                targetLufs = prefs[PreferencesKeys.TARGET_LUFS] ?: -14.0f,
+                preAmpGainDb = prefs[PreferencesKeys.PRE_AMP_GAIN_DB] ?: 0.0f
             )
         )
     }
@@ -134,6 +144,9 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.WAKE_ALARM_FADE_SECONDS] = config.wakeAlarmConfig.fadeInSeconds
             prefs[PreferencesKeys.WAKE_ALARM_SOURCE] = config.wakeAlarmConfig.source.name
             prefs[PreferencesKeys.WAKE_ALARM_VOLUME] = config.wakeAlarmConfig.targetVolume
+            prefs[PreferencesKeys.LOUDNESS_MODE] = config.loudnessConfig.mode.name
+            prefs[PreferencesKeys.TARGET_LUFS] = config.loudnessConfig.targetLufs
+            prefs[PreferencesKeys.PRE_AMP_GAIN_DB] = config.loudnessConfig.preAmpGainDb
         }
     }
 

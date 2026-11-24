@@ -593,4 +593,31 @@ class SettingsViewModelTest {
             wakeAlarmManager.snooze(15)
         }
     }
+
+    @Test
+    fun `setLoudnessMode, setTargetLufs, and setPreAmpGainDb update themeConfig`() = runTest {
+        viewModel.setLoudnessMode(LoudnessNormalizationMode.DYNAMIC_PEAK_LIMITER)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match {
+                it.loudnessConfig.mode == LoudnessNormalizationMode.DYNAMIC_PEAK_LIMITER
+            })
+        }
+
+        viewModel.setTargetLufs(-11.0f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match {
+                it.loudnessConfig.targetLufs == -11.0f
+            })
+        }
+
+        viewModel.setPreAmpGainDb(2.5f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match {
+                it.loudnessConfig.preAmpGainDb == 2.5f
+            })
+        }
+    }
 }

@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.nexus.tune.core.model.*
 
@@ -265,49 +266,121 @@ fun SettingsScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                ListItem(
-                    headlineContent = { Text("Volume Normalization (ReplayGain)") },
-                    supportingContent = { Text("Normalize loudness across songs using DSP enhancement") },
-                    trailingContent = {
-                        Switch(
-                            checked = themeConfig.volumeNormalizationEnabled,
-                            onCheckedChange = { viewModel.toggleVolumeNormalization(it) }
-                        )
-                    }
+                Text(
+                    text = "Audio Loudness Normalization & Dynamic Peak Limiter",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = "Auto-levels stream loudness to prevent volume jumps; soft-knee peak limiter prevents clipping distortion.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                if (themeConfig.volumeNormalizationEnabled) {
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Mode Selector Chips
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    LoudnessNormalizationMode.values().forEach { mode ->
+                        FilterChip(
+                            selected = themeConfig.loudnessConfig.mode == mode,
+                            onClick = { viewModel.setLoudnessMode(mode) },
+                            label = { Text(mode.displayName, style = MaterialTheme.typography.labelSmall) }
+                        )
+                    }
+                }
+
+                if (themeConfig.loudnessConfig.mode != LoudnessNormalizationMode.OFF) {
+                    Spacer(modifier = Modifier.height(8.dp))
+
                     Text(
-                        text = "Target Boost",
+                        text = "Target Loudness (LUFS)",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(vertical = 4.dp)
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        listOf(200 to "Gentle (+2dB)", 400 to "Standard (+4dB)", 600 to "Max (+6dB)").forEach { (gain, label) ->
+                        listOf(
+                            -11.0f to "-11 LUFS (Club)",
+                            -14.0f to "-14 LUFS (Standard)",
+                            -18.0f to "-18 LUFS (Dynamic)",
+                            -23.0f to "-23 LUFS (EBU R128)"
+                        ).forEach { (lufs, label) ->
                             FilterChip(
-                                selected = themeConfig.targetGainmB == gain,
-                                onClick = { viewModel.setTargetGain(gain) },
-                                label = { Text(label) }
+                                selected = kotlin.math.abs(themeConfig.loudnessConfig.targetLufs - lufs) < 0.1f,
+                                onClick = { viewModel.setTargetLufs(lufs) },
+                                label = { Text(label, style = MaterialTheme.typography.labelSmall) }
                             )
                         }
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    ListItem(
-                        headlineContent = { Text("Per-Track LUFS Calibration") },
-                        supportingContent = { Text("Automatically adjust gain according to track loudness metadata") },
-                        trailingContent = {
-                            Switch(
-                                checked = themeConfig.perTrackGainEnabled,
-                                onCheckedChange = { viewModel.togglePerTrackGain(it) }
+                    // Pre-Amp Slider
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Pre-Amp Gain: ${if (themeConfig.loudnessConfig.preAmpGainDb >= 0) "+" else ""}${String.format(java.util.Locale.US, "%.1f", themeConfig.loudnessConfig.preAmpGainDb)} dB",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        if (themeConfig.loudnessConfig.preAmpGainDb != 0f) {
+                            TextButton(onClick = { viewModel.setPreAmpGainDb(0f) }) {
+                                Text("Reset 0 dB", style = MaterialTheme.typography.labelSmall)
+                            }
+                        }
+                    }
+
+                    Slider(
+                        value = themeConfig.loudnessConfig.preAmpGainDb,
+                        onValueChange = { viewModel.setPreAmpGainDb(it) },
+                        valueRange = -6.0f..6.0f,
+                        steps = 23,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    // Headroom & Mode Status Card
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.padding(10.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Limiter Status: Soft-Knee Active (0.95 Knee)",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = themeConfig.loudnessConfig.mode.name,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = themeConfig.loudnessConfig.mode.description,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                    )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))

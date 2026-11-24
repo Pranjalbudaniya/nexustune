@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 42 (v5.2.0 Interactive Up Next Active Queue Sheet & In-Player Reordering Engine)
+- Active Phase: Post-v1.0 Improvement Loop 43 (v5.3.0 Audio Loudness Normalization & Dynamic Peak Limiter Engine)
 - In Flight: Final release qualification gate and git tagging
 - Branches: `main`
 
@@ -371,6 +371,17 @@
     - [x] Dedicated unit tests in `PlayerViewModelTest`
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v5.2-1`
+
+- [x] Improvement Loop 43 (v5.3 Milestone - Tagged `v5.3-1`)
+  - [x] Audio Loudness Normalization & Dynamic Peak Limiter Engine:
+    - [x] `LoudnessNormalizationMode` and `LoudnessConfig` domain models in `:core:model`
+    - [x] `AudioNormalizationEngine` in `:core:domain:audio` with LUFS multiplier, soft-knee peak limiter, and track estimation
+    - [x] DataStore preferences and `ThemeConfig` integration in `SettingsDataStore`
+    - [x] Real-time volume scaling via `setLoudnessMultiplier()` in `PlayerController` and auto-calibration in `NexusTuneApplication`
+    - [x] Interactive Loudness Normalization & Limiter control console in `SettingsScreen`
+    - [x] Comprehensive test suites in `AudioNormalizationEngineTest` and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v5.3-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

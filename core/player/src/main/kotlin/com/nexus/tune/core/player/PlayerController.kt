@@ -201,18 +201,28 @@ class PlayerController(private val context: Context) {
     }
 
     private var volumeLimitMultiplier: Float = 1.0f
+    private var loudnessMultiplier: Float = 1.0f
+    private var baseVolume: Float = 1.0f
+
+    fun setLoudnessMultiplier(multiplier: Float) {
+        loudnessMultiplier = multiplier.coerceIn(0.1f, 2.0f)
+        applyEffectiveVolume()
+        updateState()
+    }
+
+    private fun applyEffectiveVolume() {
+        val effective = (baseVolume * loudnessMultiplier).coerceIn(0.0f, volumeLimitMultiplier)
+        controller?.volume = effective
+    }
 
     fun setVolumeLimit(percent: Int) {
         volumeLimitMultiplier = (percent.coerceIn(10, 100) / 100f)
-        val c = controller ?: return
-        if (c.volume > volumeLimitMultiplier) {
-            c.volume = volumeLimitMultiplier
-        }
+        applyEffectiveVolume()
     }
 
     fun setVolume(volume: Float) {
-        val clamped = volume.coerceIn(0.0f, volumeLimitMultiplier)
-        controller?.volume = clamped
+        baseVolume = volume
+        applyEffectiveVolume()
     }
 
     fun seekTo(positionMs: Long) {
@@ -316,7 +326,8 @@ class PlayerController(private val context: Context) {
             isRepeatAll = c.repeatMode == Player.REPEAT_MODE_ALL,
             playbackSpeed = params.speed,
             playbackPitch = params.pitch,
-            playbackPitchSemitones = semitones
+            playbackPitchSemitones = semitones,
+            loudnessMultiplier = loudnessMultiplier
         )
         com.nexus.tune.core.player.visualizer.VisualizerManager.instance.updatePlayback(c.isPlaying)
     }

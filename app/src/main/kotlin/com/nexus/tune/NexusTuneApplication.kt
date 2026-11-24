@@ -20,7 +20,9 @@ import com.nexus.tune.core.player.PlayerController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class NexusTuneApplication : Application(), com.nexus.tune.core.player.alarm.WakeAlarmTriggerable {
@@ -144,6 +146,18 @@ class NexusTuneApplication : Application(), com.nexus.tune.core.player.alarm.Wak
         appScope.launch {
             settingsDataStore.themeConfig.collect { config ->
                 wakeAlarmManager.scheduleAlarm(config.wakeAlarmConfig)
+                val track = playerController.playbackState.value.currentTrack
+                val lufs = track?.let { com.nexus.tune.core.domain.audio.AudioNormalizationEngine.estimateTrackLufs(it) }
+                val mult = com.nexus.tune.core.domain.audio.AudioNormalizationEngine.calculateGainMultiplier(lufs, config.loudnessConfig)
+                playerController.setLoudnessMultiplier(mult)
+            }
+        }
+        appScope.launch {
+            playerController.playbackState.map { it.currentTrack }.distinctUntilChanged().collect { track ->
+                val config = settingsDataStore.themeConfig.first().loudnessConfig
+                val lufs = track?.let { com.nexus.tune.core.domain.audio.AudioNormalizationEngine.estimateTrackLufs(it) }
+                val mult = com.nexus.tune.core.domain.audio.AudioNormalizationEngine.calculateGainMultiplier(lufs, config)
+                playerController.setLoudnessMultiplier(mult)
             }
         }
     }

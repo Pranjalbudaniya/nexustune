@@ -5,6 +5,15 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.3.0] - 2026-11-24
+
+### Added
+- **Audio Loudness Normalization & Dynamic Peak Limiter Engine**: Implemented `LoudnessNormalizationMode` (`OFF`, `REPLAYGAIN_TRACK`, `REPLAYGAIN_ALBUM`, `DYNAMIC_PEAK_LIMITER`) and `LoudnessConfig` in `:core:model`.
+- **Audio Normalization Engine**: Created `AudioNormalizationEngine` in `:core:domain:audio` featuring target LUFS gain multiplier derivation (`10^(gainDb/20)`), soft-knee dynamic peak limiting (`tanh` saturation knee at 0.95 threshold) to prevent digital clipping, and intelligent metadata-driven track LUFS estimation.
+- **DataStore & Player Controller Integration**: Persisted loudness parameters in `SettingsDataStore`, added `setLoudnessMultiplier()` in `PlayerController` with real-time reactive volume scaling, and wired track changes in `NexusTuneApplication`.
+- **Settings Screen Loudness Console**: Upgraded `SettingsScreen` with a dedicated "Audio Loudness Normalization & Dynamic Peak Limiter" card featuring mode selector chips, target LUFS buttons (`-11 Club`, `-14 Standard`, `-18 Dynamic`, `-23 EBU R128`), a `-6dB` to `+6dB` pre-amp slider with instant reset, and live limiter status readout.
+- **Comprehensive Test Suites**: Created `AudioNormalizationEngineTest` in `:core:domain` and added tests in `SettingsViewModelTest` (`:feature:settings`).
+
 ## [5.2.0] - 2026-11-24
 
 ### Added

@@ -70,7 +70,8 @@ data class PlaybackState(
     val errorMessage: String? = null,
     val playbackSpeed: Float = 1.0f,
     val playbackPitch: Float = 1.0f,
-    val playbackPitchSemitones: Int = 0
+    val playbackPitchSemitones: Int = 0,
+    val loudnessMultiplier: Float = 1.0f
 )
 
 enum class ThemeSeedMode {
@@ -109,6 +110,19 @@ data class WakeAlarmConfig(
     val fadeInSeconds: Int = 120,
     val source: WakeAlarmSource = WakeAlarmSource.LIKED_SONGS,
     val targetVolume: Float = 0.8f
+)
+
+enum class LoudnessNormalizationMode(val displayName: String, val description: String) {
+    OFF("Off", "Direct unaltered audio output"),
+    REPLAYGAIN_TRACK("ReplayGain (Track)", "Standardizes loudness to target LUFS per individual track"),
+    REPLAYGAIN_ALBUM("ReplayGain (Album)", "Preserves intra-album dynamic range while leveling volume"),
+    DYNAMIC_PEAK_LIMITER("Dynamic Peak Limiter", "Soft-knee limiter preventing digital peak distortion")
+}
+
+data class LoudnessConfig(
+    val mode: LoudnessNormalizationMode = LoudnessNormalizationMode.REPLAYGAIN_TRACK,
+    val targetLufs: Float = -14.0f,
+    val preAmpGainDb: Float = 0.0f
 )
 
 enum class SpatialAudioStage {
@@ -185,7 +199,8 @@ data class ThemeConfig(
     val seekbarStyle: SeekbarStyle = SeekbarStyle.WAVEFORM,
     val resetPitchOnTrackChange: Boolean = true,
     val smartShuffleEnabled: Boolean = true,
-    val wakeAlarmConfig: WakeAlarmConfig = WakeAlarmConfig()
+    val wakeAlarmConfig: WakeAlarmConfig = WakeAlarmConfig(),
+    val loudnessConfig: LoudnessConfig = LoudnessConfig()
 )
 
 data class SoundDoseInfo(
