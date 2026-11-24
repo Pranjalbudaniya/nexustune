@@ -166,5 +166,14 @@ class NexusAudioEffectsTest {
         audioEffects.clearTubeWarmthOffset()
         assertEquals(0, audioEffects.getTubeWarmthOffset())
     }
+
+    @Test
+    fun `transient punch offset can be applied and cleared`() {
+        audioEffects.applyTransientPunchOffset(200)
+        assertEquals(200, audioEffects.getTransientPunchOffset())
+
+        audioEffects.clearTransientPunchOffset()
+        assertEquals(0, audioEffects.getTransientPunchOffset())
+    }
 }
 

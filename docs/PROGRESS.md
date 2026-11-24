@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 75 (v6.25.0 Audiophile Analog Vacuum Tube Saturation & Even-Harmonic Warmth Studio)
+- Active Phase: Post-v1.0 Improvement Loop 76 (v6.26.0 Audiophile Multi-Band Transient Shaper & Dynamic Punch Studio)
 - In Flight: Slice and final qualification gate verification
 - Branches: `main`
 
@@ -727,7 +727,7 @@
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.24-1`
 
-- [ ] Improvement Loop 75 (v6.25 Milestone - In Flight)
+- [x] Improvement Loop 75 (v6.25 Milestone - Tagged `v6.25-1`)
   - [x] Audiophile Analog Vacuum Tube Saturation & Even-Harmonic Warmth Studio (`TubeSaturationEngine`):
     - [x] `TubeTopology`, `TubeWarmthProfile`, `TubeSaturationConfig`, and `TubeSaturationMetrics` in `:core:model`
     - [x] `TubeSaturationEngine` in `:core:domain:audio` with Triode 12AX7, Pentode EL34, Warm Tape, and Class A Console non-linear curves, auto makeup headroom compensation, recursive DC offset blocking, and analytical Fourier tone probing
@@ -738,6 +738,18 @@
     - [x] Comprehensive test suites in `TubeSaturationEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.25-1`
+
+- [ ] Improvement Loop 76 (v6.26 Milestone - In Flight)
+  - [x] Audiophile Multi-Band Transient Shaper & Dynamic Punch Studio (`TransientShaperEngine`):
+    - [x] `TransientBandFocus`, `TransientPreset`, `TransientShaperConfig`, and `TransientShaperMetrics` in `:core:model`
+    - [x] `TransientShaperEngine` in `:core:domain:audio` with dual ballistic envelope followers, transient gain modulation, band focus biquads, and real-time crest factor diagnostics
+    - [x] Hardware equalizer integration in `NexusAudioEffects` (`applyTransientPunchOffset`, `clearTransientPunchOffset`, `getTransientPunchOffset`) targeting Bands 0 & 4
+    - [x] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
+    - [x] `SettingsViewModel` transient shaper control methods
+    - [x] Interactive "Multi-Band Transient Shaper & Dynamic Punch Studio" card in `SettingsScreen` with preset chips, band focus chips, attack slider, sustain slider, auto peak limit switch, and crest factor HUD
+    - [x] Comprehensive test suites in `TransientShaperEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v6.26-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

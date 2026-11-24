@@ -22,6 +22,7 @@ import com.nexus.tune.core.domain.audio.DeEsserEngine
 import com.nexus.tune.core.domain.audio.TruePeakGuardEngine
 import com.nexus.tune.core.domain.audio.UltrasonicFilterEngine
 import com.nexus.tune.core.domain.audio.TubeSaturationEngine
+import com.nexus.tune.core.domain.audio.TransientShaperEngine
 import com.nexus.tune.core.ui.EqCurveVisualizer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -2611,6 +2612,170 @@ fun SettingsScreen(
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+                ListItem(
+                    headlineContent = { Text("Multi-Band Transient Shaper & Dynamic Punch Studio") },
+                    supportingContent = { Text("Dual ballistic envelope followers isolating attack impulses from sustain body for surgical drum punch, pick snap, and fatigue softening") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.transientShaperConfig.isEnabled,
+                            onCheckedChange = { viewModel.setTransientShaperEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.transientShaperConfig.isEnabled) {
+                    val transientMetrics = remember(themeConfig.transientShaperConfig) {
+                        TransientShaperEngine.calculateMetrics(themeConfig.transientShaperConfig)
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Dynamic Punch Preset",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        TransientPreset.entries.forEach { preset ->
+                            FilterChip(
+                                selected = themeConfig.transientShaperConfig.preset == preset,
+                                onClick = { viewModel.setTransientShaperPreset(preset) },
+                                label = { Text(preset.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "Frequency Band Focus",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        TransientBandFocus.entries.forEach { focus ->
+                            FilterChip(
+                                selected = themeConfig.transientShaperConfig.bandFocus == focus,
+                                onClick = { viewModel.setTransientShaperFocus(focus) },
+                                label = { Text(focus.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Attack Punch (Initial Impulse): ${String.format(java.util.Locale.US, "%+.0f%%", themeConfig.transientShaperConfig.attackBoost * 100)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Delta: ${String.format(java.util.Locale.US, "%+.1f dB", transientMetrics.attackDeltaDb)}",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.transientShaperConfig.attackBoost,
+                        onValueChange = { viewModel.setTransientShaperAttack(it) },
+                        valueRange = -1.0f..1.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Sustain Body (Tail Decay): ${String.format(java.util.Locale.US, "%+.0f%%", themeConfig.transientShaperConfig.sustainBoost * 100)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Delta: ${String.format(java.util.Locale.US, "%+.1f dB", transientMetrics.sustainDeltaDb)}",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.transientShaperConfig.sustainBoost,
+                        onValueChange = { viewModel.setTransientShaperSustain(it) },
+                        valueRange = -1.0f..1.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Auto Peak Limiting Guard",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Switch(
+                            checked = themeConfig.transientShaperConfig.autoOutputLimit,
+                            onCheckedChange = { viewModel.setTransientShaperAutoLimit(it) }
+                        )
+                    }
+
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Text(
+                                text = transientMetrics.punchRating,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Crest Factor: ${transientMetrics.crestFactorDb} dB",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Punch Score: ${transientMetrics.dynamicPunchScore}/100",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                                Text(
+                                    text = themeConfig.transientShaperConfig.bandFocus.displayName.substringBefore(" ("),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary
                                 )
                             }
                         }

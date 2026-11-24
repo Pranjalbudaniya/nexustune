@@ -241,7 +241,8 @@ data class ThemeConfig(
     val deEsserConfig: DeEsserConfig = DeEsserConfig(),
     val truePeakGuardConfig: TruePeakGuardConfig = TruePeakGuardConfig(),
     val ultrasonicFilterConfig: UltrasonicFilterConfig = UltrasonicFilterConfig(),
-    val tubeSaturationConfig: TubeSaturationConfig = TubeSaturationConfig()
+    val tubeSaturationConfig: TubeSaturationConfig = TubeSaturationConfig(),
+    val transientShaperConfig: TransientShaperConfig = TransientShaperConfig()
 )
 
 data class SoundDoseInfo(
@@ -1322,6 +1323,46 @@ data class TubeSaturationMetrics(
     val headroomCompensationDb: Float,
     val characterRating: String
 )
+
+enum class TransientBandFocus(val displayName: String, val description: String) {
+    FULL_BAND("Full Spectrum (Broadband)", "Applies dynamic transient attack and sustain shaping across all audio frequencies"),
+    BASS_PUNCH_LOW("Low-End Kick & Bass (60-350 Hz)", "Focuses punch and velocity on bass drums, synth sub, and 808 impacts"),
+    MID_ATTACK_SNAP("Mid-Range Snap (1-4 kHz)", "Enhances snare crack, guitar pick plucks, and vocal attack presence"),
+    HIGH_PLUCK_SHINE("High-End Crisp (>5 kHz)", "Isolates delicate hi-hat taps, acoustic guitar shimmer, and transient air")
+}
+
+enum class TransientPreset(
+    val displayName: String,
+    val attack: Float,
+    val sustain: Float,
+    val focus: TransientBandFocus,
+    val description: String
+) {
+    OFF("Off (Bypassed)", 0.0f, 0.0f, TransientBandFocus.FULL_BAND, "Unmodified original recorded dynamic envelope"),
+    CRISP_DRUM_PUNCH("Crisp Drum Punch", 0.45f, -0.15f, TransientBandFocus.FULL_BAND, "Amplifies kick/snare attack while tightening muddy room decay"),
+    BASS_IMPACT_BOOST("Visceral Kick & 808 Slam", 0.60f, 0.20f, TransientBandFocus.BASS_PUNCH_LOW, "Maximum low-end transient energy for modern hip-hop and electronic beats"),
+    ACOUSTIC_PICK_ARTICULATE("Articulate String & Pluck", 0.35f, 0.10f, TransientBandFocus.MID_ATTACK_SNAP, "Brings forward acoustic guitar fingerpicking and piano hammer strikes"),
+    MELLOW_FATIGUE_SOFTENER("Mellow Transient Softener", -0.40f, 0.25f, TransientBandFocus.FULL_BAND, "Smooths harsh transients and extends body sustain for relaxing late-night sessions"),
+    DRY_STUDIO_TIGHTENER("Ultra-Dry Studio Tightener", 0.20f, -0.50f, TransientBandFocus.FULL_BAND, "Substantially clamps sustain tails for surgical punch and zero boomy resonance")
+}
+
+data class TransientShaperConfig(
+    val isEnabled: Boolean = false,
+    val preset: TransientPreset = TransientPreset.OFF,
+    val bandFocus: TransientBandFocus = TransientBandFocus.FULL_BAND,
+    val attackBoost: Float = 0.0f,
+    val sustainBoost: Float = 0.0f,
+    val autoOutputLimit: Boolean = true
+)
+
+data class TransientShaperMetrics(
+    val attackDeltaDb: Float,
+    val sustainDeltaDb: Float,
+    val crestFactorDb: Float,
+    val dynamicPunchScore: Int,
+    val punchRating: String
+)
+
 
 
 

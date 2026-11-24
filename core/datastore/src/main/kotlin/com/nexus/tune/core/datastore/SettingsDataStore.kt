@@ -145,6 +145,12 @@ class SettingsDataStore(private val context: Context) {
         val TUBE_SATURATION_DRIVE = floatPreferencesKey("tube_saturation_drive")
         val TUBE_SATURATION_BIAS = floatPreferencesKey("tube_saturation_bias")
         val TUBE_SATURATION_MAKEUP_GAIN = booleanPreferencesKey("tube_saturation_makeup_gain")
+        val TRANSIENT_SHAPER_ENABLED = booleanPreferencesKey("transient_shaper_enabled")
+        val TRANSIENT_SHAPER_PRESET = stringPreferencesKey("transient_shaper_preset")
+        val TRANSIENT_SHAPER_FOCUS = stringPreferencesKey("transient_shaper_focus")
+        val TRANSIENT_SHAPER_ATTACK = floatPreferencesKey("transient_shaper_attack")
+        val TRANSIENT_SHAPER_SUSTAIN = floatPreferencesKey("transient_shaper_sustain")
+        val TRANSIENT_SHAPER_LIMIT = booleanPreferencesKey("transient_shaper_limit")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -384,6 +390,18 @@ class SettingsDataStore(private val context: Context) {
                 drive = prefs[PreferencesKeys.TUBE_SATURATION_DRIVE] ?: 0.35f,
                 bias = prefs[PreferencesKeys.TUBE_SATURATION_BIAS] ?: 0.20f,
                 autoMakeupGain = prefs[PreferencesKeys.TUBE_SATURATION_MAKEUP_GAIN] ?: true
+            ),
+            transientShaperConfig = TransientShaperConfig(
+                isEnabled = prefs[PreferencesKeys.TRANSIENT_SHAPER_ENABLED] ?: false,
+                preset = runCatching {
+                    TransientPreset.valueOf(prefs[PreferencesKeys.TRANSIENT_SHAPER_PRESET] ?: TransientPreset.OFF.name)
+                }.getOrDefault(TransientPreset.OFF),
+                bandFocus = runCatching {
+                    TransientBandFocus.valueOf(prefs[PreferencesKeys.TRANSIENT_SHAPER_FOCUS] ?: TransientBandFocus.FULL_BAND.name)
+                }.getOrDefault(TransientBandFocus.FULL_BAND),
+                attackBoost = prefs[PreferencesKeys.TRANSIENT_SHAPER_ATTACK] ?: 0.0f,
+                sustainBoost = prefs[PreferencesKeys.TRANSIENT_SHAPER_SUSTAIN] ?: 0.0f,
+                autoOutputLimit = prefs[PreferencesKeys.TRANSIENT_SHAPER_LIMIT] ?: true
             )
         )
     }
@@ -512,6 +530,12 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.TUBE_SATURATION_DRIVE] = config.tubeSaturationConfig.drive
             prefs[PreferencesKeys.TUBE_SATURATION_BIAS] = config.tubeSaturationConfig.bias
             prefs[PreferencesKeys.TUBE_SATURATION_MAKEUP_GAIN] = config.tubeSaturationConfig.autoMakeupGain
+            prefs[PreferencesKeys.TRANSIENT_SHAPER_ENABLED] = config.transientShaperConfig.isEnabled
+            prefs[PreferencesKeys.TRANSIENT_SHAPER_PRESET] = config.transientShaperConfig.preset.name
+            prefs[PreferencesKeys.TRANSIENT_SHAPER_FOCUS] = config.transientShaperConfig.bandFocus.name
+            prefs[PreferencesKeys.TRANSIENT_SHAPER_ATTACK] = config.transientShaperConfig.attackBoost
+            prefs[PreferencesKeys.TRANSIENT_SHAPER_SUSTAIN] = config.transientShaperConfig.sustainBoost
+            prefs[PreferencesKeys.TRANSIENT_SHAPER_LIMIT] = config.transientShaperConfig.autoOutputLimit
         }
     }
 
@@ -662,6 +686,17 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.TUBE_SATURATION_DRIVE] = config.drive
             prefs[PreferencesKeys.TUBE_SATURATION_BIAS] = config.bias
             prefs[PreferencesKeys.TUBE_SATURATION_MAKEUP_GAIN] = config.autoMakeupGain
+        }
+    }
+
+    suspend fun updateTransientShaperConfig(config: TransientShaperConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.TRANSIENT_SHAPER_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.TRANSIENT_SHAPER_PRESET] = config.preset.name
+            prefs[PreferencesKeys.TRANSIENT_SHAPER_FOCUS] = config.bandFocus.name
+            prefs[PreferencesKeys.TRANSIENT_SHAPER_ATTACK] = config.attackBoost
+            prefs[PreferencesKeys.TRANSIENT_SHAPER_SUSTAIN] = config.sustainBoost
+            prefs[PreferencesKeys.TRANSIENT_SHAPER_LIMIT] = config.autoOutputLimit
         }
     }
 

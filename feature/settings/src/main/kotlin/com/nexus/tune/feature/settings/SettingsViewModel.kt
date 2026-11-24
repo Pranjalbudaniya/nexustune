@@ -1098,4 +1098,45 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(tubeSaturationConfig = current.tubeSaturationConfig.copy(autoMakeupGain = enabled)))
     }
+
+    fun setTransientShaperEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(transientShaperConfig = current.transientShaperConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setTransientShaperPreset(preset: TransientPreset) {
+        val current = themeConfig.value
+        val isEnabled = preset != TransientPreset.OFF
+        updateTheme(
+            current.copy(
+                transientShaperConfig = current.transientShaperConfig.copy(
+                    isEnabled = isEnabled,
+                    preset = preset,
+                    bandFocus = preset.focus,
+                    attackBoost = if (preset != TransientPreset.OFF) preset.attack else current.transientShaperConfig.attackBoost,
+                    sustainBoost = if (preset != TransientPreset.OFF) preset.sustain else current.transientShaperConfig.sustainBoost
+                )
+            )
+        )
+    }
+
+    fun setTransientShaperFocus(focus: TransientBandFocus) {
+        val current = themeConfig.value
+        updateTheme(current.copy(transientShaperConfig = current.transientShaperConfig.copy(bandFocus = focus)))
+    }
+
+    fun setTransientShaperAttack(attack: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(transientShaperConfig = current.transientShaperConfig.copy(attackBoost = attack.coerceIn(-1.0f, 1.0f))))
+    }
+
+    fun setTransientShaperSustain(sustain: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(transientShaperConfig = current.transientShaperConfig.copy(sustainBoost = sustain.coerceIn(-1.0f, 1.0f))))
+    }
+
+    fun setTransientShaperAutoLimit(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(transientShaperConfig = current.transientShaperConfig.copy(autoOutputLimit = enabled)))
+    }
 }

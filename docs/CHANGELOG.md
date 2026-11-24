@@ -5,6 +5,17 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.26.0] - 2026-11-24
+
+### Added
+- **Audiophile Multi-Band Transient Shaper & Dynamic Punch Studio (`TransientShaperEngine`)**: Added `TransientBandFocus` (`FULL_BAND`, `BASS_PUNCH_LOW`, `MID_ATTACK_SNAP`, `HIGH_PLUCK_SHINE`), `TransientPreset` (`OFF`, `CRISP_DRUM_PUNCH`, `BASS_IMPACT_BOOST`, `ACOUSTIC_PICK_ARTICULATE`, `MELLOW_FATIGUE_SOFTENER`, `DRY_STUDIO_TIGHTENER`), `TransientShaperConfig`, and `TransientShaperMetrics` in `:core:model`.
+- **Dual Ballistic Envelope Tracking & Dynamic Transient Modulation DSP**: Implemented `TransientShaperEngine` in `:core:domain:audio`. Computes differential energy delta between fast attack envelope ($E_{\text{fast}}$, $\tau \approx 2\text{ ms}$) and slow sustain follower ($E_{\text{slow}}$, $\tau \approx 35\text{ ms}$). Modulates attack impulses up to +10 dB for snappy leading transients or down to -6 dB for softened late-night listening, and adjusts sustain body tails independently without whole-signal compressor pumping artifacts. Includes bandpass focus filters and auto soft ceiling limiting.
+- **Hardware Equalizer Integration**: Added `applyTransientPunchOffset`, `clearTransientPunchOffset`, and `getTransientPunchOffset` targeting Bands 0 & 4 in `NexusAudioEffects` in `:core:player` for physical acoustic transient impact.
+- **DataStore Persistence**: Added `TRANSIENT_SHAPER_ENABLED`, `TRANSIENT_SHAPER_PRESET`, `TRANSIENT_SHAPER_FOCUS`, `TRANSIENT_SHAPER_ATTACK`, `TRANSIENT_SHAPER_SUSTAIN`, and `TRANSIENT_SHAPER_LIMIT` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Transient Studio**: Added interactive "Multi-Band Transient Shaper & Dynamic Punch Studio" card in `SettingsScreen` with preset chips, band focus chips, attack boost slider, sustain body slider, auto output limit switch, and real-time crest factor / dynamic punch score HUD.
+- **Unit Test Coverage**: Comprehensive test suites in `TransientShaperEngineTest` in `:core:domain`, `NexusAudioEffectsTest` in `:core:player`, and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.25.0] - 2026-11-24
 
 ### Added

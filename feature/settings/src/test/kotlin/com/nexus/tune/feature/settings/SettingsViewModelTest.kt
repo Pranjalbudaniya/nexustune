@@ -1260,4 +1260,43 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { !it.tubeSaturationConfig.autoMakeupGain })
         }
     }
+
+    @Test
+    fun `transient shaper settings update theme config`() = runTest {
+        viewModel.setTransientShaperEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.transientShaperConfig.isEnabled })
+        }
+
+        viewModel.setTransientShaperPreset(TransientPreset.CRISP_DRUM_PUNCH)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.transientShaperConfig.preset == TransientPreset.CRISP_DRUM_PUNCH })
+        }
+
+        viewModel.setTransientShaperFocus(TransientBandFocus.BASS_PUNCH_LOW)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.transientShaperConfig.bandFocus == TransientBandFocus.BASS_PUNCH_LOW })
+        }
+
+        viewModel.setTransientShaperAttack(0.55f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.transientShaperConfig.attackBoost == 0.55f })
+        }
+
+        viewModel.setTransientShaperSustain(-0.25f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.transientShaperConfig.sustainBoost == -0.25f })
+        }
+
+        viewModel.setTransientShaperAutoLimit(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.transientShaperConfig.autoOutputLimit })
+        }
+    }
 }
