@@ -5,6 +5,17 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.20.0] - 2026-11-24
+
+### Added
+- **Audiophile High-Frequency 'Air Band' & Silk Sheen Exciter Studio (`AirBandExciterEngine`)**: Added `AirBandFrequency` (`HZ_12000`, `HZ_16000`, `HZ_20000`, `HZ_24000`), `AirBandMode` (`OFF`, `SUBTLE_SILK`, `VOCAL_BREATH`, `MASTERING_AIR`, `LOSSLESS_SPARKLE`), `AirBandExciterConfig`, `AirBandMetrics`, and `AirBandBiquadCoefficients` in `:core:model`.
+- **Pultec / Maag-Style High Shelf & Psychoacoustic Harmonic Excitation DSP**: Implemented `AirBandExciterEngine` in `:core:domain:audio` generating stable Audio EQ Cookbook high-shelf biquad filter curves with continuous gain boost (0.0 dB .. 8.0 dB) combined with non-linear even-order harmonic saturation ($x^2$). Restores delicate acoustic transients, cymbal shimmer, vocal breath, and holographic 3D air truncated by lossy MP3/AAC compression algorithms.
+- **Hardware Equalizer Integration**: Added `applyAirBandOffset`, `clearAirBandOffset`, and `getAirBandOffset` targeting Band 4 (high treble) in `NexusAudioEffects` in `:core:player`.
+- **DataStore Persistence**: Added `AIR_BAND_ENABLED`, `AIR_BAND_MODE`, `AIR_BAND_FREQ`, `AIR_BAND_BOOST_DB`, and `AIR_BAND_HARMONICS` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Air Band Studio**: Added interactive "High-Frequency 'Air Band' & Silk Sheen Exciter" studio card in `SettingsScreen` with exciter presets, frequency selectors, shelf boost slider, harmonic saturation slider, and real-time sparkle index / sheen descriptor badge.
+- **Unit Test Coverage**: Comprehensive test suites in `AirBandExciterEngineTest` in `:core:domain`, `NexusAudioEffectsTest` in `:core:player`, and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.19.0] - 2026-11-24
 
 ### Added

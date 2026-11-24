@@ -130,5 +130,14 @@ class NexusAudioEffectsTest {
         audioEffects.clearMidBassClarityOffset()
         assertEquals(0, audioEffects.getMidBassClarityOffset())
     }
+
+    @Test
+    fun `air band offset can be applied and cleared`() {
+        audioEffects.applyAirBandOffset(450)
+        assertEquals(450, audioEffects.getAirBandOffset())
+
+        audioEffects.clearAirBandOffset()
+        assertEquals(0, audioEffects.getAirBandOffset())
+    }
 }
 

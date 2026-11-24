@@ -235,7 +235,8 @@ data class ThemeConfig(
     val deClickerConfig: DeClickerConfig = DeClickerConfig(),
     val midBassClarityConfig: MidBassClarityConfig = MidBassClarityConfig(),
     val crosstalkCancellationConfig: CrosstalkCancellationConfig = CrosstalkCancellationConfig(),
-    val infrasonicFilterConfig: InfrasonicFilterConfig = InfrasonicFilterConfig()
+    val infrasonicFilterConfig: InfrasonicFilterConfig = InfrasonicFilterConfig(),
+    val airBandExciterConfig: AirBandExciterConfig = AirBandExciterConfig()
 )
 
 data class SoundDoseInfo(
@@ -1088,6 +1089,46 @@ data class InfrasonicBiquadCoefficients(
     val a1: Float,
     val a2: Float
 )
+
+enum class AirBandFrequency(val frequencyHz: Int, val displayName: String, val description: String) {
+    HZ_12000(12000, "12 kHz", "Vocal breath, acoustic guitar pick transients, and snare wire sizzle"),
+    HZ_16000(16000, "16 kHz", "Pultec-style high air shelf, open cymbal sheen without harsh sibilance"),
+    HZ_20000(20000, "20 kHz", "Maag AIR BAND® legendary pristine dimension and holographic 3D space"),
+    HZ_24000(24000, "24 kHz", "Ultra-sonic sheen shelf, psychoacoustic air blooming across the soundstage")
+}
+
+enum class AirBandMode(val displayName: String, val boostDb: Float, val harmonicPercent: Int, val description: String) {
+    OFF("Off (Bypassed)", 0.0f, 0, "Flat passband without high-frequency excitation"),
+    SUBTLE_SILK("Subtle Silk (+1.5 dB)", 1.5f, 20, "Gentle high shelf with subtle even-harmonic warmth"),
+    VOCAL_BREATH("Vocal Breath (+3.0 dB)", 3.0f, 35, "Silky acoustic presence and vocal intelligibility"),
+    MASTERING_AIR("Mastering Air (+4.5 dB)", 4.5f, 50, "Pristine studio polish, opening up cramped lossy streams"),
+    LOSSLESS_SPARKLE("Lossless Sparkle (+6.0 dB)", 6.0f, 75, "Euphoric top-end radiance and lively micro-detail transient bloom")
+}
+
+data class AirBandExciterConfig(
+    val isEnabled: Boolean = false,
+    val mode: AirBandMode = AirBandMode.OFF,
+    val frequency: AirBandFrequency = AirBandFrequency.HZ_16000,
+    val boostDb: Float = 3.0f,
+    val harmonicExcitationPercent: Int = 30
+)
+
+data class AirBandMetrics(
+    val frequencyHz: Int,
+    val boostDb: Float,
+    val harmonicDistortionPercent: Float,
+    val airEnergyIndexPercent: Int,
+    val sheenDescriptor: String
+)
+
+data class AirBandBiquadCoefficients(
+    val b0: Float,
+    val b1: Float,
+    val b2: Float,
+    val a1: Float,
+    val a2: Float
+)
+
 
 
 

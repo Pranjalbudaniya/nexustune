@@ -1068,4 +1068,37 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { !it.infrasonicFilterConfig.dcBlockerEnabled })
         }
     }
+
+    @Test
+    fun `air band exciter settings update theme config and audio effects`() = runTest {
+        viewModel.setAirBandEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.airBandExciterConfig.isEnabled })
+        }
+
+        viewModel.setAirBandMode(AirBandMode.MASTERING_AIR)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.airBandExciterConfig.mode == AirBandMode.MASTERING_AIR })
+        }
+
+        viewModel.setAirBandFrequency(AirBandFrequency.HZ_20000)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.airBandExciterConfig.frequency == AirBandFrequency.HZ_20000 })
+        }
+
+        viewModel.setAirBandBoostDb(5.0f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.airBandExciterConfig.boostDb == 5.0f })
+        }
+
+        viewModel.setAirBandHarmonics(60)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.airBandExciterConfig.harmonicExcitationPercent == 60 })
+        }
+    }
 }

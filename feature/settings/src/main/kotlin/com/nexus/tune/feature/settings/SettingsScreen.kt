@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.nexus.tune.core.model.*
 import com.nexus.tune.core.domain.audio.InfrasonicFilterEngine
+import com.nexus.tune.core.domain.audio.AirBandExciterEngine
 import com.nexus.tune.core.ui.EqCurveVisualizer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -1804,6 +1805,143 @@ fun SettingsScreen(
                                 )
                                 Text(
                                     text = infrasonicMetrics.protectionRating,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+                ListItem(
+                    headlineContent = { Text("High-Frequency 'Air Band' & Silk Sheen Exciter") },
+                    supportingContent = { Text("Pultec / Maag-style high shelf with psychoacoustic even-order harmonic sheen for lossy streams") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.airBandExciterConfig.isEnabled,
+                            onCheckedChange = { viewModel.setAirBandEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.airBandExciterConfig.isEnabled) {
+                    val airBandMetrics = remember(themeConfig.airBandExciterConfig) {
+                        AirBandExciterEngine.calculateMetrics(themeConfig.airBandExciterConfig)
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Exciter Preset",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        AirBandMode.entries.forEach { mode ->
+                            FilterChip(
+                                selected = themeConfig.airBandExciterConfig.mode == mode,
+                                onClick = { viewModel.setAirBandMode(mode) },
+                                label = { Text(mode.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "Air Shelf Center Frequency",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        AirBandFrequency.entries.forEach { freq ->
+                            FilterChip(
+                                selected = themeConfig.airBandExciterConfig.frequency == freq,
+                                onClick = { viewModel.setAirBandFrequency(freq) },
+                                label = { Text(freq.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Air Shelf Boost: +${String.format(java.util.Locale.US, "%.1f", themeConfig.airBandExciterConfig.boostDb)} dB",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Harmonics: ${themeConfig.airBandExciterConfig.harmonicExcitationPercent}%",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+
+                    Slider(
+                        value = themeConfig.airBandExciterConfig.boostDb,
+                        onValueChange = { viewModel.setAirBandBoostDb(it) },
+                        valueRange = 0.0f..8.0f,
+                        steps = 15,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Text(
+                        text = "Harmonic Excitation Intensity",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Slider(
+                        value = themeConfig.airBandExciterConfig.harmonicExcitationPercent.toFloat(),
+                        onValueChange = { viewModel.setAirBandHarmonics(it.toInt()) },
+                        valueRange = 0.0f..100.0f,
+                        steps = 19,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Text(
+                                text = themeConfig.airBandExciterConfig.frequency.description,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Sparkle: ${airBandMetrics.airEnergyIndexPercent}%",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "THD: +${String.format(java.util.Locale.US, "%.2f", airBandMetrics.harmonicDistortionPercent)}%",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                                Text(
+                                    text = airBandMetrics.sheenDescriptor,
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.tertiary
                                 )

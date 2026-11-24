@@ -116,6 +116,11 @@ class SettingsDataStore(private val context: Context) {
         val INFRASONIC_CUTOFF_HZ = floatPreferencesKey("infrasonic_cutoff_hz")
         val INFRASONIC_SLOPE = stringPreferencesKey("infrasonic_slope")
         val INFRASONIC_DC_BLOCKER = booleanPreferencesKey("infrasonic_dc_blocker")
+        val AIR_BAND_ENABLED = booleanPreferencesKey("air_band_enabled")
+        val AIR_BAND_MODE = stringPreferencesKey("air_band_mode")
+        val AIR_BAND_FREQ = stringPreferencesKey("air_band_freq")
+        val AIR_BAND_BOOST_DB = floatPreferencesKey("air_band_boost_db")
+        val AIR_BAND_HARMONICS = intPreferencesKey("air_band_harmonics")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -292,6 +297,17 @@ class SettingsDataStore(private val context: Context) {
                     InfrasonicSlope.valueOf(prefs[PreferencesKeys.INFRASONIC_SLOPE] ?: InfrasonicSlope.SLOPE_18DB_OCTAVE.name)
                 }.getOrDefault(InfrasonicSlope.SLOPE_18DB_OCTAVE),
                 dcBlockerEnabled = prefs[PreferencesKeys.INFRASONIC_DC_BLOCKER] ?: true
+            ),
+            airBandExciterConfig = AirBandExciterConfig(
+                isEnabled = prefs[PreferencesKeys.AIR_BAND_ENABLED] ?: false,
+                mode = runCatching {
+                    AirBandMode.valueOf(prefs[PreferencesKeys.AIR_BAND_MODE] ?: AirBandMode.OFF.name)
+                }.getOrDefault(AirBandMode.OFF),
+                frequency = runCatching {
+                    AirBandFrequency.valueOf(prefs[PreferencesKeys.AIR_BAND_FREQ] ?: AirBandFrequency.HZ_16000.name)
+                }.getOrDefault(AirBandFrequency.HZ_16000),
+                boostDb = prefs[PreferencesKeys.AIR_BAND_BOOST_DB] ?: 3.0f,
+                harmonicExcitationPercent = prefs[PreferencesKeys.AIR_BAND_HARMONICS] ?: 30
             )
         )
     }
@@ -391,6 +407,11 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.INFRASONIC_CUTOFF_HZ] = config.infrasonicFilterConfig.cutoffHz
             prefs[PreferencesKeys.INFRASONIC_SLOPE] = config.infrasonicFilterConfig.slope.name
             prefs[PreferencesKeys.INFRASONIC_DC_BLOCKER] = config.infrasonicFilterConfig.dcBlockerEnabled
+            prefs[PreferencesKeys.AIR_BAND_ENABLED] = config.airBandExciterConfig.isEnabled
+            prefs[PreferencesKeys.AIR_BAND_MODE] = config.airBandExciterConfig.mode.name
+            prefs[PreferencesKeys.AIR_BAND_FREQ] = config.airBandExciterConfig.frequency.name
+            prefs[PreferencesKeys.AIR_BAND_BOOST_DB] = config.airBandExciterConfig.boostDb
+            prefs[PreferencesKeys.AIR_BAND_HARMONICS] = config.airBandExciterConfig.harmonicExcitationPercent
         }
     }
 
@@ -482,6 +503,16 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.INFRASONIC_CUTOFF_HZ] = config.cutoffHz
             prefs[PreferencesKeys.INFRASONIC_SLOPE] = config.slope.name
             prefs[PreferencesKeys.INFRASONIC_DC_BLOCKER] = config.dcBlockerEnabled
+        }
+    }
+
+    suspend fun updateAirBandExciterConfig(config: AirBandExciterConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.AIR_BAND_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.AIR_BAND_MODE] = config.mode.name
+            prefs[PreferencesKeys.AIR_BAND_FREQ] = config.frequency.name
+            prefs[PreferencesKeys.AIR_BAND_BOOST_DB] = config.boostDb
+            prefs[PreferencesKeys.AIR_BAND_HARMONICS] = config.harmonicExcitationPercent
         }
     }
 

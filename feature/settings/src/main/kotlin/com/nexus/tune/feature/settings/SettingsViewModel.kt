@@ -829,4 +829,56 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(infrasonicFilterConfig = current.infrasonicFilterConfig.copy(dcBlockerEnabled = enabled)))
     }
+
+    fun setAirBandEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        val updated = current.copy(airBandExciterConfig = current.airBandExciterConfig.copy(isEnabled = enabled))
+        updateTheme(updated)
+        val offset = com.nexus.tune.core.domain.audio.AirBandExciterEngine.calculateHardwareOffsetMb(
+            updated.airBandExciterConfig.boostDb,
+            enabled
+        )
+        NexusAudioEffects.instance.applyAirBandOffset(offset)
+    }
+
+    fun setAirBandMode(mode: AirBandMode) {
+        val current = themeConfig.value
+        val isEnabled = mode != AirBandMode.OFF
+        val updated = current.copy(
+            airBandExciterConfig = current.airBandExciterConfig.copy(
+                isEnabled = isEnabled,
+                mode = mode,
+                boostDb = mode.boostDb,
+                harmonicExcitationPercent = mode.harmonicPercent
+            )
+        )
+        updateTheme(updated)
+        val offset = com.nexus.tune.core.domain.audio.AirBandExciterEngine.calculateHardwareOffsetMb(
+            updated.airBandExciterConfig.boostDb,
+            isEnabled
+        )
+        NexusAudioEffects.instance.applyAirBandOffset(offset)
+    }
+
+    fun setAirBandFrequency(frequency: AirBandFrequency) {
+        val current = themeConfig.value
+        updateTheme(current.copy(airBandExciterConfig = current.airBandExciterConfig.copy(frequency = frequency)))
+    }
+
+    fun setAirBandBoostDb(boostDb: Float) {
+        val current = themeConfig.value
+        val clamped = boostDb.coerceIn(0.0f, 8.0f)
+        val updated = current.copy(airBandExciterConfig = current.airBandExciterConfig.copy(boostDb = clamped))
+        updateTheme(updated)
+        val offset = com.nexus.tune.core.domain.audio.AirBandExciterEngine.calculateHardwareOffsetMb(
+            clamped,
+            updated.airBandExciterConfig.isEnabled
+        )
+        NexusAudioEffects.instance.applyAirBandOffset(offset)
+    }
+
+    fun setAirBandHarmonics(harmonicPercent: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(airBandExciterConfig = current.airBandExciterConfig.copy(harmonicExcitationPercent = harmonicPercent.coerceIn(0, 100))))
+    }
 }
