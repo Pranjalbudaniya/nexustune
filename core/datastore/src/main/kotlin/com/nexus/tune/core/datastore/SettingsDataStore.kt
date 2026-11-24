@@ -80,6 +80,7 @@ class SettingsDataStore(private val context: Context) {
         val STEREO_MID_LEVEL_DB = floatPreferencesKey("stereo_mid_level_db")
         val STEREO_SIDE_LEVEL_DB = floatPreferencesKey("stereo_side_level_db")
         val SLEEP_DRIFT_PROFILE = stringPreferencesKey("sleep_drift_profile")
+        val DITHER_MODE = stringPreferencesKey("dither_mode")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -180,7 +181,10 @@ class SettingsDataStore(private val context: Context) {
             ),
             sleepDriftProfile = runCatching {
                 SleepDriftProfile.valueOf(prefs[PreferencesKeys.SLEEP_DRIFT_PROFILE] ?: SleepDriftProfile.OFF.name)
-            }.getOrDefault(SleepDriftProfile.OFF)
+            }.getOrDefault(SleepDriftProfile.OFF),
+            ditherMode = runCatching {
+                DitherMode.valueOf(prefs[PreferencesKeys.DITHER_MODE] ?: DitherMode.TRIANGULAR_TPDF.name)
+            }.getOrDefault(DitherMode.TRIANGULAR_TPDF)
         )
     }
 
@@ -243,6 +247,13 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.STEREO_MID_LEVEL_DB] = config.stereoWidthConfig.midLevelDb
             prefs[PreferencesKeys.STEREO_SIDE_LEVEL_DB] = config.stereoWidthConfig.sideLevelDb
             prefs[PreferencesKeys.SLEEP_DRIFT_PROFILE] = config.sleepDriftProfile.name
+            prefs[PreferencesKeys.DITHER_MODE] = config.ditherMode.name
+        }
+    }
+
+    suspend fun setDitherMode(mode: DitherMode) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.DITHER_MODE] = mode.name
         }
     }
 

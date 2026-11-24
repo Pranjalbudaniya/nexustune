@@ -641,4 +641,8 @@ class SettingsViewModel(
         updateTheme(themeConfig.value.copy(sleepDriftProfile = profile))
         sleepTimerManager?.setSleepDriftProfile(profile)
     }
+
+    fun setDitherMode(mode: DitherMode) {
+        updateTheme(themeConfig.value.copy(ditherMode = mode))
+    }
 }

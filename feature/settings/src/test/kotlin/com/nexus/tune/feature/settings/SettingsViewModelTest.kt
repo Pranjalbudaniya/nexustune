@@ -824,4 +824,14 @@ class SettingsViewModelTest {
             sleepTimerManager.setSleepDriftProfile(SleepDriftProfile.WARM_MELLOW)
         }
     }
+
+    @Test
+    fun `setDitherMode updates theme config`() = runTest {
+        viewModel.setDitherMode(DitherMode.PSYCHOACOUSTIC_LIPSHITZ)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.ditherMode == DitherMode.PSYCHOACOUSTIC_LIPSHITZ })
+        }
+    }
 }

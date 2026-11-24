@@ -224,7 +224,8 @@ data class ThemeConfig(
     val autoStashConfig: AutoStashConfig = AutoStashConfig(),
     val headphoneCorrectionConfig: HeadphoneCorrectionConfig = HeadphoneCorrectionConfig(),
     val stereoWidthConfig: StereoWidthConfig = StereoWidthConfig(),
-    val sleepDriftProfile: SleepDriftProfile = SleepDriftProfile.OFF
+    val sleepDriftProfile: SleepDriftProfile = SleepDriftProfile.OFF,
+    val ditherMode: DitherMode = DitherMode.TRIANGULAR_TPDF
 )
 
 data class SoundDoseInfo(
@@ -800,6 +801,27 @@ data class SleepDriftConfig(
     val tempoDecelerationEnabled: Boolean = true,
     val maxHighCutDbmB: Int = -1000
 )
+
+enum class DitherMode(val displayName: String, val description: String, val snrBonusDb: Float) {
+    OFF("Off (Truncate)", "Direct integer truncation without dither", 0.0f),
+    RECTANGULAR_RPDF("Rectangular (RPDF)", "Single uniform random noise (±0.5 LSB)", 1.5f),
+    TRIANGULAR_TPDF("Triangular (TPDF)", "Industry reference dual-random dither with zero noise modulation", 3.0f),
+    PSYCHOACOUSTIC_LIPSHITZ("Psychoacoustic Shaped", "F-weighted noise shaping pushing quantization error into inaudible high frequencies", 18.0f),
+    HIGH_PASS_CONTOUR("High-Pass Contour", "High-pass filtered dither avoiding sub-bass interference", 6.0f)
+}
+
+data class DitherConfig(
+    val mode: DitherMode = DitherMode.TRIANGULAR_TPDF,
+    val targetBitDepth: Int = 16,
+    val noiseShapingStrengthPercent: Int = 100
+)
+
+data class QuantizationNoiseMetrics(
+    val theoreticalDynamicRangeDb: Float,
+    val effectiveSnrDb: Float,
+    val noiseShapingGainDb: Float
+)
+
 
 
 

@@ -961,6 +961,68 @@ fun SettingsScreen(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Audiophile Dither & Noise Shaping",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+                Text(
+                    text = "Eliminates harmonic quantization distortion when rendering 24/32-bit audio to 16-bit output. Psychoacoustic shaping yields >116 dB apparent dynamic range.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.padding(bottom = 6.dp)
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    DitherMode.entries.forEach { mode ->
+                        FilterChip(
+                            selected = themeConfig.ditherMode == mode,
+                            onClick = { viewModel.setDitherMode(mode) },
+                            label = { Text(mode.displayName) }
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                val ditherMetrics = com.nexus.tune.core.domain.audio.DitherShapingEngine.calculateNoiseMetrics(16, themeConfig.ditherMode)
+                Surface(
+                    shape = MaterialTheme.shapes.small,
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                ) {
+                    Column(modifier = Modifier.padding(8.dp)) {
+                        Text(
+                            text = themeConfig.ditherMode.description,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Apparent DR: ${String.format(java.util.Locale.US, "%.1f", ditherMetrics.effectiveSnrDb)} dB",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            if (ditherMetrics.noiseShapingGainDb > 0f) {
+                                Text(
+                                    text = "Shaping Bonus: +${String.format(java.util.Locale.US, "%.1f", ditherMetrics.noiseShapingGainDb)} dB",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                        }
+                    }
+                }
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
                 // --- Gapless Buffer Pre-Loading ---

@@ -5,6 +5,17 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.9.0] - 2026-11-24
+
+### Added
+- **Audiophile TPDF Dither & Psychoacoustic Noise Shaping Studio (`DitherShapingEngine`)**: Added `DitherMode` (`OFF`, `RECTANGULAR_RPDF`, `TRIANGULAR_TPDF`, `PSYCHOACOUSTIC_LIPSHITZ`, `HIGH_PASS_CONTOUR`), `DitherConfig`, and `QuantizationNoiseMetrics` in `:core:model`.
+- **Triangular Probability Density Function (TPDF) Dithering DSP**: Implemented `DitherShapingEngine` in `:core:domain:audio` with dual-random TPDF dither generation ($R_1 - R_2$) linearizing quantization error and mathematically eliminating harmonic distortion and noise modulation when rendering 24-bit/32-bit audio to 16-bit DAC or Bluetooth outputs.
+- **F-Weighted Psychoacoustic Noise Shaping Filter**: Designed 2nd order Lipshitz/Wannamaker noise-shaping filter coefficients (`[1.62f, -0.93f]`) and 1st order high-pass contour (`[0.95f]`) pushing quantization error energy from sensitive human hearing bands (1kHz-5kHz) into the ultrasonic periphery (>15kHz), boosting apparent 16-bit dynamic range from 98.1 dB to >116 dB.
+- **DataStore Preferences & Persistence**: Added `DITHER_MODE` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Audiophile Dither Studio**: Added interactive "Audiophile Dither & Noise Shaping" card in `SettingsScreen` under Hi-Res Audio section with mode chips, description text, and live Apparent Dynamic Range and Noise Shaping Bonus metrics.
+- **Unit Test Coverage**: Comprehensive test suites in `DitherShapingEngineTest` in `:core:domain` and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.8.0] - 2026-11-24
 
 ### Added
