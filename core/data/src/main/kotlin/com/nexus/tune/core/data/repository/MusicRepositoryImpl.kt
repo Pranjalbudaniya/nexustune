@@ -304,5 +304,39 @@ class MusicRepositoryImpl(
     override suspend fun deletePlaylist(playlistId: String) {
         database.playlistDao().delete(playlistId)
     }
+
+    override fun getBookmarksForTrack(trackId: String): Flow<List<TrackBookmark>> {
+        return database.trackBookmarkDao().getBookmarksForTrack(trackId).map { list ->
+            list.map {
+                TrackBookmark(
+                    id = it.id,
+                    trackId = it.trackId,
+                    title = it.title,
+                    positionMs = it.positionMs,
+                    createdAtTimestamp = it.createdAtTimestamp
+                )
+            }
+        }
+    }
+
+    override suspend fun addBookmark(trackId: String, title: String, positionMs: Long): TrackBookmark {
+        val entity = com.nexus.tune.core.database.entity.TrackBookmarkEntity(
+            trackId = trackId,
+            title = title,
+            positionMs = positionMs
+        )
+        val generatedId = database.trackBookmarkDao().insert(entity)
+        return TrackBookmark(
+            id = generatedId,
+            trackId = trackId,
+            title = title,
+            positionMs = positionMs,
+            createdAtTimestamp = entity.createdAtTimestamp
+        )
+    }
+
+    override suspend fun deleteBookmark(bookmarkId: Long) {
+        database.trackBookmarkDao().delete(bookmarkId)
+    }
 }
 

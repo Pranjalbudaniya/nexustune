@@ -31,6 +31,9 @@ interface MusicRepository {
     suspend fun removeRecentSearch(query: String)
     suspend fun clearRecentSearches()
     suspend fun deduplicateLikedTracks(): Int
+    fun getBookmarksForTrack(trackId: String): Flow<List<TrackBookmark>>
+    suspend fun addBookmark(trackId: String, title: String, positionMs: Long): TrackBookmark
+    suspend fun deleteBookmark(bookmarkId: Long)
 }
 
 interface QueueRepository {

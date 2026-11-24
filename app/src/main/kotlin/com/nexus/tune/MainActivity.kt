@@ -249,6 +249,7 @@ class MainActivity : ComponentActivity() {
                             val abLoopState by playerViewModel.abLoopState.collectAsState()
                             val audioOutputDevice by app.audioOutputRouteManager.currentOutputDevice.collectAsState()
                             val visualizerData by com.nexus.tune.core.player.visualizer.VisualizerManager.instance.visualizerData.collectAsState()
+                            val bookmarks by playerViewModel.bookmarks.collectAsState()
                             LaunchedEffect(playbackState.currentTrack) {
                                 playbackState.currentTrack?.let { playerViewModel.loadLyrics(it) }
                             }
@@ -303,7 +304,11 @@ class MainActivity : ComponentActivity() {
                                             }
                                         }
                                     }
-                                }
+                                },
+                                bookmarks = bookmarks,
+                                onAddBookmark = { playerViewModel.addBookmark(it) },
+                                onDeleteBookmark = { playerViewModel.deleteBookmark(it) },
+                                onSeekToBookmark = { playerViewModel.seekToBookmark(it) }
                             )
                         }
                     }

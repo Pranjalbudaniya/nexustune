@@ -10,6 +10,7 @@ import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -227,6 +228,44 @@ class PlayerViewModelTest {
         val exported = viewModel.exportCurrentLyrics(track)
         assertEquals("[00:01.00] Hello", exported)
         coVerify { musicRepository.exportLyricsToLrc("trk1") }
+    }
+
+    @Test
+    fun `addBookmark delegates to musicRepository and loadBookmarks updates state`() = runTest {
+        val sampleTrack = Track(id = "trk1", title = "Mix", artist = "DJ")
+        val bookmarksList = listOf(
+            com.nexus.tune.core.model.TrackBookmark(id = 1L, trackId = "trk1", title = "Solo", positionMs = 45000L)
+        )
+        every { musicRepository.getBookmarksForTrack("trk1") } returns flowOf(bookmarksList)
+
+        viewModel.loadLyrics(sampleTrack)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(1, viewModel.bookmarks.value.size)
+        assertEquals("Solo", viewModel.bookmarks.value[0].title)
+
+        viewModel.addBookmark("Breakdown", 90000L)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { musicRepository.addBookmark("trk1", "Breakdown", 90000L) }
+    }
+
+    @Test
+    fun `deleteBookmark and seekToBookmark delegate appropriately`() = runTest {
+        val mockPlayerController = mockk<com.nexus.tune.core.player.PlayerController>(relaxed = true)
+        val vm = PlayerViewModel(
+            musicRepository = musicRepository,
+            manageQueueUseCase = manageQueueUseCase,
+            playerController = mockPlayerController
+        )
+
+        vm.deleteBookmark(99L)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify { musicRepository.deleteBookmark(99L) }
+
+        val bookmark = com.nexus.tune.core.model.TrackBookmark(id = 5L, trackId = "trk1", title = "Drop", positionMs = 60000L)
+        vm.seekToBookmark(bookmark)
+        verify { mockPlayerController.seekTo(60000L) }
     }
 }
 

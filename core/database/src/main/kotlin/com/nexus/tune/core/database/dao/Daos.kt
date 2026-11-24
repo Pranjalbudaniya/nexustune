@@ -85,3 +85,21 @@ interface LyricsDao {
     suspend fun getCachedCount(): Int
 }
 
+@Dao
+interface TrackBookmarkDao {
+    @Query("SELECT * FROM track_bookmarks WHERE trackId = :trackId ORDER BY positionMs ASC")
+    fun getBookmarksForTrack(trackId: String): Flow<List<com.nexus.tune.core.database.entity.TrackBookmarkEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(bookmark: com.nexus.tune.core.database.entity.TrackBookmarkEntity): Long
+
+    @Query("DELETE FROM track_bookmarks WHERE id = :bookmarkId")
+    suspend fun delete(bookmarkId: Long)
+
+    @Query("DELETE FROM track_bookmarks WHERE trackId = :trackId")
+    suspend fun deleteAllForTrack(trackId: String)
+
+    @Query("SELECT COUNT(*) FROM track_bookmarks WHERE trackId = :trackId")
+    suspend fun getBookmarkCountForTrack(trackId: String): Int
+}
+

@@ -55,3 +55,12 @@ data class LyricsEntity(
     val cachedAtTimestamp: Long = System.currentTimeMillis()
 )
 
+@Entity(tableName = "track_bookmarks")
+data class TrackBookmarkEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val trackId: String,
+    val title: String,
+    val positionMs: Long,
+    val createdAtTimestamp: Long = System.currentTimeMillis()
+)
+

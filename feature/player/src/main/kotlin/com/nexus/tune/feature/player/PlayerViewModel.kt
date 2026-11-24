@@ -7,10 +7,13 @@ import com.nexus.tune.core.domain.repository.MusicRepository
 import com.nexus.tune.core.domain.usecase.ManageQueueUseCase
 import com.nexus.tune.core.model.PlaybackState
 import com.nexus.tune.core.model.Track
+import com.nexus.tune.core.model.TrackBookmark
 import com.nexus.tune.core.model.TrackLyrics
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
@@ -41,6 +44,11 @@ class PlayerViewModel(
 
     private val _lyrics = MutableStateFlow<TrackLyrics?>(null)
     val lyrics: StateFlow<TrackLyrics?> = _lyrics.asStateFlow()
+
+    private val _bookmarks = MutableStateFlow<List<TrackBookmark>>(emptyList())
+    val bookmarks: StateFlow<List<TrackBookmark>> = _bookmarks.asStateFlow()
+
+    private var bookmarkCollectionJob: Job? = null
 
     private val _lyricsOffsetMs = MutableStateFlow(0L)
     val lyricsOffsetMs: StateFlow<Long> = _lyricsOffsetMs.asStateFlow()
@@ -134,6 +142,7 @@ class PlayerViewModel(
 
     fun loadLyrics(track: Track) {
         activeTrackId = track.id
+        loadBookmarks(track.id)
         viewModelScope.launch {
             _lyricsOffsetMs.value = musicRepository.getLyricsOffset(track.id)
             when (val result = musicRepository.getLyrics(track.id, track.title, track.artist, track.durationSeconds)) {
@@ -141,6 +150,41 @@ class PlayerViewModel(
                 is MusicResult.Failure -> _lyrics.value = null
             }
         }
+    }
+
+    fun loadBookmarks(trackId: String) {
+        bookmarkCollectionJob?.cancel()
+        bookmarkCollectionJob = viewModelScope.launch {
+            musicRepository.getBookmarksForTrack(trackId).collect { list ->
+                _bookmarks.value = list
+            }
+        }
+    }
+
+    fun addBookmark(title: String = "", positionMs: Long? = null) {
+        val trackId = activeTrackId ?: return
+        val pos = positionMs ?: playerController?.playbackState?.value?.positionMs ?: 0L
+        val cleanTitle = if (title.isBlank()) {
+            val totalSecs = (pos / 1000).coerceAtLeast(0)
+            val mins = totalSecs / 60
+            val secs = totalSecs % 60
+            String.format("Bookmark at %02d:%02d", mins, secs)
+        } else {
+            title.trim()
+        }
+        viewModelScope.launch {
+            musicRepository.addBookmark(trackId, cleanTitle, pos)
+        }
+    }
+
+    fun deleteBookmark(bookmarkId: Long) {
+        viewModelScope.launch {
+            musicRepository.deleteBookmark(bookmarkId)
+        }
+    }
+
+    fun seekToBookmark(bookmark: TrackBookmark) {
+        playerController?.seekTo(bookmark.positionMs)
     }
 
     fun toggleLike(track: Track) {

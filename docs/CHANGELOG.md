@@ -5,6 +5,14 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.9.0] - 2026-11-24
+
+### Added
+- **Interactive Track Audio Bookmark & Chapter Annotation Engine**: Implemented `TrackBookmark` domain model, Room `TrackBookmarkEntity`, and `TrackBookmarkDao` for persisting timestamped markers within any track or DJ mix.
+- **Repository & State Orchestration**: Added `getBookmarksForTrack()`, `addBookmark()`, and `deleteBookmark()` in `MusicRepository` and `MusicRepositoryImpl`, with reactive `bookmarks` flow and auto-tracking in `PlayerViewModel`.
+- **Interactive Player Bookmark Console**: Added tactile "Bookmark" button, quick-jump timestamp chips (e.g. `01:15 Drop`), interactive delete icon, and an "Add Bookmark" modal dialog in `PlayerScreen`.
+- **Unit Test Suites**: Implemented comprehensive unit test suites in `TrackBookmarkRepositoryTest` (`:core:data`) and `PlayerViewModelTest` (`:feature:player`).
+
 ## [4.8.0] - 2026-11-24
 
 ### Added

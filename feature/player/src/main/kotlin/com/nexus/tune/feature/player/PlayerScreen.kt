@@ -2,9 +2,12 @@ package com.nexus.tune.feature.player
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.VolumeUp
@@ -25,6 +28,7 @@ import coil.compose.AsyncImage
 import com.nexus.tune.core.model.PlaybackState
 import com.nexus.tune.core.model.PlaybackStatus
 import com.nexus.tune.core.model.PlayerLayout
+import com.nexus.tune.core.model.TrackBookmark
 import com.nexus.tune.core.model.TrackLyrics
 
 @Composable
@@ -59,12 +63,17 @@ fun PlayerScreen(
     onSkipPrevious: () -> Unit = {},
     onSkipNext: () -> Unit = {},
     onImportLrc: (String) -> Unit = {},
-    onExportLrc: () -> Unit = {}
+    onExportLrc: () -> Unit = {},
+    bookmarks: List<TrackBookmark> = emptyList(),
+    onAddBookmark: (String) -> Unit = {},
+    onDeleteBookmark: (Long) -> Unit = {},
+    onSeekToBookmark: (TrackBookmark) -> Unit = {}
 ) {
     val track = playbackState.currentTrack ?: return
     val isPlaying = playbackState.status == PlaybackStatus.PLAYING
     var showImportLrcDialog by remember { mutableStateOf(false) }
     var lrcInputText by remember { mutableStateOf("") }
+    var showAddBookmarkDialog by remember { mutableStateOf(false) }
 
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -439,6 +448,41 @@ fun PlayerScreen(
                 }
             }
 
+            // Bookmarks & Chapters
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+                    .horizontalScroll(rememberScrollState()),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                AssistChip(
+                    onClick = { showAddBookmarkDialog = true },
+                    label = { Text("Bookmark", style = MaterialTheme.typography.labelSmall) },
+                    leadingIcon = {
+                        Icon(Icons.Rounded.BookmarkAdd, contentDescription = "Add Bookmark", modifier = Modifier.size(16.dp))
+                    }
+                )
+                bookmarks.forEach { bookmark ->
+                    val isNear = kotlin.math.abs(playbackState.positionMs - bookmark.positionMs) < 2500L
+                    InputChip(
+                        selected = isNear,
+                        onClick = { onSeekToBookmark(bookmark) },
+                        label = { Text("${bookmark.formattedPosition} ${bookmark.title}", style = MaterialTheme.typography.labelSmall) },
+                        trailingIcon = {
+                            Icon(
+                                Icons.Rounded.Close,
+                                contentDescription = "Delete Bookmark",
+                                modifier = Modifier
+                                    .size(14.dp)
+                                    .clickable { onDeleteBookmark(bookmark.id) }
+                            )
+                        }
+                    )
+                }
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
 
             // Ergonomic Controls
@@ -641,6 +685,48 @@ fun PlayerScreen(
                 },
                 dismissButton = {
                     TextButton(onClick = { showImportLrcDialog = false }) {
+                        Text("Cancel")
+                    }
+                }
+            )
+        }
+
+        if (showAddBookmarkDialog) {
+            var bookmarkTitle by remember { mutableStateOf("") }
+            val currentPosMs = playbackState.positionMs
+            AlertDialog(
+                onDismissRequest = { showAddBookmarkDialog = false },
+                title = { Text("Add Bookmark") },
+                text = {
+                    Column {
+                        Text(
+                            text = "Timestamp: ${formatTime(currentPosMs)}",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedTextField(
+                            value = bookmarkTitle,
+                            onValueChange = { bookmarkTitle = it },
+                            label = { Text("Bookmark Label") },
+                            placeholder = { Text("e.g. Solo, Drop, Breakdown") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            onAddBookmark(bookmarkTitle)
+                            showAddBookmarkDialog = false
+                        }
+                    ) {
+                        Text("Save Bookmark")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showAddBookmarkDialog = false }) {
                         Text("Cancel")
                     }
                 }

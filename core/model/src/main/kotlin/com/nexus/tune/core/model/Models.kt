@@ -301,3 +301,18 @@ enum class AmbientSoundType(val displayName: String, val description: String) {
     SOLFEGGIO_528HZ("528Hz Miracle", "Transformation and clarity tone")
 }
 
+data class TrackBookmark(
+    val id: Long = 0,
+    val trackId: String,
+    val title: String,
+    val positionMs: Long,
+    val createdAtTimestamp: Long = System.currentTimeMillis()
+) {
+    val formattedPosition: String get() {
+        val totalSecs = (positionMs / 1000).coerceAtLeast(0)
+        val mins = totalSecs / 60
+        val secs = totalSecs % 60
+        return String.format("%02d:%02d", mins, secs)
+    }
+}
+

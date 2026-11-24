@@ -18,3 +18,4 @@ class WakeAlarmReceiver : BroadcastReceiver() {
 interface WakeAlarmTriggerable {
     fun triggerWakeAlarm()
 }
+
