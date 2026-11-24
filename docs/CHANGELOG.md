@@ -5,6 +5,16 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.6.0] - 2026-11-24
+
+### Added
+- **Interactive DJ Audio Transformation & Sound Effects Engine**: Implemented `DjPreset` (`NORMAL`, `NIGHTCORE`, `SLOWED_REVERB`, `VINTAGE_VINYL`, `VAPORWAVE`, `DEEP_BASS`, `CUSTOM`) and `DjFxConfig` in `:core:model` allowing real-time aesthetic acoustic modulation.
+- **DJ Transformation Math Engine**: Implemented `DjTransformEngine` in `:core:domain:audio` calculating calibrated speed factors ($0.50\times - 2.00\times$), vocal pitch semitones ($\pm 6$ st), stereo soundstage width matrices ($0.0\times$ mono to $2.0\times$ super-wide), effective scaled duration, and closest aesthetic preset matching.
+- **Interactive DJ Control Sheet in Player**: Added top-bar DJ action button and Material 3 Expressive `ModalBottomSheet` in `PlayerScreen` featuring aesthetic preset chips, speed slider, pitch transposition controls, soundstage width slider, vintage lo-fi filter toggle, live overview metrics, and one-tap reset.
+- **Settings Console Integration**: Added dedicated "DJ Sound Effects & Transformation" card in `SettingsScreen` with preset selectors and toggleable "Remember DJ FX Across Tracks" persistence.
+- **DataStore & Player Controller Integration**: Persisted DJ configuration in `SettingsDataStore` and mapped real-time parameters directly to `PlayerController` and `PlayerViewModel`.
+- **Comprehensive Unit Test Suites**: Created `DjTransformEngineTest` in `:core:domain` and expanded `PlayerViewModelTest` (`:feature:player`) and `SettingsViewModelTest` (`:feature:settings`).
+
 ## [5.5.0] - 2026-11-24
 
 ### Added

@@ -105,3 +105,4 @@ class EqCurveCalculatorTest {
         assertEquals("P2", restored[1].name)
     }
 }
+

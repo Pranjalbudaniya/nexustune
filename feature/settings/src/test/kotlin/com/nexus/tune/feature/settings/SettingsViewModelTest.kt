@@ -676,4 +676,23 @@ class SettingsViewModelTest {
         }
         assertEquals(EqualizerPreset.CUSTOM, viewModel.equalizerPreset.value)
     }
+
+    @Test
+    fun `setDjPreset and setDjRememberAcrossTracks update themeConfig`() = runTest {
+        viewModel.setDjPreset(DjPreset.NIGHTCORE)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match {
+                it.djFxConfig.preset == DjPreset.NIGHTCORE && it.djFxConfig.speed == 1.25f && it.djFxConfig.semitones == 2
+            })
+        }
+
+        viewModel.setDjRememberAcrossTracks(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match {
+                it.djRememberAcrossTracks
+            })
+        }
+    }
 }

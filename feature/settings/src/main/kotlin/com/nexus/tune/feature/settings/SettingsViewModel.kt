@@ -532,4 +532,13 @@ class SettingsViewModel(
     fun snoozeWakeAlarm(minutes: Int = 10) {
         wakeAlarmManager?.snooze(minutes)
     }
+
+    fun setDjPreset(preset: DjPreset) {
+        val config = com.nexus.tune.core.domain.audio.DjTransformEngine.getPresetConfig(preset)
+        updateTheme(themeConfig.value.copy(djFxConfig = config))
+    }
+
+    fun setDjRememberAcrossTracks(remember: Boolean) {
+        updateTheme(themeConfig.value.copy(djRememberAcrossTracks = remember))
+    }
 }

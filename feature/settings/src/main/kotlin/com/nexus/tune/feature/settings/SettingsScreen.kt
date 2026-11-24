@@ -460,6 +460,68 @@ fun SettingsScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
+                // DJ Sound Effects & Transformation Card
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Text(
+                        text = "DJ Sound Effects & Transformation",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Real-time aesthetic pitch, tempo, and acoustic soundstage modulation",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // Preset Chips Row
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        com.nexus.tune.core.model.DjPreset.values().forEach { preset ->
+                            val isSelected = themeConfig.djFxConfig.preset == preset
+                            FilterChip(
+                                selected = isSelected,
+                                onClick = { viewModel.setDjPreset(preset) },
+                                label = { Text(preset.displayName) },
+                                leadingIcon = if (isSelected) {
+                                    {
+                                        Icon(
+                                            Icons.Rounded.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                } else null
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    ListItem(
+                        headlineContent = { Text("Remember DJ FX Across Tracks") },
+                        supportingContent = { Text("Preserve active tempo, pitch, and soundstage between songs instead of resetting to standard") },
+                        trailingContent = {
+                            Switch(
+                                checked = themeConfig.djRememberAcrossTracks,
+                                onCheckedChange = { viewModel.setDjRememberAcrossTracks(it) }
+                            )
+                        }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
                 ListItem(
                     headlineContent = { Text("Spatial Audio (3D Virtualizer)") },
                     supportingContent = { Text("Simulate binaural room reflections and expansive soundstage") },

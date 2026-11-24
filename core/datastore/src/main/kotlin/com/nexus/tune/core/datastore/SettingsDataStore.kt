@@ -56,6 +56,13 @@ class SettingsDataStore(private val context: Context) {
         val STREAK_LONGEST_DAYS = intPreferencesKey("streak_longest_days")
         val STREAK_LAST_ACTIVE_EPOCH_DAY = longPreferencesKey("streak_last_active_epoch_day")
         val CUSTOM_EQ_PROFILES = stringPreferencesKey("custom_eq_profiles_serialized")
+        val DJ_PRESET = stringPreferencesKey("dj_preset")
+        val DJ_SPEED = floatPreferencesKey("dj_speed")
+        val DJ_SEMITONES = intPreferencesKey("dj_semitones")
+        val DJ_SOUNDSTAGE_WIDTH = floatPreferencesKey("dj_soundstage_width")
+        val DJ_LOFI_FILTER = booleanPreferencesKey("dj_lofi_filter")
+        val DJ_BASS_BOOST = intPreferencesKey("dj_bass_boost")
+        val DJ_REMEMBER_ACROSS_TRACKS = booleanPreferencesKey("dj_remember_across_tracks")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -111,7 +118,18 @@ class SettingsDataStore(private val context: Context) {
                 }.getOrDefault(LoudnessNormalizationMode.REPLAYGAIN_TRACK),
                 targetLufs = prefs[PreferencesKeys.TARGET_LUFS] ?: -14.0f,
                 preAmpGainDb = prefs[PreferencesKeys.PRE_AMP_GAIN_DB] ?: 0.0f
-            )
+            ),
+            djFxConfig = DjFxConfig(
+                preset = runCatching {
+                    DjPreset.valueOf(prefs[PreferencesKeys.DJ_PRESET] ?: DjPreset.NORMAL.name)
+                }.getOrDefault(DjPreset.NORMAL),
+                speed = prefs[PreferencesKeys.DJ_SPEED] ?: 1.0f,
+                semitones = prefs[PreferencesKeys.DJ_SEMITONES] ?: 0,
+                soundstageWidth = prefs[PreferencesKeys.DJ_SOUNDSTAGE_WIDTH] ?: 1.0f,
+                loFiFilterEnabled = prefs[PreferencesKeys.DJ_LOFI_FILTER] ?: false,
+                bassBoostDb = prefs[PreferencesKeys.DJ_BASS_BOOST] ?: 0
+            ),
+            djRememberAcrossTracks = prefs[PreferencesKeys.DJ_REMEMBER_ACROSS_TRACKS] ?: false
         )
     }
 
@@ -151,6 +169,13 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.LOUDNESS_MODE] = config.loudnessConfig.mode.name
             prefs[PreferencesKeys.TARGET_LUFS] = config.loudnessConfig.targetLufs
             prefs[PreferencesKeys.PRE_AMP_GAIN_DB] = config.loudnessConfig.preAmpGainDb
+            prefs[PreferencesKeys.DJ_PRESET] = config.djFxConfig.preset.name
+            prefs[PreferencesKeys.DJ_SPEED] = config.djFxConfig.speed
+            prefs[PreferencesKeys.DJ_SEMITONES] = config.djFxConfig.semitones
+            prefs[PreferencesKeys.DJ_SOUNDSTAGE_WIDTH] = config.djFxConfig.soundstageWidth
+            prefs[PreferencesKeys.DJ_LOFI_FILTER] = config.djFxConfig.loFiFilterEnabled
+            prefs[PreferencesKeys.DJ_BASS_BOOST] = config.djFxConfig.bassBoostDb
+            prefs[PreferencesKeys.DJ_REMEMBER_ACROSS_TRACKS] = config.djRememberAcrossTracks
         }
     }
 
@@ -256,6 +281,40 @@ class SettingsDataStore(private val context: Context) {
     suspend fun saveCustomEqProfilesRaw(raw: String) {
         context.dataStore.edit { prefs ->
             prefs[PreferencesKeys.CUSTOM_EQ_PROFILES] = raw
+        }
+    }
+
+    val djFxConfig: Flow<DjFxConfig> = context.dataStore.data.map { prefs ->
+        DjFxConfig(
+            preset = runCatching {
+                DjPreset.valueOf(prefs[PreferencesKeys.DJ_PRESET] ?: DjPreset.NORMAL.name)
+            }.getOrDefault(DjPreset.NORMAL),
+            speed = prefs[PreferencesKeys.DJ_SPEED] ?: 1.0f,
+            semitones = prefs[PreferencesKeys.DJ_SEMITONES] ?: 0,
+            soundstageWidth = prefs[PreferencesKeys.DJ_SOUNDSTAGE_WIDTH] ?: 1.0f,
+            loFiFilterEnabled = prefs[PreferencesKeys.DJ_LOFI_FILTER] ?: false,
+            bassBoostDb = prefs[PreferencesKeys.DJ_BASS_BOOST] ?: 0
+        )
+    }
+
+    suspend fun updateDjFxConfig(config: DjFxConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.DJ_PRESET] = config.preset.name
+            prefs[PreferencesKeys.DJ_SPEED] = config.speed
+            prefs[PreferencesKeys.DJ_SEMITONES] = config.semitones
+            prefs[PreferencesKeys.DJ_SOUNDSTAGE_WIDTH] = config.soundstageWidth
+            prefs[PreferencesKeys.DJ_LOFI_FILTER] = config.loFiFilterEnabled
+            prefs[PreferencesKeys.DJ_BASS_BOOST] = config.bassBoostDb
+        }
+    }
+
+    val djRememberAcrossTracks: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[PreferencesKeys.DJ_REMEMBER_ACROSS_TRACKS] ?: false
+    }
+
+    suspend fun setDjRememberAcrossTracks(remember: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.DJ_REMEMBER_ACROSS_TRACKS] = remember
         }
     }
 }

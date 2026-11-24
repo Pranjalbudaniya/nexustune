@@ -76,7 +76,14 @@ fun PlayerScreen(
     onJumpToQueueIndex: (Int) -> Unit = {},
     onRemoveFromQueue: (Int) -> Unit = {},
     onClearUpcoming: () -> Unit = {},
-    onDeduplicateQueue: () -> Unit = {}
+    onDeduplicateQueue: () -> Unit = {},
+    djFxConfig: com.nexus.tune.core.model.DjFxConfig = com.nexus.tune.core.model.DjFxConfig(),
+    onSetDjPreset: (com.nexus.tune.core.model.DjPreset) -> Unit = {},
+    onSetDjSpeed: (Float) -> Unit = {},
+    onSetDjSemitones: (Int) -> Unit = {},
+    onSetDjSoundstageWidth: (Float) -> Unit = {},
+    onToggleDjLoFi: () -> Unit = {},
+    onResetDjFx: () -> Unit = {}
 ) {
     val track = playbackState.currentTrack ?: return
     val isPlaying = playbackState.status == PlaybackStatus.PLAYING
@@ -84,6 +91,7 @@ fun PlayerScreen(
     var lrcInputText by remember { mutableStateOf("") }
     var showAddBookmarkDialog by remember { mutableStateOf(false) }
     var showQueueSheet by remember { mutableStateOf(false) }
+    var showDjSheet by remember { mutableStateOf(false) }
 
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -151,6 +159,13 @@ fun PlayerScreen(
                     }
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = { showDjSheet = true }) {
+                        Icon(
+                            imageVector = Icons.Rounded.Tune,
+                            contentDescription = "DJ Sound Effects",
+                            tint = if (djFxConfig.preset != com.nexus.tune.core.model.DjPreset.NORMAL) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                     IconButton(onClick = { showQueueSheet = true }) {
                         Icon(Icons.AutoMirrored.Rounded.QueueMusic, contentDescription = "Up Next Queue")
                     }
@@ -894,6 +909,258 @@ fun PlayerScreen(
                             }
                         }
                     }
+                }
+            }
+        }
+
+        if (showDjSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showDjSheet = false },
+                containerColor = MaterialTheme.colorScheme.surface
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 8.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                text = "DJ Sound FX & Transformation",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Aesthetic tempo, pitch & soundstage modulation",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        if (djFxConfig.preset != com.nexus.tune.core.model.DjPreset.NORMAL) {
+                            TextButton(onClick = onResetDjFx) {
+                                Text("Reset FX", style = MaterialTheme.typography.labelSmall)
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Preset Chips Row
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        com.nexus.tune.core.model.DjPreset.values().forEach { preset ->
+                            val isSelected = djFxConfig.preset == preset
+                            FilterChip(
+                                selected = isSelected,
+                                onClick = { onSetDjPreset(preset) },
+                                label = { Text(preset.displayName) },
+                                leadingIcon = if (isSelected) {
+                                    {
+                                        Icon(
+                                            Icons.Rounded.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                } else null
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Status Overview Card
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp),
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    text = "SPEED",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Text(
+                                    text = String.format(java.util.Locale.US, "%.2fx", djFxConfig.speed),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    text = "PITCH",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Text(
+                                    text = when {
+                                        djFxConfig.semitones > 0 -> "+${djFxConfig.semitones} st"
+                                        djFxConfig.semitones < 0 -> "${djFxConfig.semitones} st"
+                                        else -> "0 st"
+                                    },
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    text = "STAGE",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Text(
+                                    text = "${(djFxConfig.soundstageWidth * 100).toInt()}%",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Speed Slider
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Playback Tempo / Speed",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = String.format(java.util.Locale.US, "%.2fx", djFxConfig.speed),
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Slider(
+                        value = djFxConfig.speed,
+                        onValueChange = onSetDjSpeed,
+                        valueRange = 0.50f..2.00f,
+                        steps = 15,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Pitch Semitones Controls
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Vocal Pitch Transposition",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            IconButton(
+                                onClick = { onSetDjSemitones(djFxConfig.semitones - 1) },
+                                enabled = djFxConfig.semitones > -6,
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(Icons.Rounded.Remove, contentDescription = "Pitch down", modifier = Modifier.size(18.dp))
+                            }
+                            Text(
+                                text = when {
+                                    djFxConfig.semitones > 0 -> "+${djFxConfig.semitones}"
+                                    djFxConfig.semitones < 0 -> "${djFxConfig.semitones}"
+                                    else -> "0"
+                                },
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                            )
+                            IconButton(
+                                onClick = { onSetDjSemitones(djFxConfig.semitones + 1) },
+                                enabled = djFxConfig.semitones < 6,
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(Icons.Rounded.Add, contentDescription = "Pitch up", modifier = Modifier.size(18.dp))
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Soundstage Width Slider
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Stereo Soundstage Width",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "${(djFxConfig.soundstageWidth * 100).toInt()}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                    Slider(
+                        value = djFxConfig.soundstageWidth,
+                        onValueChange = onSetDjSoundstageWidth,
+                        valueRange = 0.0f..2.0f,
+                        steps = 20,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Lo-Fi Warmth Filter Switch
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                text = "Vintage Lo-Fi Filter",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Bandpass warmth and subtle analog texture",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Switch(
+                            checked = djFxConfig.loFiFilterEnabled,
+                            onCheckedChange = { onToggleDjLoFi() }
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
             }
         }

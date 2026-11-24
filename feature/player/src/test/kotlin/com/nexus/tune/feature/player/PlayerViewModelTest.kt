@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -289,6 +290,56 @@ class PlayerViewModelTest {
         vm.clearUpcoming()
         testDispatcher.scheduler.advanceUntilIdle()
         coVerify { manageQueueUseCase.clearUpcoming() }
+    }
+
+    @Test
+    fun `setDjPreset updates config and delegates speed and pitch to playerController`() = runTest {
+        val mockPlayerController = mockk<com.nexus.tune.core.player.PlayerController>(relaxed = true)
+        val vm = PlayerViewModel(
+            musicRepository = musicRepository,
+            manageQueueUseCase = manageQueueUseCase,
+            playerController = mockPlayerController
+        )
+
+        vm.setDjPreset(com.nexus.tune.core.model.DjPreset.NIGHTCORE)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(com.nexus.tune.core.model.DjPreset.NIGHTCORE, vm.djFxConfig.value.preset)
+        assertEquals(1.25f, vm.djFxConfig.value.speed, 0.001f)
+        assertEquals(2, vm.djFxConfig.value.semitones)
+        verify { mockPlayerController.setPlaybackSpeed(1.25f) }
+        verify { mockPlayerController.setPlaybackSemitones(2) }
+
+        vm.resetDjFx()
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertEquals(com.nexus.tune.core.model.DjPreset.NORMAL, vm.djFxConfig.value.preset)
+        verify { mockPlayerController.setPlaybackSpeed(1.0f) }
+        verify { mockPlayerController.setPlaybackSemitones(0) }
+    }
+
+    @Test
+    fun `setDjSpeed, setDjSemitones, and setDjSoundstageWidth correctly update config and player`() = runTest {
+        val mockPlayerController = mockk<com.nexus.tune.core.player.PlayerController>(relaxed = true)
+        val vm = PlayerViewModel(
+            musicRepository = musicRepository,
+            manageQueueUseCase = manageQueueUseCase,
+            playerController = mockPlayerController
+        )
+
+        vm.setDjSpeed(1.4f)
+        assertEquals(1.4f, vm.djFxConfig.value.speed, 0.001f)
+        verify { mockPlayerController.setPlaybackSpeed(1.4f) }
+
+        vm.setDjSemitones(-2)
+        assertEquals(-2, vm.djFxConfig.value.semitones)
+        verify { mockPlayerController.setPlaybackSemitones(-2) }
+
+        vm.setDjSoundstageWidth(1.6f)
+        assertEquals(1.6f, vm.djFxConfig.value.soundstageWidth, 0.001f)
+
+        assertFalse(vm.djFxConfig.value.loFiFilterEnabled)
+        vm.toggleDjLoFiFilter()
+        assertTrue(vm.djFxConfig.value.loFiFilterEnabled)
     }
 }
 

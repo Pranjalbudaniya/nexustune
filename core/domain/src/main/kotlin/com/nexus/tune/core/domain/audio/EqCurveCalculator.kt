@@ -125,3 +125,4 @@ object EqCurveCalculator {
         return raw.split("###").mapNotNull { deserializeProfile(it) }
     }
 }
+

@@ -200,7 +200,9 @@ data class ThemeConfig(
     val resetPitchOnTrackChange: Boolean = true,
     val smartShuffleEnabled: Boolean = true,
     val wakeAlarmConfig: WakeAlarmConfig = WakeAlarmConfig(),
-    val loudnessConfig: LoudnessConfig = LoudnessConfig()
+    val loudnessConfig: LoudnessConfig = LoudnessConfig(),
+    val djFxConfig: DjFxConfig = DjFxConfig(),
+    val djRememberAcrossTracks: Boolean = false
 )
 
 data class SoundDoseInfo(
@@ -396,5 +398,25 @@ data class TimeCapsuleRecap(
     val topGenres: List<GenreShare> = emptyList(),
     val peakPeriod: String = "All Day",
     val streakDays: Int = 0
+)
+
+enum class DjPreset(val displayName: String) {
+    NORMAL("Original"),
+    NIGHTCORE("Nightcore"),
+    SLOWED_REVERB("Slowed + Reverb"),
+    VINTAGE_VINYL("Vintage Lo-Fi"),
+    VAPORWAVE("Vaporwave"),
+    DEEP_BASS("Bass Pushed"),
+    CUSTOM("Custom DJ")
+}
+
+data class DjFxConfig(
+    val preset: DjPreset = DjPreset.NORMAL,
+    val speed: Float = 1.0f,
+    val semitones: Int = 0,
+    val soundstageWidth: Float = 1.0f,
+    val loFiFilterEnabled: Boolean = false,
+    val bassBoostDb: Int = 0,
+    val isEqualizerLinked: Boolean = true
 )
 

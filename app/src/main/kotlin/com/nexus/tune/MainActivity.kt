@@ -252,6 +252,7 @@ class MainActivity : ComponentActivity() {
                             val bookmarks by playerViewModel.bookmarks.collectAsState()
                             val activeQueue by playerViewModel.activeQueue.collectAsState()
                             val activeQueueIndex by playerViewModel.activeQueueIndex.collectAsState()
+                            val djFxConfig by playerViewModel.djFxConfig.collectAsState()
                             LaunchedEffect(playbackState.currentTrack) {
                                 playbackState.currentTrack?.let { playerViewModel.loadLyrics(it) }
                             }
@@ -316,7 +317,14 @@ class MainActivity : ComponentActivity() {
                                 onJumpToQueueIndex = { playerViewModel.jumpToQueueIndex(it) },
                                 onRemoveFromQueue = { playerViewModel.removeFromQueue(it) },
                                 onClearUpcoming = { playerViewModel.clearUpcoming() },
-                                onDeduplicateQueue = { playerViewModel.deduplicateQueue() }
+                                onDeduplicateQueue = { playerViewModel.deduplicateQueue() },
+                                djFxConfig = djFxConfig,
+                                onSetDjPreset = { playerViewModel.setDjPreset(it) },
+                                onSetDjSpeed = { playerViewModel.setDjSpeed(it) },
+                                onSetDjSemitones = { playerViewModel.setDjSemitones(it) },
+                                onSetDjSoundstageWidth = { playerViewModel.setDjSoundstageWidth(it) },
+                                onToggleDjLoFi = { playerViewModel.toggleDjLoFiFilter() },
+                                onResetDjFx = { playerViewModel.resetDjFx() }
                             )
                         }
                     }

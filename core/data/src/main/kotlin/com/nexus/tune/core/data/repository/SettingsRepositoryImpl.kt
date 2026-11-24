@@ -66,5 +66,17 @@ class SettingsRepositoryImpl(
             .filter { it.id != profileId }
         dataStore.saveCustomEqProfilesRaw(com.nexus.tune.core.domain.audio.EqCurveCalculator.serializeProfilesList(existing))
     }
+
+    override fun getDjFxConfig(): Flow<com.nexus.tune.core.model.DjFxConfig> = dataStore.djFxConfig
+
+    override suspend fun updateDjFxConfig(config: com.nexus.tune.core.model.DjFxConfig) {
+        dataStore.updateDjFxConfig(config)
+    }
+
+    override fun getDjRememberAcrossTracks(): Flow<Boolean> = dataStore.djRememberAcrossTracks
+
+    override suspend fun setDjRememberAcrossTracks(remember: Boolean) {
+        dataStore.setDjRememberAcrossTracks(remember)
+    }
 }
 

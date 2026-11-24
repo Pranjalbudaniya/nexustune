@@ -150,6 +150,56 @@ class PlayerViewModel(
         setPlaybackSemitones(0)
     }
 
+    private val _djFxConfig = MutableStateFlow(com.nexus.tune.core.model.DjFxConfig())
+    val djFxConfig: StateFlow<com.nexus.tune.core.model.DjFxConfig> = _djFxConfig.asStateFlow()
+
+    fun setDjPreset(preset: com.nexus.tune.core.model.DjPreset) {
+        val config = com.nexus.tune.core.domain.audio.DjTransformEngine.getPresetConfig(preset)
+        _djFxConfig.value = config
+        playerController?.setPlaybackSpeed(config.speed)
+        playerController?.setPlaybackSemitones(config.semitones)
+        _playbackSpeed.value = config.speed
+        _playbackPitchSemitones.value = config.semitones
+    }
+
+    fun setDjSpeed(speed: Float) {
+        val clamped = com.nexus.tune.core.domain.audio.DjTransformEngine.clampSpeed(speed)
+        val current = _djFxConfig.value
+        val newConfig = current.copy(
+            speed = clamped,
+            preset = com.nexus.tune.core.domain.audio.DjTransformEngine.matchClosestPreset(clamped, current.semitones)
+        )
+        _djFxConfig.value = newConfig
+        playerController?.setPlaybackSpeed(clamped)
+        _playbackSpeed.value = clamped
+    }
+
+    fun setDjSemitones(semitones: Int) {
+        val clamped = com.nexus.tune.core.domain.audio.DjTransformEngine.clampSemitones(semitones)
+        val current = _djFxConfig.value
+        val newConfig = current.copy(
+            semitones = clamped,
+            preset = com.nexus.tune.core.domain.audio.DjTransformEngine.matchClosestPreset(current.speed, clamped)
+        )
+        _djFxConfig.value = newConfig
+        playerController?.setPlaybackSemitones(clamped)
+        _playbackPitchSemitones.value = clamped
+    }
+
+    fun setDjSoundstageWidth(width: Float) {
+        val clamped = com.nexus.tune.core.domain.audio.DjTransformEngine.clampSoundstageWidth(width)
+        _djFxConfig.value = _djFxConfig.value.copy(soundstageWidth = clamped)
+    }
+
+    fun toggleDjLoFiFilter() {
+        val current = _djFxConfig.value
+        _djFxConfig.value = current.copy(loFiFilterEnabled = !current.loFiFilterEnabled)
+    }
+
+    fun resetDjFx() {
+        setDjPreset(com.nexus.tune.core.model.DjPreset.NORMAL)
+    }
+
     fun adjustLyricsOffset(deltaMs: Long) {
         val newOffset = _lyricsOffsetMs.value + deltaMs
         _lyricsOffsetMs.value = newOffset

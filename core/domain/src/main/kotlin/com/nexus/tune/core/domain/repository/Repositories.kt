@@ -68,6 +68,10 @@ interface SettingsRepository {
     fun getCustomEqProfiles(): Flow<List<com.nexus.tune.core.model.CustomEqProfile>> = kotlinx.coroutines.flow.flowOf(emptyList())
     suspend fun saveCustomEqProfile(profile: com.nexus.tune.core.model.CustomEqProfile) {}
     suspend fun deleteCustomEqProfile(profileId: String) {}
+    fun getDjFxConfig(): Flow<com.nexus.tune.core.model.DjFxConfig> = kotlinx.coroutines.flow.flowOf(com.nexus.tune.core.model.DjFxConfig())
+    suspend fun updateDjFxConfig(config: com.nexus.tune.core.model.DjFxConfig) {}
+    fun getDjRememberAcrossTracks(): Flow<Boolean> = kotlinx.coroutines.flow.flowOf(false)
+    suspend fun setDjRememberAcrossTracks(remember: Boolean) {}
 }
 
 
