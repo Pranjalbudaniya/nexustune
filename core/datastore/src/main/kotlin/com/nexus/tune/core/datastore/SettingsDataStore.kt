@@ -70,6 +70,9 @@ class SettingsDataStore(private val context: Context) {
         val AUTO_STASH_BUDGET_MB = intPreferencesKey("auto_stash_budget_mb")
         val AUTO_STASH_STRATEGY = stringPreferencesKey("auto_stash_strategy")
         val AUTO_STASH_WIFI_ONLY = booleanPreferencesKey("auto_stash_wifi_only")
+        val HEADPHONE_CORRECTION_ENABLED = booleanPreferencesKey("headphone_correction_enabled")
+        val HEADPHONE_TARGET_CURVE = stringPreferencesKey("headphone_target_curve")
+        val HEADPHONE_CROSSFEED_ENABLED = booleanPreferencesKey("headphone_crossfeed_enabled")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -150,6 +153,13 @@ class SettingsDataStore(private val context: Context) {
                     AutoStashStrategy.valueOf(prefs[PreferencesKeys.AUTO_STASH_STRATEGY] ?: AutoStashStrategy.BALANCED_HYBRID.name)
                 }.getOrDefault(AutoStashStrategy.BALANCED_HYBRID),
                 wifiOnly = prefs[PreferencesKeys.AUTO_STASH_WIFI_ONLY] ?: true
+            ),
+            headphoneCorrectionConfig = HeadphoneCorrectionConfig(
+                isEnabled = prefs[PreferencesKeys.HEADPHONE_CORRECTION_ENABLED] ?: false,
+                targetCurve = runCatching {
+                    HeadphoneTargetCurve.valueOf(prefs[PreferencesKeys.HEADPHONE_TARGET_CURVE] ?: HeadphoneTargetCurve.HARMAN_OVER_EAR.name)
+                }.getOrDefault(HeadphoneTargetCurve.HARMAN_OVER_EAR),
+                crossfeedEnabled = prefs[PreferencesKeys.HEADPHONE_CROSSFEED_ENABLED] ?: true
             )
         )
     }
@@ -203,6 +213,9 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.AUTO_STASH_BUDGET_MB] = config.autoStashConfig.storageBudgetMb
             prefs[PreferencesKeys.AUTO_STASH_STRATEGY] = config.autoStashConfig.strategy.name
             prefs[PreferencesKeys.AUTO_STASH_WIFI_ONLY] = config.autoStashConfig.wifiOnly
+            prefs[PreferencesKeys.HEADPHONE_CORRECTION_ENABLED] = config.headphoneCorrectionConfig.isEnabled
+            prefs[PreferencesKeys.HEADPHONE_TARGET_CURVE] = config.headphoneCorrectionConfig.targetCurve.name
+            prefs[PreferencesKeys.HEADPHONE_CROSSFEED_ENABLED] = config.headphoneCorrectionConfig.crossfeedEnabled
         }
     }
 

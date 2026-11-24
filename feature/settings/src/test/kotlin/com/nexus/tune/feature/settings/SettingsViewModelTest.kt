@@ -757,4 +757,25 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { !it.autoStashConfig.wifiOnly })
         }
     }
+
+    @Test
+    fun `headphone correction configuration updates persist via settingsRepository`() = runTest {
+        viewModel.setHeadphoneCorrectionEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.headphoneCorrectionConfig.isEnabled })
+        }
+
+        viewModel.setHeadphoneTargetCurve(HeadphoneTargetCurve.HARMAN_IN_EAR)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.headphoneCorrectionConfig.targetCurve == HeadphoneTargetCurve.HARMAN_IN_EAR })
+        }
+
+        viewModel.setHeadphoneCrossfeedEnabled(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.headphoneCorrectionConfig.crossfeedEnabled })
+        }
+    }
 }

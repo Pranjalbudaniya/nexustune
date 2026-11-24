@@ -5,6 +5,16 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.5.0] - 2026-11-24
+
+### Added
+- **Headphone Soundstage & Acoustic Target Compensation (`HeadphoneCorrectionEngine`)**: Added `HeadphoneTargetCurve` (`HARMAN_OVER_EAR`, `HARMAN_IN_EAR`, `DIFFUSE_FIELD`, `STUDIO_NEUTRAL`, `WARM_PUNCH`, `V_SHAPED_BASSHEAD`, `TREBLE_AIR`) and `HeadphoneCorrectionConfig` in `:core:model`.
+- **Acoustic Target Calculation & Binaural Crossfeed Math**: Implemented `HeadphoneCorrectionEngine` in `:core:domain:audio` with calibrated 5-band millibel corrections matching Harman research and Diffuse-Field targets, bass boost driver compensations, and interaural time difference (ITD, 0.25ms - 0.40ms) / interaural level difference (ILD, -14dB to -6dB) crossfeed math to banish "in-head" headphone listening fatigue.
+- **Dynamic Layered Audio Effects & Equalizer Preservation**: Added `applyHeadphoneOffsets`, `clearHeadphoneOffsets`, `setBassBoostStrength`, and non-destructive layering in `NexusAudioEffects` allowing concurrent custom user EQ, karaoke vocal notching, and headphone target curve compensation.
+- **DataStore Preferences & Persistence**: Added `HEADPHONE_CORRECTION_ENABLED`, `HEADPHONE_TARGET_CURVE`, and `HEADPHONE_CROSSFEED_ENABLED` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Acoustic Target Studio**: Added interactive "Headphone Target & Crossfeed Compensation" card in `SettingsScreen` with curve filter chips, tonal character descriptors, and binaural crossfeed toggle.
+- **Unit Test Coverage**: Comprehensive test coverage across `HeadphoneCorrectionEngineTest` in `:core:domain`, `NexusAudioEffectsTest` in `:core:player`, and `SettingsViewModelTest` in `:feature:settings`.
+
 ## [6.4.0] - 2026-11-24
 
 ### Added

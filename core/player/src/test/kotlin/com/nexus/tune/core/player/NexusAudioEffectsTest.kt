@@ -76,5 +76,17 @@ class NexusAudioEffectsTest {
         audioEffects.applyPreset(EqualizerPreset.CUSTOM)
         assertEquals(listOf(100, 200, 300, 400, 500), audioEffects.getBandLevels())
     }
+
+    @Test
+    fun `headphone target offsets and bass boost can be applied and cleared`() {
+        val offsets = listOf(450, 150, 0, 300, 0)
+        audioEffects.applyHeadphoneOffsets(offsets)
+        assertEquals(offsets, audioEffects.getHeadphoneOffsets())
+
+        audioEffects.setBassBoostStrength(400.toShort())
+
+        audioEffects.clearHeadphoneOffsets()
+        assertEquals(listOf(0, 0, 0, 0, 0), audioEffects.getHeadphoneOffsets())
+    }
 }
 

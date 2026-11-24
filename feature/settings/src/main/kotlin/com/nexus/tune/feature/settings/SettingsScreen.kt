@@ -628,6 +628,71 @@ fun SettingsScreen(
                     }
                 }
 
+                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+
+                // --- Headphone Soundstage & Target Calibration ---
+                Text(
+                    text = "Headphone Target & Crossfeed Compensation",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+
+                ListItem(
+                    headlineContent = { Text("Acoustic Target Correction") },
+                    supportingContent = { Text("Apply studio Harman & Diffuse-Field curve compensation to eliminate headphone acoustic resonance") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.headphoneCorrectionConfig.isEnabled,
+                            onCheckedChange = { viewModel.setHeadphoneCorrectionEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.headphoneCorrectionConfig.isEnabled) {
+                    Text(
+                        text = "Acoustic Target Curve",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        HeadphoneTargetCurve.entries.forEach { curve ->
+                            FilterChip(
+                                selected = themeConfig.headphoneCorrectionConfig.targetCurve == curve,
+                                onClick = { viewModel.setHeadphoneTargetCurve(curve) },
+                                label = { Text(curve.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = themeConfig.headphoneCorrectionConfig.targetCurve.tonalCharacter,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    ListItem(
+                        headlineContent = { Text("Binaural Crossfeed Simulation") },
+                        supportingContent = { Text("Subtle ITD/ILD ear-to-ear crossfeed to eliminate 'in-head' stereo fatigue") },
+                        trailingContent = {
+                            Switch(
+                                checked = themeConfig.headphoneCorrectionConfig.crossfeedEnabled,
+                                onCheckedChange = { viewModel.setHeadphoneCrossfeedEnabled(it) }
+                            )
+                        }
+                    )
+                }
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
                 // --- Hearing Protection & Safe Listening ---

@@ -218,7 +218,8 @@ data class ThemeConfig(
     val djRememberAcrossTracks: Boolean = false,
     val harmonicMixingEnabled: Boolean = true,
     val visualizerPalette: VisualizerPalette = VisualizerPalette.DYNAMIC,
-    val autoStashConfig: AutoStashConfig = AutoStashConfig()
+    val autoStashConfig: AutoStashConfig = AutoStashConfig(),
+    val headphoneCorrectionConfig: HeadphoneCorrectionConfig = HeadphoneCorrectionConfig()
 )
 
 data class SoundDoseInfo(
@@ -716,6 +717,28 @@ data class CleanMetadataResult(
     val removedPatterns: List<String> = emptyList(),
     val isModified: Boolean = false
 )
+
+enum class HeadphoneTargetCurve(
+    val displayName: String,
+    val description: String,
+    val tonalCharacter: String
+) {
+    HARMAN_OVER_EAR("Harman Over-Ear (2019)", "Industry standard acoustic target with tight sub-bass shelf and smooth pinna gain", "Warm & Balanced"),
+    HARMAN_IN_EAR("Harman In-Ear", "Compensated for ear canal resonance with energetic vocal presence", "Engaging & Crisp"),
+    DIFFUSE_FIELD("Diffuse Field", "Classic diffuse sound field simulation offering wide, bright staging", "Spacious & Bright"),
+    STUDIO_NEUTRAL("Studio Neutral", "Ruler-flat monitor curve for mixing accuracy and authentic timbres", "Analytical Reference"),
+    WARM_PUNCH("Warm & Punchy", "Rich lower-mid body with elevated punchy bass for acoustic warmth", "Cozy & Lush"),
+    V_SHAPED_BASSHEAD("V-Shaped Energy", "Boosted sub-bass punch and elevated treble sparkle for EDM and pop", "Energetic & Fun"),
+    TREBLE_AIR("Air & Micro-Detail", "Extended ultra-high frequency brilliance for acoustic string separation", "Airy & Transparent")
+}
+
+data class HeadphoneCorrectionConfig(
+    val isEnabled: Boolean = false,
+    val targetCurve: HeadphoneTargetCurve = HeadphoneTargetCurve.HARMAN_OVER_EAR,
+    val crossfeedEnabled: Boolean = false,
+    val crossfeedLevelPercent: Int = 30
+)
+
 
 
 

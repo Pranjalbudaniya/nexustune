@@ -20,6 +20,7 @@ class NexusAudioEffects {
     private var currentSpatialStage: SpatialAudioStage = SpatialAudioStage.OFF
     private var customBandLevels: IntArray = IntArray(5) { 0 }
     private var karaokeOffsets: List<Int> = List(5) { 0 }
+    private var headphoneOffsets: List<Int> = List(5) { 0 }
 
     fun attachToAudioSession(sessionId: Int) {
         if (sessionId == 0 || sessionId == currentSessionId) return
@@ -196,8 +197,9 @@ class NexusAudioEffects {
         val eq = equalizer ?: return
         try {
             if (band in 0 until eq.numberOfBands.toInt()) {
-                val offset = karaokeOffsets.getOrElse(band) { 0 }
-                val combined = (clamped + offset).coerceIn(-1500, 1500)
+                val kOffset = karaokeOffsets.getOrElse(band) { 0 }
+                val hOffset = headphoneOffsets.getOrElse(band) { 0 }
+                val combined = (clamped + kOffset + hOffset).coerceIn(-1500, 1500)
                 eq.setBandLevel(band.toShort(), combined.toShort())
             }
         } catch (e: Exception) {
@@ -217,14 +219,35 @@ class NexusAudioEffects {
 
     fun getKaraokeOffsets(): List<Int> = karaokeOffsets
 
+    fun applyHeadphoneOffsets(offsets: List<Int>) {
+        headphoneOffsets = offsets
+        refreshBands()
+    }
+
+    fun clearHeadphoneOffsets() {
+        headphoneOffsets = List(5) { 0 }
+        refreshBands()
+    }
+
+    fun getHeadphoneOffsets(): List<Int> = headphoneOffsets
+
+    fun setBassBoostStrength(strength: Short) {
+        try {
+            bassBoost?.setStrength(strength)
+        } catch (e: Exception) {
+            Log.w("NexusAudioEffects", "Failed to set bass boost strength: ${e.message}")
+        }
+    }
+
     private fun refreshBands() {
         val eq = equalizer ?: return
         try {
             val numBands = eq.numberOfBands.toInt().coerceAtMost(5)
             for (i in 0 until numBands) {
                 val base = customBandLevels.getOrElse(i) { 0 }
-                val offset = karaokeOffsets.getOrElse(i) { 0 }
-                val combined = (base + offset).coerceIn(-1500, 1500)
+                val kOffset = karaokeOffsets.getOrElse(i) { 0 }
+                val hOffset = headphoneOffsets.getOrElse(i) { 0 }
+                val combined = (base + kOffset + hOffset).coerceIn(-1500, 1500)
                 eq.setBandLevel(i.toShort(), combined.toShort())
             }
         } catch (e: Exception) {

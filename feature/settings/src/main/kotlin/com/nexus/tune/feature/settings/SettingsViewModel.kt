@@ -3,6 +3,7 @@ package com.nexus.tune.feature.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nexus.tune.core.data.storage.StorageManager
+import com.nexus.tune.core.domain.audio.HeadphoneCorrectionEngine
 import com.nexus.tune.core.domain.repository.SettingsRepository
 import com.nexus.tune.core.domain.usecase.GetListeningStatsUseCase
 import com.nexus.tune.core.model.*
@@ -128,6 +129,16 @@ class SettingsViewModel(
                 NexusAudioEffects.instance.setSpatialAudioEnabled(config.spatialAudioEnabled)
                 NexusAudioEffects.instance.setSpatialAudioStage(config.spatialAudioStage)
                 sleepTimerManager?.setShakeToExtend(config.shakeToExtendSleepTimerEnabled, config.shakeExtendMinutes)
+                if (config.headphoneCorrectionConfig.isEnabled) {
+                    val offsets = HeadphoneCorrectionEngine.calculateTargetEqOffsets(config.headphoneCorrectionConfig.targetCurve)
+                    NexusAudioEffects.instance.applyHeadphoneOffsets(offsets)
+                    val bassStrength = HeadphoneCorrectionEngine.calculateBassBoostStrength(config.headphoneCorrectionConfig.targetCurve)
+                    if (bassStrength > 0) {
+                        NexusAudioEffects.instance.setBassBoostStrength(bassStrength.toShort())
+                    }
+                } else {
+                    NexusAudioEffects.instance.clearHeadphoneOffsets()
+                }
             }
         }
     }
@@ -576,5 +587,20 @@ class SettingsViewModel(
     fun setAutoStashWifiOnly(wifiOnly: Boolean) {
         val current = themeConfig.value
         updateTheme(current.copy(autoStashConfig = current.autoStashConfig.copy(wifiOnly = wifiOnly)))
+    }
+
+    fun setHeadphoneCorrectionEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(headphoneCorrectionConfig = current.headphoneCorrectionConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setHeadphoneTargetCurve(curve: HeadphoneTargetCurve) {
+        val current = themeConfig.value
+        updateTheme(current.copy(headphoneCorrectionConfig = current.headphoneCorrectionConfig.copy(targetCurve = curve)))
+    }
+
+    fun setHeadphoneCrossfeedEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(headphoneCorrectionConfig = current.headphoneCorrectionConfig.copy(crossfeedEnabled = enabled)))
     }
 }
