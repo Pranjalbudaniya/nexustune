@@ -39,3 +39,4 @@ class SafeListeningManager {
         _soundDoseInfo.value = SoundDoseInfo()
     }
 }
+

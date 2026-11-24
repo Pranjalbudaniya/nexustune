@@ -50,3 +50,4 @@ class SafeListeningManagerTest {
         assertFalse(manager.soundDoseInfo.value.isOverExposed)
     }
 }
+
