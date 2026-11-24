@@ -226,7 +226,8 @@ data class ThemeConfig(
     val stereoWidthConfig: StereoWidthConfig = StereoWidthConfig(),
     val sleepDriftProfile: SleepDriftProfile = SleepDriftProfile.OFF,
     val ditherMode: DitherMode = DitherMode.TRIANGULAR_TPDF,
-    val dynamicLoudnessConfig: DynamicLoudnessConfig = DynamicLoudnessConfig()
+    val dynamicLoudnessConfig: DynamicLoudnessConfig = DynamicLoudnessConfig(),
+    val beatCrossfadeConfig: BeatCrossfadeConfig = BeatCrossfadeConfig()
 )
 
 data class SoundDoseInfo(
@@ -842,6 +843,39 @@ data class LoudnessCurveOffsets(
     val effectiveBassGainDb: Float,
     val effectiveTrebleGainDb: Float
 )
+
+enum class BeatCrossfadeMode(val displayName: String, val description: String, val defaultBars: Int) {
+    OFF("Standard Time", "Standard fixed-second volume crossfade", 0),
+    SMART_BEAT_SYNC("Smart Beat-Sync", "Dynamic 4-bar or 8-bar tempo-synchronized phrase alignment", 4),
+    PHRASE_ALIGNED_8BAR("8-Bar Phrase Mix", "Strict 32-beat broadcast-style phrase blend", 8),
+    PHRASE_ALIGNED_16BAR("16-Bar Club Mix", "Extended 64-beat seamless dancefloor phrase transition", 16),
+    BASS_SWAP_CLUB("Bass-Swap Club", "High-energy transition with early low-end frequency swap", 8)
+}
+
+data class BeatCrossfadeConfig(
+    val isEnabled: Boolean = false,
+    val mode: BeatCrossfadeMode = BeatCrossfadeMode.SMART_BEAT_SYNC,
+    val maxTempoBendPercent: Int = 6
+)
+
+data class BassSwapCurve(
+    val outgoingBassGainDb: Float,
+    val incomingBassGainDb: Float,
+    val outgoingMidHighGainDb: Float,
+    val incomingMidHighGainDb: Float
+)
+
+data class BeatTransitionPlan(
+    val outgoingBpm: Int,
+    val incomingBpm: Int,
+    val targetDurationMs: Long,
+    val musicalBars: Int,
+    val totalBeats: Int,
+    val tempoRatio: Float,
+    val requiresTempoBend: Boolean,
+    val effectiveRampBpm: Int
+)
+
 
 
 

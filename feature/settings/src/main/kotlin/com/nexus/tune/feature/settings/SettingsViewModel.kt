@@ -670,4 +670,19 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(dynamicLoudnessConfig = current.dynamicLoudnessConfig.copy(intensityPercent = intensity.coerceIn(0, 100))))
     }
+
+    fun setBeatCrossfadeEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(beatCrossfadeConfig = current.beatCrossfadeConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setBeatCrossfadeMode(mode: BeatCrossfadeMode) {
+        val current = themeConfig.value
+        updateTheme(current.copy(beatCrossfadeConfig = current.beatCrossfadeConfig.copy(mode = mode)))
+    }
+
+    fun setBeatCrossfadeMaxBend(maxBend: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(beatCrossfadeConfig = current.beatCrossfadeConfig.copy(maxTempoBendPercent = maxBend.coerceIn(0, 15))))
+    }
 }

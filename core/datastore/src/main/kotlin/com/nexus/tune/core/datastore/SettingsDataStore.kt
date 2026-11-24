@@ -84,6 +84,9 @@ class SettingsDataStore(private val context: Context) {
         val DYNAMIC_LOUDNESS_ENABLED = booleanPreferencesKey("dynamic_loudness_enabled")
         val DYNAMIC_LOUDNESS_MODE = stringPreferencesKey("dynamic_loudness_mode")
         val DYNAMIC_LOUDNESS_INTENSITY = intPreferencesKey("dynamic_loudness_intensity")
+        val BEAT_CROSSFADE_ENABLED = booleanPreferencesKey("beat_crossfade_enabled")
+        val BEAT_CROSSFADE_MODE = stringPreferencesKey("beat_crossfade_mode")
+        val BEAT_CROSSFADE_MAX_BEND = intPreferencesKey("beat_crossfade_max_bend")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -194,6 +197,13 @@ class SettingsDataStore(private val context: Context) {
                     DynamicLoudnessMode.valueOf(prefs[PreferencesKeys.DYNAMIC_LOUDNESS_MODE] ?: DynamicLoudnessMode.ISO_226_REFERENCE.name)
                 }.getOrDefault(DynamicLoudnessMode.ISO_226_REFERENCE),
                 intensityPercent = prefs[PreferencesKeys.DYNAMIC_LOUDNESS_INTENSITY] ?: 100
+            ),
+            beatCrossfadeConfig = BeatCrossfadeConfig(
+                isEnabled = prefs[PreferencesKeys.BEAT_CROSSFADE_ENABLED] ?: false,
+                mode = runCatching {
+                    BeatCrossfadeMode.valueOf(prefs[PreferencesKeys.BEAT_CROSSFADE_MODE] ?: BeatCrossfadeMode.SMART_BEAT_SYNC.name)
+                }.getOrDefault(BeatCrossfadeMode.SMART_BEAT_SYNC),
+                maxTempoBendPercent = prefs[PreferencesKeys.BEAT_CROSSFADE_MAX_BEND] ?: 6
             )
         )
     }
@@ -261,6 +271,9 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.DYNAMIC_LOUDNESS_ENABLED] = config.dynamicLoudnessConfig.isEnabled
             prefs[PreferencesKeys.DYNAMIC_LOUDNESS_MODE] = config.dynamicLoudnessConfig.mode.name
             prefs[PreferencesKeys.DYNAMIC_LOUDNESS_INTENSITY] = config.dynamicLoudnessConfig.intensityPercent
+            prefs[PreferencesKeys.BEAT_CROSSFADE_ENABLED] = config.beatCrossfadeConfig.isEnabled
+            prefs[PreferencesKeys.BEAT_CROSSFADE_MODE] = config.beatCrossfadeConfig.mode.name
+            prefs[PreferencesKeys.BEAT_CROSSFADE_MAX_BEND] = config.beatCrossfadeConfig.maxTempoBendPercent
         }
     }
 
@@ -275,6 +288,14 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.DYNAMIC_LOUDNESS_ENABLED] = config.isEnabled
             prefs[PreferencesKeys.DYNAMIC_LOUDNESS_MODE] = config.mode.name
             prefs[PreferencesKeys.DYNAMIC_LOUDNESS_INTENSITY] = config.intensityPercent
+        }
+    }
+
+    suspend fun updateBeatCrossfadeConfig(config: BeatCrossfadeConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.BEAT_CROSSFADE_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.BEAT_CROSSFADE_MODE] = config.mode.name
+            prefs[PreferencesKeys.BEAT_CROSSFADE_MAX_BEND] = config.maxTempoBendPercent
         }
     }
 

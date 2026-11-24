@@ -855,4 +855,25 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.dynamicLoudnessConfig.intensityPercent == 80 })
         }
     }
+
+    @Test
+    fun `beat crossfade settings update theme config`() = runTest {
+        viewModel.setBeatCrossfadeEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.beatCrossfadeConfig.isEnabled })
+        }
+
+        viewModel.setBeatCrossfadeMode(BeatCrossfadeMode.BASS_SWAP_CLUB)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.beatCrossfadeConfig.mode == BeatCrossfadeMode.BASS_SWAP_CLUB })
+        }
+
+        viewModel.setBeatCrossfadeMaxBend(8)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.beatCrossfadeConfig.maxTempoBendPercent == 8 })
+        }
+    }
 }

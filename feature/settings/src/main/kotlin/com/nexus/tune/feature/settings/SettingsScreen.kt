@@ -2197,6 +2197,104 @@ fun SettingsScreen(
                     }
                 }
 
+                // --- Beat-Synchronized Phrase Crossfade & DJ Cue Studio ---
+                Spacer(modifier = Modifier.height(8.dp))
+                ListItem(
+                    headlineContent = { Text("Beat-Sync Phrase Crossfade (DJ)") },
+                    supportingContent = { Text("Align crossfade with musical 4/8/16-bar phrases and smart tempo blending") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.beatCrossfadeConfig.isEnabled,
+                            onCheckedChange = { viewModel.setBeatCrossfadeEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.beatCrossfadeConfig.isEnabled) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Phrase Transition Mode",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        BeatCrossfadeMode.entries.filter { it != BeatCrossfadeMode.OFF }.forEach { mode ->
+                            FilterChip(
+                                selected = themeConfig.beatCrossfadeConfig.mode == mode,
+                                onClick = { viewModel.setBeatCrossfadeMode(mode) },
+                                label = { Text(mode.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Tempo Bend Tolerance",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "±${themeConfig.beatCrossfadeConfig.maxTempoBendPercent}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.beatCrossfadeConfig.maxTempoBendPercent.toFloat(),
+                        onValueChange = { viewModel.setBeatCrossfadeMaxBend(it.toInt()) },
+                        valueRange = 2f..12f,
+                        steps = 9
+                    )
+
+                    val demoPlan = com.nexus.tune.core.domain.audio.BeatSyncCrossfadeEngine.calculateTransitionPlan(
+                        outgoingProfile = com.nexus.tune.core.model.TrackHarmonicProfile("out", com.nexus.tune.core.model.CamelotKey.KEY_8B, 124, 80),
+                        incomingProfile = com.nexus.tune.core.model.TrackHarmonicProfile("in", com.nexus.tune.core.model.CamelotKey.KEY_9B, 126, 82),
+                        mode = themeConfig.beatCrossfadeConfig.mode,
+                        maxBendPercent = themeConfig.beatCrossfadeConfig.maxTempoBendPercent
+                    )
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Text(
+                                text = themeConfig.beatCrossfadeConfig.mode.description,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Duration: ${(demoPlan.targetDurationMs / 1000f)}s (${demoPlan.musicalBars} Bars)",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "${demoPlan.totalBeats} Beats • Ratio ${(demoPlan.tempoRatio * 100).toInt()}%",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                        }
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(8.dp))
 
                 ListItem(

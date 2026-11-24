@@ -5,6 +5,16 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.11.0] - 2026-11-24
+
+### Added
+- **Beat-Synchronized Phrase Crossfade & DJ Cue Transition Engine (`BeatSyncCrossfadeEngine`)**: Added `BeatCrossfadeMode` (`OFF`, `SMART_BEAT_SYNC`, `PHRASE_ALIGNED_8BAR`, `PHRASE_ALIGNED_16BAR`, `BASS_SWAP_CLUB`), `BeatCrossfadeConfig`, `BassSwapCurve`, and `BeatTransitionPlan` in `:core:model`.
+- **Musical Bar/Phrase Alignment & Asymmetric Bass-Swap Crossover DSP**: Implemented `BeatSyncCrossfadeEngine` in `:core:domain:audio` with exact tempo-synchronized phrase calculations (4, 8, 16 bars), bounded tempo bending ($\pm 2\%$ to $\pm 12\%$) for smooth rhythmic blend, and asymmetric bass crossover curves dropping outgoing sub-bass early ($0.4 \to 0.6$) to eliminate double-kick phase collision.
+- **DataStore Persistence**: Added `BEAT_CROSSFADE_ENABLED`, `BEAT_CROSSFADE_MODE`, and `BEAT_CROSSFADE_MAX_BEND` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Beat-Sync DJ Studio**: Added interactive "Beat-Sync Phrase Crossfade (DJ)" card in `SettingsScreen` with phrase mode chips, tempo bend slider, and live phrase duration and beat alignment metrics.
+- **Unit Test Coverage**: Comprehensive test suites in `BeatSyncCrossfadeEngineTest` in `:core:domain` and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.10.0] - 2026-11-24
 
 ### Added
