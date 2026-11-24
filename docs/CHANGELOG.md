@@ -5,6 +5,16 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.6.0] - 2026-11-24
+
+### Added
+- **Mid/Side (M/S) Stereo Soundstage Widener & Haas Spatializer Engine (`StereoWidenerEngine`)**: Added `StereoWidthMode` (`MONO`, `NARROW`, `NATURAL`, `EXPANDED`, `SUPER_WIDE`, `MID_VOCAL`, `SIDE_AMBIENT`), `StereoWidthConfig`, and `StereoPhaseRating` in `:core:model`.
+- **Acoustic Mid/Side Matrix & Phase Correlation DSP**: Implemented `StereoWidenerEngine` in `:core:domain:audio` with Mid/Side deconstruction/reconstruction math, Pearson stereo phase correlation calculation ($[-1.0, +1.0]$) to protect against destructive phase cancellation on mono speakers, Haas effect micro-delay sample calculations (0ms to 20ms), and hardware virtualizer strength mapping.
+- **Audio Effects & Virtualizer Integration**: Added `setVirtualizerStrength` in `NexusAudioEffects` dynamically driving spatial widening according to custom width percentages without overriding spatial room mode settings.
+- **DataStore Preferences & Persistence**: Added `STEREO_WIDTH_ENABLED`, `STEREO_WIDTH_MODE`, `STEREO_WIDTH_PERCENT`, `STEREO_HAAS_DELAY_MS`, `STEREO_MID_LEVEL_DB`, and `STEREO_SIDE_LEVEL_DB` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Soundstage Studio**: Added interactive "Stereo Field & Soundstage Studio" card in `SettingsScreen` with soundstage mode filter chips, live percentage slider (0% to 200%), soundstage width status descriptors, and Haas delay filter chips.
+- **Unit Test Coverage**: Comprehensive test coverage in `StereoWidenerEngineTest` in `:core:domain` and `SettingsViewModelTest` in `:feature:settings`.
+
 ## [6.5.0] - 2026-11-24
 
 ### Added

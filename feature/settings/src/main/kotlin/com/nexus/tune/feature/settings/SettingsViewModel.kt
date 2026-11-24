@@ -139,6 +139,10 @@ class SettingsViewModel(
                 } else {
                     NexusAudioEffects.instance.clearHeadphoneOffsets()
                 }
+                if (config.stereoWidthConfig.isEnabled) {
+                    val strength = com.nexus.tune.core.domain.audio.StereoWidenerEngine.mapWidthToVirtualizerStrength(config.stereoWidthConfig.customWidthPercent)
+                    NexusAudioEffects.instance.setVirtualizerStrength(strength)
+                }
             }
         }
     }
@@ -602,5 +606,33 @@ class SettingsViewModel(
     fun setHeadphoneCrossfeedEnabled(enabled: Boolean) {
         val current = themeConfig.value
         updateTheme(current.copy(headphoneCorrectionConfig = current.headphoneCorrectionConfig.copy(crossfeedEnabled = enabled)))
+    }
+
+    fun setStereoWidthEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(stereoWidthConfig = current.stereoWidthConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setStereoWidthMode(mode: StereoWidthMode) {
+        val preset = com.nexus.tune.core.domain.audio.StereoWidenerEngine.getPresetConfig(mode)
+        updateTheme(themeConfig.value.copy(stereoWidthConfig = preset))
+    }
+
+    fun setStereoWidthPercent(percent: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(stereoWidthConfig = current.stereoWidthConfig.copy(customWidthPercent = percent.coerceIn(0, 200))))
+    }
+
+    fun setStereoHaasDelayMs(delayMs: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(stereoWidthConfig = current.stereoWidthConfig.copy(haasDelayMs = delayMs.coerceIn(0f, 25f))))
+    }
+
+    fun setStereoMidSideLevels(midDb: Float, sideDb: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(stereoWidthConfig = current.stereoWidthConfig.copy(
+            midLevelDb = midDb.coerceIn(-12f, 6f),
+            sideLevelDb = sideDb.coerceIn(-12f, 6f)
+        )))
     }
 }

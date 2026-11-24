@@ -219,7 +219,8 @@ data class ThemeConfig(
     val harmonicMixingEnabled: Boolean = true,
     val visualizerPalette: VisualizerPalette = VisualizerPalette.DYNAMIC,
     val autoStashConfig: AutoStashConfig = AutoStashConfig(),
-    val headphoneCorrectionConfig: HeadphoneCorrectionConfig = HeadphoneCorrectionConfig()
+    val headphoneCorrectionConfig: HeadphoneCorrectionConfig = HeadphoneCorrectionConfig(),
+    val stereoWidthConfig: StereoWidthConfig = StereoWidthConfig()
 )
 
 data class SoundDoseInfo(
@@ -738,6 +739,32 @@ data class HeadphoneCorrectionConfig(
     val crossfeedEnabled: Boolean = false,
     val crossfeedLevelPercent: Int = 30
 )
+
+enum class StereoWidthMode(val displayName: String, val description: String, val defaultWidthPercent: Int) {
+    MONO("Mono (0%)", "Sums L+R channels into center mono for single speaker compatibility", 0),
+    NARROW("Narrow (50%)", "Gently concentrates stereo soundstage toward center", 50),
+    NATURAL("Natural (100%)", "Untouched original stereo master balance", 100),
+    EXPANDED("Expanded (135%)", "Subtly expands horizontal stereo sweetspot across speakers/headphones", 135),
+    SUPER_WIDE("Super-Wide (175%)", "Dramatic ultra-wide panoramic soundstage using Haas spatialization", 175),
+    MID_VOCAL("Vocal Solo (Mid)", "Attenuates side audio to isolate lead vocals and center instruments", 10),
+    SIDE_AMBIENT("Side Ambient", "Attenuates center vocals/drums to isolate reverb, synths, and stereo room pads", 200)
+}
+
+data class StereoWidthConfig(
+    val isEnabled: Boolean = false,
+    val mode: StereoWidthMode = StereoWidthMode.NATURAL,
+    val customWidthPercent: Int = 100,
+    val haasDelayMs: Float = 0.0f,
+    val midLevelDb: Float = 0.0f,
+    val sideLevelDb: Float = 0.0f
+)
+
+data class StereoPhaseRating(
+    val correlation: Float,
+    val rating: String,
+    val isPhaseSafe: Boolean
+)
+
 
 
 

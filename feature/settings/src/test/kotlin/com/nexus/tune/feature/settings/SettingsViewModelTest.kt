@@ -778,4 +778,37 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { !it.headphoneCorrectionConfig.crossfeedEnabled })
         }
     }
+
+    @Test
+    fun `stereo width configuration updates persist via settingsRepository`() = runTest {
+        viewModel.setStereoWidthEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.stereoWidthConfig.isEnabled })
+        }
+
+        viewModel.setStereoWidthMode(StereoWidthMode.SUPER_WIDE)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.stereoWidthConfig.mode == StereoWidthMode.SUPER_WIDE && it.stereoWidthConfig.customWidthPercent == 175 })
+        }
+
+        viewModel.setStereoWidthPercent(150)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.stereoWidthConfig.customWidthPercent == 150 })
+        }
+
+        viewModel.setStereoHaasDelayMs(10.0f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.stereoWidthConfig.haasDelayMs == 10.0f })
+        }
+
+        viewModel.setStereoMidSideLevels(2.0f, -4.0f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.stereoWidthConfig.midLevelDb == 2.0f && it.stereoWidthConfig.sideLevelDb == -4.0f })
+        }
+    }
 }

@@ -73,6 +73,12 @@ class SettingsDataStore(private val context: Context) {
         val HEADPHONE_CORRECTION_ENABLED = booleanPreferencesKey("headphone_correction_enabled")
         val HEADPHONE_TARGET_CURVE = stringPreferencesKey("headphone_target_curve")
         val HEADPHONE_CROSSFEED_ENABLED = booleanPreferencesKey("headphone_crossfeed_enabled")
+        val STEREO_WIDTH_ENABLED = booleanPreferencesKey("stereo_width_enabled")
+        val STEREO_WIDTH_MODE = stringPreferencesKey("stereo_width_mode")
+        val STEREO_WIDTH_PERCENT = intPreferencesKey("stereo_width_percent")
+        val STEREO_HAAS_DELAY_MS = floatPreferencesKey("stereo_haas_delay_ms")
+        val STEREO_MID_LEVEL_DB = floatPreferencesKey("stereo_mid_level_db")
+        val STEREO_SIDE_LEVEL_DB = floatPreferencesKey("stereo_side_level_db")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -160,6 +166,16 @@ class SettingsDataStore(private val context: Context) {
                     HeadphoneTargetCurve.valueOf(prefs[PreferencesKeys.HEADPHONE_TARGET_CURVE] ?: HeadphoneTargetCurve.HARMAN_OVER_EAR.name)
                 }.getOrDefault(HeadphoneTargetCurve.HARMAN_OVER_EAR),
                 crossfeedEnabled = prefs[PreferencesKeys.HEADPHONE_CROSSFEED_ENABLED] ?: true
+            ),
+            stereoWidthConfig = StereoWidthConfig(
+                isEnabled = prefs[PreferencesKeys.STEREO_WIDTH_ENABLED] ?: false,
+                mode = runCatching {
+                    StereoWidthMode.valueOf(prefs[PreferencesKeys.STEREO_WIDTH_MODE] ?: StereoWidthMode.NATURAL.name)
+                }.getOrDefault(StereoWidthMode.NATURAL),
+                customWidthPercent = prefs[PreferencesKeys.STEREO_WIDTH_PERCENT] ?: 100,
+                haasDelayMs = prefs[PreferencesKeys.STEREO_HAAS_DELAY_MS] ?: 0.0f,
+                midLevelDb = prefs[PreferencesKeys.STEREO_MID_LEVEL_DB] ?: 0.0f,
+                sideLevelDb = prefs[PreferencesKeys.STEREO_SIDE_LEVEL_DB] ?: 0.0f
             )
         )
     }
@@ -216,6 +232,12 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.HEADPHONE_CORRECTION_ENABLED] = config.headphoneCorrectionConfig.isEnabled
             prefs[PreferencesKeys.HEADPHONE_TARGET_CURVE] = config.headphoneCorrectionConfig.targetCurve.name
             prefs[PreferencesKeys.HEADPHONE_CROSSFEED_ENABLED] = config.headphoneCorrectionConfig.crossfeedEnabled
+            prefs[PreferencesKeys.STEREO_WIDTH_ENABLED] = config.stereoWidthConfig.isEnabled
+            prefs[PreferencesKeys.STEREO_WIDTH_MODE] = config.stereoWidthConfig.mode.name
+            prefs[PreferencesKeys.STEREO_WIDTH_PERCENT] = config.stereoWidthConfig.customWidthPercent
+            prefs[PreferencesKeys.STEREO_HAAS_DELAY_MS] = config.stereoWidthConfig.haasDelayMs
+            prefs[PreferencesKeys.STEREO_MID_LEVEL_DB] = config.stereoWidthConfig.midLevelDb
+            prefs[PreferencesKeys.STEREO_SIDE_LEVEL_DB] = config.stereoWidthConfig.sideLevelDb
         }
     }
 

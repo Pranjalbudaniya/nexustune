@@ -87,6 +87,9 @@ class NexusAudioEffectsTest {
 
         audioEffects.clearHeadphoneOffsets()
         assertEquals(listOf(0, 0, 0, 0, 0), audioEffects.getHeadphoneOffsets())
+
+        audioEffects.setVirtualizerStrength(650.toShort())
+        audioEffects.setVirtualizerStrength(0.toShort())
     }
 }
 

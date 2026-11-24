@@ -319,6 +319,19 @@ class NexusAudioEffects {
         }
     }
 
+    fun setVirtualizerStrength(strength: Short) {
+        try {
+            if (strength > 0) {
+                virtualizer?.enabled = true
+                virtualizer?.setStrength(strength)
+            } else if (!spatialAudioEnabled) {
+                virtualizer?.enabled = false
+            }
+        } catch (e: Exception) {
+            Log.w("NexusAudioEffects", "Failed to set virtualizer strength: ${e.message}")
+        }
+    }
+
     fun stageToStrength(stage: SpatialAudioStage): Short {
         return when (stage) {
             SpatialAudioStage.OFF -> 0

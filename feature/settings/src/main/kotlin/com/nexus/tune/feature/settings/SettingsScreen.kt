@@ -693,6 +693,105 @@ fun SettingsScreen(
                     )
                 }
 
+                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+
+                // --- Stereo Field & Soundstage Studio ---
+                Text(
+                    text = "Stereo Field & Soundstage Studio",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+
+                ListItem(
+                    headlineContent = { Text("M/S Stereo Soundstage Widener") },
+                    supportingContent = { Text("Mid/Side matrix soundstage expansion and Haas psychoacoustic spatialization") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.stereoWidthConfig.isEnabled,
+                            onCheckedChange = { viewModel.setStereoWidthEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.stereoWidthConfig.isEnabled) {
+                    Text(
+                        text = "Soundstage Preset",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        StereoWidthMode.entries.forEach { mode ->
+                            FilterChip(
+                                selected = themeConfig.stereoWidthConfig.mode == mode,
+                                onClick = { viewModel.setStereoWidthMode(mode) },
+                                label = { Text(mode.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = themeConfig.stereoWidthConfig.mode.description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Width: ${themeConfig.stereoWidthConfig.customWidthPercent}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = if (themeConfig.stereoWidthConfig.customWidthPercent > 100) "Expanded Field" else if (themeConfig.stereoWidthConfig.customWidthPercent < 100) "Focused Field" else "Neutral Stereo",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.stereoWidthConfig.customWidthPercent.toFloat(),
+                        onValueChange = { viewModel.setStereoWidthPercent(it.toInt()) },
+                        valueRange = 0f..200f,
+                        steps = 19
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "Haas Acoustic Delay: ${themeConfig.stereoWidthConfig.haasDelayMs} ms",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf(0f to "0ms (Off)", 4.5f to "4.5ms (Subtle)", 10f to "10ms (Medium)", 18f to "18ms (Wide)").forEach { (ms, label) ->
+                            FilterChip(
+                                selected = themeConfig.stereoWidthConfig.haasDelayMs == ms,
+                                onClick = { viewModel.setStereoHaasDelayMs(ms) },
+                                label = { Text(label) }
+                            )
+                        }
+                    }
+                }
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
                 // --- Hearing Protection & Safe Listening ---
