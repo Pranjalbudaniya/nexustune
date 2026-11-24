@@ -91,6 +91,21 @@ class ManageQueueUseCase(private val queueRepository: QueueRepository) {
     suspend fun clearUpcoming() {
         queueRepository.clearUpcoming()
     }
+
+    suspend fun deduplicateQueue(): Int {
+        val current = queueRepository.getQueue().firstOrNull() ?: return 0
+        val report = com.nexus.tune.core.domain.playlist.PlaylistDeduplicator.deduplicate(current)
+        if (report.duplicateCount > 0) {
+            val currentIndex = queueRepository.getQueueIndex().firstOrNull() ?: 0
+            val currentTrack = current.getOrNull(currentIndex)
+            val newIndex = if (currentTrack != null) {
+                val idx = report.deduplicatedTracks.indexOfFirst { it.id == currentTrack.id }
+                if (idx >= 0) idx else 0
+            } else 0
+            queueRepository.setQueue(report.deduplicatedTracks, newIndex)
+        }
+        return report.duplicateCount
+    }
 }
 
 class ManagePlaylistsUseCase(private val musicRepository: MusicRepository) {

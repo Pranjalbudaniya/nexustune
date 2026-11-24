@@ -60,6 +60,32 @@ fun LibraryScreen(
         when (selectedTab) {
             0 -> {
                 // Liked Tracks
+                val dedupStatus by viewModel.deduplicationStatus.collectAsState()
+                if (dedupStatus != null) {
+                    Text(
+                        text = dedupStatus ?: "",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                    )
+                }
+                if (likedTracks.isNotEmpty()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        OutlinedButton(
+                            onClick = { viewModel.deduplicateLikedTracks() },
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 2.dp)
+                        ) {
+                            Icon(Icons.Rounded.Delete, contentDescription = null, modifier = Modifier.size(14.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Clean Duplicates", style = MaterialTheme.typography.labelSmall)
+                        }
+                    }
+                }
                 TrackListTab(
                     tracks = likedTracks,
                     emptyMessage = "No liked songs yet.",

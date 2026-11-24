@@ -312,4 +312,11 @@ class SettingsViewModel(
             musicRepository?.clearLyricsCache()
         }
     }
+
+    fun deduplicateLikedTracks() {
+        viewModelScope.launch {
+            val removed = musicRepository?.deduplicateLikedTracks() ?: 0
+            backupImportStatus.value = if (removed > 0) "Removed $removed duplicate tracks" else "No duplicates found in library"
+        }
+    }
 }

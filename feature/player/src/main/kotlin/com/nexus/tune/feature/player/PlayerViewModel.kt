@@ -89,5 +89,14 @@ class PlayerViewModel(
             musicRepository.toggleLike(track)
         }
     }
+
+    val queueDedupStatus = MutableStateFlow<String?>(null)
+
+    fun deduplicateQueue() {
+        viewModelScope.launch {
+            val count = manageQueueUseCase.deduplicateQueue()
+            queueDedupStatus.value = if (count > 0) "Removed $count duplicate tracks from queue" else "Queue has no duplicates"
+        }
+    }
 }
 

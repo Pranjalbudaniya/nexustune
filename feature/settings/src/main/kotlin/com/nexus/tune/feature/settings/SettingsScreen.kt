@@ -881,6 +881,16 @@ fun SettingsScreen(
                     }
                 )
 
+                ListItem(
+                    headlineContent = { Text("Clean Library Duplicates") },
+                    supportingContent = { Text("Scan and remove duplicate entries from liked tracks") },
+                    trailingContent = {
+                        OutlinedButton(onClick = { viewModel.deduplicateLikedTracks() }) {
+                            Text("Clean")
+                        }
+                    }
+                )
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
             }
 
@@ -976,8 +986,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v3.8.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Sleep Timer Accelerometer Shake-to-Extend") }
+                    headlineContent = { Text("NexusTune v3.9.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Smart Playlist & Queue Deduplication Engine") }
                 )
             }
         }

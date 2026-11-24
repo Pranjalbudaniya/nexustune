@@ -49,5 +49,14 @@ class LibraryViewModel(
             musicRepository.deletePlaylist(playlistId)
         }
     }
+
+    val deduplicationStatus = kotlinx.coroutines.flow.MutableStateFlow<String?>(null)
+
+    fun deduplicateLikedTracks() {
+        viewModelScope.launch {
+            val removed = musicRepository.deduplicateLikedTracks()
+            deduplicationStatus.value = if (removed > 0) "Removed $removed duplicate tracks" else "No duplicates found"
+        }
+    }
 }
 

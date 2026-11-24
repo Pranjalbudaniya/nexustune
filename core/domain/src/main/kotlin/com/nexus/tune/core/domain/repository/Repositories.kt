@@ -28,6 +28,7 @@ interface MusicRepository {
     suspend fun addRecentSearch(query: String)
     suspend fun removeRecentSearch(query: String)
     suspend fun clearRecentSearches()
+    suspend fun deduplicateLikedTracks(): Int
 }
 
 interface QueueRepository {

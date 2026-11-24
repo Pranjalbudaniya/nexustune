@@ -9,6 +9,7 @@ import com.nexus.tune.core.domain.repository.MusicRepository
 import com.nexus.tune.core.extractor.MusicSource
 import com.nexus.tune.core.model.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class MusicRepositoryImpl(
@@ -129,6 +130,18 @@ class MusicRepositoryImpl(
 
     override fun getLikedTracks(): Flow<List<Track>> {
         return database.trackDao().getLikedTracks().map { list -> list.map { it.toModel() } }
+    }
+
+    override suspend fun deduplicateLikedTracks(): Int {
+        val liked = database.trackDao().getLikedTracks().first()
+        val report = com.nexus.tune.core.domain.playlist.PlaylistDeduplicator.deduplicate(liked.map { it.toModel() })
+        if (report.duplicateCount > 0) {
+            val duplicateIds = report.duplicateTracks.map { it.id }.toSet()
+            for (dupId in duplicateIds) {
+                database.trackDao().updateLiked(dupId, false)
+            }
+        }
+        return report.duplicateCount
     }
 
     override suspend fun toggleLike(track: Track): Boolean {
