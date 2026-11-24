@@ -15,8 +15,28 @@ import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     private val musicRepository: MusicRepository,
-    private val manageQueueUseCase: ManageQueueUseCase
+    private val manageQueueUseCase: ManageQueueUseCase,
+    private val abLoopManager: com.nexus.tune.core.player.ABLoopManager? = null
 ) : ViewModel() {
+
+    val abLoopState: StateFlow<com.nexus.tune.core.model.ABLoopState> =
+        abLoopManager?.loopState ?: MutableStateFlow(com.nexus.tune.core.model.ABLoopState()).asStateFlow()
+
+    fun setABLoopPointA(posMs: Long? = null) {
+        abLoopManager?.setPointA(posMs)
+    }
+
+    fun setABLoopPointB(posMs: Long? = null) {
+        abLoopManager?.setPointB(posMs)
+    }
+
+    fun toggleABLoop(enabled: Boolean? = null) {
+        abLoopManager?.toggleLoop(enabled)
+    }
+
+    fun clearABLoop() {
+        abLoopManager?.clearLoop()
+    }
 
     private val _lyrics = MutableStateFlow<TrackLyrics?>(null)
     val lyrics: StateFlow<TrackLyrics?> = _lyrics.asStateFlow()

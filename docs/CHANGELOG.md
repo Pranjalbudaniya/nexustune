@@ -5,6 +5,13 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.3.0] - 2026-11-24
+
+### Added
+- **A-B Repeat Segment & Audio Practice Loop Engine**: Added `ABLoopState` and `ABLoopManager` in `:core:player` enabling precision looping between markers A and B with auto-rewind seeking and iteration counting.
+- **Player Screen Tactile A-B Console**: Integrated A-B loop boundary chips (`Set A`, `Set B`), active loop iteration indicator (`Loop #N`), and one-tap clear button in `PlayerScreen`.
+- **ViewModel Integration**: Added `setABLoopPointA()`, `setABLoopPointB()`, `toggleABLoop()`, and `clearABLoop()` to `PlayerViewModel`.
+
 ## [4.2.0] - 2026-11-24
 
 ### Added

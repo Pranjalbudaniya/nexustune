@@ -6,11 +6,10 @@ import com.nexus.tune.core.domain.usecase.ManageQueueUseCase
 import com.nexus.tune.core.model.LyricsLine
 import com.nexus.tune.core.model.Track
 import com.nexus.tune.core.model.TrackLyrics
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.mockk
+import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -137,6 +136,35 @@ class PlayerViewModelTest {
         val testData = com.nexus.tune.core.model.VisualizerData(amplitude = 0.85f)
         viewModel.updateVisualizerData(testData)
         assertEquals(0.85f, viewModel.visualizerData.value.amplitude, 0.001f)
+    }
+
+    @Test
+    fun `abLoopManager methods delegate and update abLoopState`() {
+        val mockAbLoop = mockk<com.nexus.tune.core.player.ABLoopManager>(relaxed = true)
+        val loopFlow = MutableStateFlow(com.nexus.tune.core.model.ABLoopState(isEnabled = true, startMs = 1000L, endMs = 5000L, loopCount = 2))
+        every { mockAbLoop.loopState } returns loopFlow
+
+        val vm = PlayerViewModel(
+            musicRepository = mockk(relaxed = true),
+            manageQueueUseCase = mockk(relaxed = true),
+            abLoopManager = mockAbLoop
+        )
+
+        assertEquals(1000L, vm.abLoopState.value.startMs)
+        assertEquals(5000L, vm.abLoopState.value.endMs)
+        assertEquals(2, vm.abLoopState.value.loopCount)
+
+        vm.setABLoopPointA(2000L)
+        verify { mockAbLoop.setPointA(2000L) }
+
+        vm.setABLoopPointB(6000L)
+        verify { mockAbLoop.setPointB(6000L) }
+
+        vm.toggleABLoop(false)
+        verify { mockAbLoop.toggleLoop(false) }
+
+        vm.clearABLoop()
+        verify { mockAbLoop.clearLoop() }
     }
 }
 

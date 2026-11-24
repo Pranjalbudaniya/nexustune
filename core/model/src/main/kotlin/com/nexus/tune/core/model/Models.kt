@@ -231,6 +231,13 @@ data class SkipSegment(
     val endMs: Long
 )
 
+data class ABLoopState(
+    val isEnabled: Boolean = false,
+    val startMs: Long? = null,
+    val endMs: Long? = null,
+    val loopCount: Int = 0
+)
+
 enum class AudioDeviceType {
     BUILTIN_SPEAKER,
     BLUETOOTH_A2DP,

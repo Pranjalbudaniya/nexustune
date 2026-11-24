@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 32 (v4.2.0 Bedtime Sound Handoff Engine)
+- Active Phase: Post-v1.0 Improvement Loop 33 (v4.3.0 A-B Repeat Segment & Audio Practice Loop Engine)
 - In Flight: Running test suites and ./scripts/gate.sh slice
 - Branches: `main`
 
@@ -257,14 +257,23 @@
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `git tag v4.1-1`
 
-## Improvement Loop 32 (v4.2 Milestone - In Progress)
-- [ ] Bedtime Sound Handoff Engine:
-  - [x] Integrated music-to-ambient procedural soundscape transition in `SleepTimerManager`
-  - [x] Handoff settings persistence (`bedtimeHandoffEnabled`, `bedtimeHandoffSoundType`, `bedtimeHandoffVolume`, `bedtimeHandoffDurationMinutes`) in `SettingsDataStore`
-  - [x] Interactive handoff card and profile/duration chips in `SettingsScreen` under Sleep Timer
-  - [x] Unit tests in `SleepTimerManagerTest` and `SettingsViewModelTest`
+- [x] Improvement Loop 32 (v4.2 Milestone - Tagged `v4.2-1`)
+  - [x] Bedtime Sound Handoff Engine:
+    - [x] Integrated music-to-ambient procedural soundscape transition in `SleepTimerManager`
+    - [x] Handoff settings persistence (`bedtimeHandoffEnabled`, `bedtimeHandoffSoundType`, `bedtimeHandoffVolume`, `bedtimeHandoffDurationMinutes`) in `SettingsDataStore`
+    - [x] Interactive handoff card and profile/duration chips in `SettingsScreen` under Sleep Timer
+    - [x] Unit tests in `SleepTimerManagerTest` and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `git tag v4.2-1`
+
+## Improvement Loop 33 (v4.3 Milestone - In Progress)
+- [ ] A-B Repeat Segment & Audio Practice Loop Engine:
+  - [x] `ABLoopState` and `ABLoopManager` in `:core:player` with position monitoring and auto-seek
+  - [x] Tactile A-B Loop controls (Point A, Point B, active loop count badge, clear action) in `PlayerScreen`
+  - [x] Reactive state flow and action methods in `PlayerViewModel`
+  - [x] Unit tests in `ABLoopManagerTest` and `PlayerViewModelTest`
 - [ ] Slice gate passed
-- [ ] Final gate passed & tagged: `git tag v4.2-1`
+- [ ] Final gate passed & tagged: `git tag v4.3-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

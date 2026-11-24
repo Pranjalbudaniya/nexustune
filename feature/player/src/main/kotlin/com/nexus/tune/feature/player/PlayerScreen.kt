@@ -43,7 +43,12 @@ fun PlayerScreen(
     onAdjustLyricsOffset: (Long) -> Unit = {},
     onResetLyricsOffset: () -> Unit = {},
     onSetPlaybackSpeed: (Float) -> Unit = {},
-    onSetVisualizerMode: (com.nexus.tune.core.model.VisualizerMode) -> Unit = {}
+    onSetVisualizerMode: (com.nexus.tune.core.model.VisualizerMode) -> Unit = {},
+    abLoopState: com.nexus.tune.core.model.ABLoopState = com.nexus.tune.core.model.ABLoopState(),
+    onSetABPointA: () -> Unit = {},
+    onSetABPointB: () -> Unit = {},
+    onToggleABLoop: () -> Unit = {},
+    onClearABLoop: () -> Unit = {}
 ) {
     val track = playbackState.currentTrack ?: return
     val isPlaying = playbackState.status == PlaybackStatus.PLAYING
@@ -327,6 +332,61 @@ fun PlayerScreen(
             ) {
                 Text(text = formatTime(playbackState.positionMs), style = MaterialTheme.typography.labelSmall)
                 Text(text = formatTime(playbackState.durationMs), style = MaterialTheme.typography.labelSmall)
+            }
+
+            // A-B Repeat Loop Bar
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                FilterChip(
+                    selected = abLoopState.startMs != null,
+                    onClick = onSetABPointA,
+                    label = {
+                        val textA = abLoopState.startMs?.let { "A: ${formatTime(it)}" } ?: "Set A"
+                        Text(textA, style = MaterialTheme.typography.labelSmall)
+                    },
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                )
+
+                FilterChip(
+                    selected = abLoopState.endMs != null,
+                    onClick = onSetABPointB,
+                    label = {
+                        val textB = abLoopState.endMs?.let { "B: ${formatTime(it)}" } ?: "Set B"
+                        Text(textB, style = MaterialTheme.typography.labelSmall)
+                    },
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                )
+
+                if (abLoopState.isEnabled && abLoopState.startMs != null && abLoopState.endMs != null) {
+                    FilterChip(
+                        selected = true,
+                        onClick = onToggleABLoop,
+                        label = {
+                            Text("Loop #${abLoopState.loopCount}", style = MaterialTheme.typography.labelSmall)
+                        },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        ),
+                        modifier = Modifier.padding(horizontal = 4.dp)
+                    )
+
+                    IconButton(
+                        onClick = onClearABLoop,
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            Icons.Rounded.Close,
+                            contentDescription = "Clear A-B Loop",
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
