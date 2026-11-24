@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 71 (v6.21.0 Psychoacoustic Sub-Harmonic Bass & Missing Fundamental Studio)
+- Active Phase: Post-v1.0 Improvement Loop 72 (v6.22.0 Dynamic Spectral De-Esser & Vocal Harshness Tamer Studio)
 - In Flight: Quality gate execution and release qualification
 - Branches: `main`
 
@@ -692,6 +692,18 @@
     - [x] Comprehensive test suites in `SubHarmonicSynthEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.21-1`
+
+- [x] Improvement Loop 72 (v6.22 Milestone - Tagged `v6.22-1`)
+  - [x] Dynamic Spectral De-Esser & Vocal Harshness Tamer Studio (`DeEsserEngine`):
+    - [x] `DeEsserMode`, `DeEsserConfig`, `DeEsserMetrics`, and `DeEsserBiquadCoefficients` in `:core:model`
+    - [x] `DeEsserEngine` in `:core:domain:audio` with 2nd-order band-pass detection filter, localized sibilance ratio tracking, dynamic fast-attack ducking, and hardware Band 3 offset derivation
+    - [x] Hardware equalizer integration in `NexusAudioEffects` targeting Band 3 (~4-6 kHz presence/treble) with `applyDeEsserOffset`
+    - [x] DataStore persistence in `SettingsDataStore` mapped to `ThemeConfig`
+    - [x] `SettingsViewModel` de-esser control methods
+    - [x] Interactive "Dynamic Spectral De-Esser Studio" card in `SettingsScreen`
+    - [x] Comprehensive test suites in `DeEsserEngineTest`, `NexusAudioEffectsTest`, and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v6.22-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

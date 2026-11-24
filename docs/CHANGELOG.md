@@ -5,6 +5,17 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.22.0] - 2026-11-24
+
+### Added
+- **Dynamic Spectral De-Esser & Vocal Harshness Tamer Studio (`DeEsserEngine`)**: Added `DeEsserMode` (`OFF`, `SUBTLE_SMOOTH`, `VOCAL_INTIMATE`, `BRIGHT_HEADPHONE_TAMER`, `AGGRESSIVE_SPLIT_BAND`), `DeEsserConfig`, `DeEsserMetrics`, and `DeEsserBiquadCoefficients` in `:core:model`.
+- **Sidechain Sibilance Band-Pass Detection & Dynamic Fast-Attack Ducking DSP**: Implemented `DeEsserEngine` in `:core:domain:audio` monitoring localized sibilance ratio ($4.5\dots 8.5\text{ kHz}$) using 2nd-order band-pass biquad filters ($Q \approx 2.0$) with zero DC transmission. Automatically clamps piercing consonants and ear-fatiguing headphone driver treble spikes with dynamic gain reduction (up to -8.0 dB) during sibilant bursts, smoothly returning to 0 dB unity gain in 25 ms to preserve airy vocal sparkle.
+- **Hardware Equalizer Integration**: Added `applyDeEsserOffset`, `clearDeEsserOffset`, and `getDeEsserOffset` targeting Band 3 (~4-6 kHz presence/treble band) in `NexusAudioEffects` in `:core:player`.
+- **DataStore Persistence**: Added `DEESSER_ENABLED`, `DEESSER_MODE`, `DEESSER_CENTER_HZ`, `DEESSER_THRESHOLD`, and `DEESSER_MAX_REDUCTION` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen De-Esser Studio**: Added interactive "Dynamic Spectral De-Esser Studio" card in `SettingsScreen` with preset chips, center frequency chips, threshold slider, max reduction slider, and real-time sibilance reduction / fatigue shield badge.
+- **Unit Test Coverage**: Comprehensive test suites in `DeEsserEngineTest` in `:core:domain`, `NexusAudioEffectsTest` in `:core:player`, and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.21.0] - 2026-11-24
 
 ### Added

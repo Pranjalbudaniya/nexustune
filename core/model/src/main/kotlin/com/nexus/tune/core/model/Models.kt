@@ -237,7 +237,8 @@ data class ThemeConfig(
     val crosstalkCancellationConfig: CrosstalkCancellationConfig = CrosstalkCancellationConfig(),
     val infrasonicFilterConfig: InfrasonicFilterConfig = InfrasonicFilterConfig(),
     val airBandExciterConfig: AirBandExciterConfig = AirBandExciterConfig(),
-    val subHarmonicSynthConfig: SubHarmonicSynthConfig = SubHarmonicSynthConfig()
+    val subHarmonicSynthConfig: SubHarmonicSynthConfig = SubHarmonicSynthConfig(),
+    val deEsserConfig: DeEsserConfig = DeEsserConfig()
 )
 
 data class SoundDoseInfo(
@@ -1164,6 +1165,44 @@ data class SubHarmonicMetrics(
     val phantomFundamentalRating: String,
     val excursionSafeguardActive: Boolean
 )
+
+enum class DeEsserMode(
+    val displayName: String,
+    val centerFrequencyHz: Float,
+    val thresholdPercent: Int,
+    val maxReductionDb: Float,
+    val description: String
+) {
+    OFF("Off (Bypassed)", 6000.0f, 30, 0.0f, "Unaltered sibilant passband"),
+    SUBTLE_SMOOTH("Subtle Smooth (-2.5 dB)", 6500.0f, 35, 2.5f, "Gentle softening of sharp consonants while preserving air"),
+    VOCAL_INTIMATE("Vocal Intimate (-4.5 dB)", 6000.0f, 28, 4.5f, "Studio-grade split-band ducking for close-mic vocal tracks"),
+    BRIGHT_HEADPHONE_TAMER("Bright Headphone Tamer (-6.0 dB)", 7000.0f, 22, 6.0f, "Attenuates harsh 6-8 kHz ear-canal resonances and driver peaks"),
+    AGGRESSIVE_SPLIT_BAND("Aggressive Split-Band (-8.0 dB)", 5500.0f, 18, 8.0f, "Heavy sibilance clamp for highly compressed or sibilant recordings")
+}
+
+data class DeEsserConfig(
+    val isEnabled: Boolean = false,
+    val mode: DeEsserMode = DeEsserMode.OFF,
+    val centerFrequencyHz: Float = 6000.0f,
+    val thresholdPercent: Int = 28,
+    val maxReductionDb: Float = 4.5f
+)
+
+data class DeEsserMetrics(
+    val dynamicReductionDb: Float,
+    val sibilanceActivityPercent: Int,
+    val vocalSmoothnessRating: String,
+    val fatigueReductionPercent: Int
+)
+
+data class DeEsserBiquadCoefficients(
+    val b0: Float,
+    val b1: Float,
+    val b2: Float,
+    val a1: Float,
+    val a2: Float
+)
+
 
 
 

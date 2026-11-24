@@ -1134,4 +1134,37 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.subHarmonicSynthConfig.subOctaveBlendPercent == 75 })
         }
     }
+
+    @Test
+    fun `de-esser settings update theme config and audio effects`() = runTest {
+        viewModel.setDeEsserEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.deEsserConfig.isEnabled })
+        }
+
+        viewModel.setDeEsserMode(DeEsserMode.BRIGHT_HEADPHONE_TAMER)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.deEsserConfig.mode == DeEsserMode.BRIGHT_HEADPHONE_TAMER })
+        }
+
+        viewModel.setDeEsserCenterFrequency(7000.0f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.deEsserConfig.centerFrequencyHz == 7000.0f })
+        }
+
+        viewModel.setDeEsserThreshold(25)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.deEsserConfig.thresholdPercent == 25 })
+        }
+
+        viewModel.setDeEsserMaxReduction(6.0f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.deEsserConfig.maxReductionDb == 6.0f })
+        }
+    }
 }

@@ -126,6 +126,11 @@ class SettingsDataStore(private val context: Context) {
         val SUB_BASS_SYNTH_TARGET = stringPreferencesKey("sub_bass_synth_target")
         val SUB_BASS_SYNTH_INTENSITY = intPreferencesKey("sub_bass_synth_intensity")
         val SUB_BASS_SYNTH_BLEND = intPreferencesKey("sub_bass_synth_blend")
+        val DEESSER_ENABLED = booleanPreferencesKey("deesser_enabled")
+        val DEESSER_MODE = stringPreferencesKey("deesser_mode")
+        val DEESSER_CENTER_HZ = floatPreferencesKey("deesser_center_hz")
+        val DEESSER_THRESHOLD = intPreferencesKey("deesser_threshold")
+        val DEESSER_MAX_REDUCTION = floatPreferencesKey("deesser_max_reduction")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -324,6 +329,15 @@ class SettingsDataStore(private val context: Context) {
                 }.getOrDefault(SubHarmonicTarget.HYBRID_BALANCED),
                 intensityPercent = prefs[PreferencesKeys.SUB_BASS_SYNTH_INTENSITY] ?: 50,
                 subOctaveBlendPercent = prefs[PreferencesKeys.SUB_BASS_SYNTH_BLEND] ?: 40
+            ),
+            deEsserConfig = DeEsserConfig(
+                isEnabled = prefs[PreferencesKeys.DEESSER_ENABLED] ?: false,
+                mode = runCatching {
+                    DeEsserMode.valueOf(prefs[PreferencesKeys.DEESSER_MODE] ?: DeEsserMode.OFF.name)
+                }.getOrDefault(DeEsserMode.OFF),
+                centerFrequencyHz = prefs[PreferencesKeys.DEESSER_CENTER_HZ] ?: 6000.0f,
+                thresholdPercent = prefs[PreferencesKeys.DEESSER_THRESHOLD] ?: 28,
+                maxReductionDb = prefs[PreferencesKeys.DEESSER_MAX_REDUCTION] ?: 4.5f
             )
         )
     }
@@ -433,6 +447,11 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.SUB_BASS_SYNTH_TARGET] = config.subHarmonicSynthConfig.target.name
             prefs[PreferencesKeys.SUB_BASS_SYNTH_INTENSITY] = config.subHarmonicSynthConfig.intensityPercent
             prefs[PreferencesKeys.SUB_BASS_SYNTH_BLEND] = config.subHarmonicSynthConfig.subOctaveBlendPercent
+            prefs[PreferencesKeys.DEESSER_ENABLED] = config.deEsserConfig.isEnabled
+            prefs[PreferencesKeys.DEESSER_MODE] = config.deEsserConfig.mode.name
+            prefs[PreferencesKeys.DEESSER_CENTER_HZ] = config.deEsserConfig.centerFrequencyHz
+            prefs[PreferencesKeys.DEESSER_THRESHOLD] = config.deEsserConfig.thresholdPercent
+            prefs[PreferencesKeys.DEESSER_MAX_REDUCTION] = config.deEsserConfig.maxReductionDb
         }
     }
 
@@ -544,6 +563,16 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.SUB_BASS_SYNTH_TARGET] = config.target.name
             prefs[PreferencesKeys.SUB_BASS_SYNTH_INTENSITY] = config.intensityPercent
             prefs[PreferencesKeys.SUB_BASS_SYNTH_BLEND] = config.subOctaveBlendPercent
+        }
+    }
+
+    suspend fun updateDeEsserConfig(config: DeEsserConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.DEESSER_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.DEESSER_MODE] = config.mode.name
+            prefs[PreferencesKeys.DEESSER_CENTER_HZ] = config.centerFrequencyHz
+            prefs[PreferencesKeys.DEESSER_THRESHOLD] = config.thresholdPercent
+            prefs[PreferencesKeys.DEESSER_MAX_REDUCTION] = config.maxReductionDb
         }
     }
 

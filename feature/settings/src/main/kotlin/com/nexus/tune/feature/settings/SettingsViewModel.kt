@@ -944,4 +944,57 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(subHarmonicSynthConfig = current.subHarmonicSynthConfig.copy(subOctaveBlendPercent = blendPercent.coerceIn(0, 100))))
     }
+
+    fun setDeEsserEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        val updated = current.copy(deEsserConfig = current.deEsserConfig.copy(isEnabled = enabled))
+        updateTheme(updated)
+        val offset = com.nexus.tune.core.domain.audio.DeEsserEngine.calculateHardwareOffsetMb(
+            -updated.deEsserConfig.maxReductionDb * 0.7f,
+            enabled
+        )
+        NexusAudioEffects.instance.applyDeEsserOffset(offset)
+    }
+
+    fun setDeEsserMode(mode: DeEsserMode) {
+        val current = themeConfig.value
+        val isEnabled = mode != DeEsserMode.OFF
+        val updated = current.copy(
+            deEsserConfig = current.deEsserConfig.copy(
+                isEnabled = isEnabled,
+                mode = mode,
+                centerFrequencyHz = mode.centerFrequencyHz,
+                thresholdPercent = mode.thresholdPercent,
+                maxReductionDb = mode.maxReductionDb
+            )
+        )
+        updateTheme(updated)
+        val offset = com.nexus.tune.core.domain.audio.DeEsserEngine.calculateHardwareOffsetMb(
+            -updated.deEsserConfig.maxReductionDb * 0.7f,
+            isEnabled
+        )
+        NexusAudioEffects.instance.applyDeEsserOffset(offset)
+    }
+
+    fun setDeEsserCenterFrequency(centerHz: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(deEsserConfig = current.deEsserConfig.copy(centerFrequencyHz = centerHz.coerceIn(3000.0f, 9000.0f))))
+    }
+
+    fun setDeEsserThreshold(thresholdPercent: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(deEsserConfig = current.deEsserConfig.copy(thresholdPercent = thresholdPercent.coerceIn(10, 80))))
+    }
+
+    fun setDeEsserMaxReduction(maxReductionDb: Float) {
+        val current = themeConfig.value
+        val clamped = maxReductionDb.coerceIn(0.0f, 12.0f)
+        val updated = current.copy(deEsserConfig = current.deEsserConfig.copy(maxReductionDb = clamped))
+        updateTheme(updated)
+        val offset = com.nexus.tune.core.domain.audio.DeEsserEngine.calculateHardwareOffsetMb(
+            -clamped * 0.7f,
+            updated.deEsserConfig.isEnabled
+        )
+        NexusAudioEffects.instance.applyDeEsserOffset(offset)
+    }
 }

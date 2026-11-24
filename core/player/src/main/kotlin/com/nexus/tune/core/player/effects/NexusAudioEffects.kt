@@ -27,6 +27,7 @@ class NexusAudioEffects {
     private var midBassClarityOffset: Int = 0
     private var airBandOffset: Int = 0
     private var subHarmonicOffset: Int = 0
+    private var deEsserOffset: Int = 0
 
     fun attachToAudioSession(sessionId: Int) {
         if (sessionId == 0 || sessionId == currentSessionId) return
@@ -311,6 +312,18 @@ class NexusAudioEffects {
 
     fun getSubHarmonicOffset(): Int = subHarmonicOffset
 
+    fun applyDeEsserOffset(offset: Int) {
+        deEsserOffset = offset
+        refreshBands()
+    }
+
+    fun clearDeEsserOffset() {
+        deEsserOffset = 0
+        refreshBands()
+    }
+
+    fun getDeEsserOffset(): Int = deEsserOffset
+
     fun setBassBoostStrength(strength: Short) {
         try {
             bassBoost?.setStrength(strength)
@@ -333,7 +346,8 @@ class NexusAudioEffects {
                 val mOffset = if (i == 1) midBassClarityOffset else 0
                 val aOffset = if (i == 4) airBandOffset else 0
                 val sHarmonicOffset = if (i == 0) subHarmonicOffset else 0
-                val combined = (base + kOffset + hOffset + sOffset + dOffset + tOffset + mOffset + aOffset + sHarmonicOffset).coerceIn(-1500, 1500)
+                val deEssOffset = if (i == 3) deEsserOffset else 0
+                val combined = (base + kOffset + hOffset + sOffset + dOffset + tOffset + mOffset + aOffset + sHarmonicOffset + deEssOffset).coerceIn(-1500, 1500)
                 eq.setBandLevel(i.toShort(), combined.toShort())
             }
         } catch (e: Exception) {

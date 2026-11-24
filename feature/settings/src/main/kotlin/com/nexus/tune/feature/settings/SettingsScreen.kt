@@ -18,6 +18,7 @@ import com.nexus.tune.core.model.*
 import com.nexus.tune.core.domain.audio.InfrasonicFilterEngine
 import com.nexus.tune.core.domain.audio.AirBandExciterEngine
 import com.nexus.tune.core.domain.audio.SubHarmonicSynthEngine
+import com.nexus.tune.core.domain.audio.DeEsserEngine
 import com.nexus.tune.core.ui.EqCurveVisualizer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -2081,6 +2082,145 @@ fun SettingsScreen(
                                         color = MaterialTheme.colorScheme.tertiary
                                     )
                                 }
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+                ListItem(
+                    headlineContent = { Text("Dynamic Spectral De-Esser Studio") },
+                    supportingContent = { Text("Tames piercing vocal sibilance ('s', 'sh', 't') and bright headphone resonances without muffling presence") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.deEsserConfig.isEnabled,
+                            onCheckedChange = { viewModel.setDeEsserEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.deEsserConfig.isEnabled) {
+                    val deEsserMetrics = remember(themeConfig.deEsserConfig) {
+                        DeEsserEngine.calculateMetrics(themeConfig.deEsserConfig)
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "De-Esser Profile",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        DeEsserMode.entries.forEach { mode ->
+                            FilterChip(
+                                selected = themeConfig.deEsserConfig.mode == mode,
+                                onClick = { viewModel.setDeEsserMode(mode) },
+                                label = { Text(mode.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "Sibilance Center Frequency",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf(5000.0f, 5500.0f, 6000.0f, 6500.0f, 7000.0f, 8000.0f).forEach { freq ->
+                            FilterChip(
+                                selected = kotlin.math.abs(themeConfig.deEsserConfig.centerFrequencyHz - freq) < 1.0f,
+                                onClick = { viewModel.setDeEsserCenterFrequency(freq) },
+                                label = { Text("${(freq / 1000.0f).toInt()}k Hz") }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Detection Threshold: ${themeConfig.deEsserConfig.thresholdPercent}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Max Ducking: -${String.format(java.util.Locale.US, "%.1f", themeConfig.deEsserConfig.maxReductionDb)} dB",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    Slider(
+                        value = themeConfig.deEsserConfig.thresholdPercent.toFloat(),
+                        onValueChange = { viewModel.setDeEsserThreshold(it.toInt()) },
+                        valueRange = 10.0f..60.0f,
+                        steps = 10,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Text(
+                        text = "Maximum Sibilant Attenuation",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Slider(
+                        value = themeConfig.deEsserConfig.maxReductionDb,
+                        onValueChange = { viewModel.setDeEsserMaxReduction(it) },
+                        valueRange = 1.0f..10.0f,
+                        steps = 18,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Text(
+                                text = deEsserMetrics.vocalSmoothnessRating,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Dynamic Reduction: ${String.format(java.util.Locale.US, "%.1f", deEsserMetrics.dynamicReductionDb)} dB",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Fatigue Shield: ${deEsserMetrics.fatigueReductionPercent}%",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                                Text(
+                                    text = "Activity: ${deEsserMetrics.sibilanceActivityPercent}%",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
                             }
                         }
                     }

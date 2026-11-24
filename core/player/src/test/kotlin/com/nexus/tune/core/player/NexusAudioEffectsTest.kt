@@ -148,5 +148,14 @@ class NexusAudioEffectsTest {
         audioEffects.clearSubHarmonicOffset()
         assertEquals(0, audioEffects.getSubHarmonicOffset())
     }
+
+    @Test
+    fun `de-esser offset can be applied and cleared`() {
+        audioEffects.applyDeEsserOffset(-350)
+        assertEquals(-350, audioEffects.getDeEsserOffset())
+
+        audioEffects.clearDeEsserOffset()
+        assertEquals(0, audioEffects.getDeEsserOffset())
+    }
 }
 
