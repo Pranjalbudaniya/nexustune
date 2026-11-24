@@ -64,6 +64,8 @@ class SettingsDataStore(private val context: Context) {
         val DJ_BASS_BOOST = intPreferencesKey("dj_bass_boost")
         val DJ_REMEMBER_ACROSS_TRACKS = booleanPreferencesKey("dj_remember_across_tracks")
         val CUSTOM_SMART_PLAYLISTS = stringPreferencesKey("custom_smart_playlists_json")
+        val VISUALIZER_MODE = stringPreferencesKey("theme_visualizer_mode")
+        val VISUALIZER_PALETTE = stringPreferencesKey("theme_visualizer_palette")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -130,7 +132,13 @@ class SettingsDataStore(private val context: Context) {
                 loFiFilterEnabled = prefs[PreferencesKeys.DJ_LOFI_FILTER] ?: false,
                 bassBoostDb = prefs[PreferencesKeys.DJ_BASS_BOOST] ?: 0
             ),
-            djRememberAcrossTracks = prefs[PreferencesKeys.DJ_REMEMBER_ACROSS_TRACKS] ?: false
+            djRememberAcrossTracks = prefs[PreferencesKeys.DJ_REMEMBER_ACROSS_TRACKS] ?: false,
+            visualizerMode = runCatching {
+                VisualizerMode.valueOf(prefs[PreferencesKeys.VISUALIZER_MODE] ?: VisualizerMode.SPECTRUM_BARS.name)
+            }.getOrDefault(VisualizerMode.SPECTRUM_BARS),
+            visualizerPalette = runCatching {
+                VisualizerPalette.valueOf(prefs[PreferencesKeys.VISUALIZER_PALETTE] ?: VisualizerPalette.DYNAMIC.name)
+            }.getOrDefault(VisualizerPalette.DYNAMIC)
         )
     }
 
@@ -177,6 +185,8 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.DJ_LOFI_FILTER] = config.djFxConfig.loFiFilterEnabled
             prefs[PreferencesKeys.DJ_BASS_BOOST] = config.djFxConfig.bassBoostDb
             prefs[PreferencesKeys.DJ_REMEMBER_ACROSS_TRACKS] = config.djRememberAcrossTracks
+            prefs[PreferencesKeys.VISUALIZER_MODE] = config.visualizerMode.name
+            prefs[PreferencesKeys.VISUALIZER_PALETTE] = config.visualizerPalette.name
         }
     }
 

@@ -47,6 +47,7 @@ fun PlayerScreen(
     audioOutputDevice: com.nexus.tune.core.model.AudioOutputDevice = com.nexus.tune.core.model.AudioOutputDevice(),
     visualizerData: com.nexus.tune.core.model.VisualizerData = com.nexus.tune.core.model.VisualizerData(),
     visualizerMode: com.nexus.tune.core.model.VisualizerMode = com.nexus.tune.core.model.VisualizerMode.SPECTRUM_BARS,
+    visualizerPalette: com.nexus.tune.core.model.VisualizerPalette = com.nexus.tune.core.model.VisualizerPalette.DYNAMIC,
     onAdjustLyricsOffset: (Long) -> Unit = {},
     onResetLyricsOffset: () -> Unit = {},
     onSetPlaybackSpeed: (Float) -> Unit = {},
@@ -421,6 +422,7 @@ fun PlayerScreen(
                 com.nexus.tune.core.ui.AudioVisualizerView(
                     visualizerData = visualizerData,
                     mode = visualizerMode,
+                    palette = visualizerPalette,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(36.dp)

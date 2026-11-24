@@ -268,6 +268,7 @@ class MainActivity : ComponentActivity() {
                                 audioOutputDevice = audioOutputDevice,
                                 visualizerData = visualizerData,
                                 visualizerMode = themeConfig.visualizerMode,
+                                visualizerPalette = themeConfig.visualizerPalette,
                                 onAdjustLyricsOffset = { playerViewModel.adjustLyricsOffset(it) },
                                 onResetLyricsOffset = { playerViewModel.resetLyricsOffset() },
                                 onSetPlaybackSpeed = { app.playerController.setPlaybackSpeed(it) },

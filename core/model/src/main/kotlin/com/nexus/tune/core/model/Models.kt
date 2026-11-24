@@ -91,7 +91,20 @@ enum class MiniPlayerStyle {
 }
 
 enum class VisualizerMode {
-    OFF, SPECTRUM_BARS, CIRCULAR_WAVE, GLOW_PULSE
+    OFF, SPECTRUM_BARS, CIRCULAR_WAVE, GLOW_PULSE, STEREO_VU, LIQUID_WAVE
+}
+
+enum class VisualizerPalette(
+    val displayName: String,
+    val primaryHex: String,
+    val secondaryHex: String
+) {
+    DYNAMIC("Dynamic Theme", "", ""),
+    CYBERPUNK("Cyberpunk Neon", "#00F0FF", "#FF003C"),
+    SUNSET_EMBER("Sunset Ember", "#FF5E3A", "#FF2A68"),
+    AURORA("Aurora Borealis", "#00FFA3", "#00B8FF"),
+    ELECTRIC_VIOLET("Electric Violet", "#A855F7", "#EC4899"),
+    GOLDEN_CHAMPAGNE("Golden Spark", "#F59E0B", "#FBBF24")
 }
 
 enum class SeekbarStyle {
@@ -203,7 +216,8 @@ data class ThemeConfig(
     val loudnessConfig: LoudnessConfig = LoudnessConfig(),
     val djFxConfig: DjFxConfig = DjFxConfig(),
     val djRememberAcrossTracks: Boolean = false,
-    val harmonicMixingEnabled: Boolean = true
+    val harmonicMixingEnabled: Boolean = true,
+    val visualizerPalette: VisualizerPalette = VisualizerPalette.DYNAMIC
 )
 
 data class SoundDoseInfo(

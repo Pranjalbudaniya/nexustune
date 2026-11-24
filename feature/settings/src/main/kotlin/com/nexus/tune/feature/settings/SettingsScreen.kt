@@ -129,10 +129,12 @@ fun SettingsScreen(
                 )
 
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    VisualizerMode.values().forEach { mode ->
+                    VisualizerMode.entries.forEach { mode ->
                         FilterChip(
                             selected = themeConfig.visualizerMode == mode,
                             onClick = { viewModel.setVisualizerMode(mode) },
@@ -143,10 +145,37 @@ fun SettingsScreen(
                                         VisualizerMode.SPECTRUM_BARS -> "Spectrum"
                                         VisualizerMode.CIRCULAR_WAVE -> "Circular"
                                         VisualizerMode.GLOW_PULSE -> "Glow"
+                                        VisualizerMode.STEREO_VU -> "Stereo VU"
+                                        VisualizerMode.LIQUID_WAVE -> "Liquid Wave"
                                     }
                                 )
                             }
                         )
+                    }
+                }
+
+                if (themeConfig.visualizerMode != VisualizerMode.OFF) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        text = "Visualizer Color Palette",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        VisualizerPalette.entries.forEach { palette ->
+                            FilterChip(
+                                selected = themeConfig.visualizerPalette == palette,
+                                onClick = { viewModel.setVisualizerPalette(palette) },
+                                label = { Text(palette.displayName) }
+                            )
+                        }
                     }
                 }
 

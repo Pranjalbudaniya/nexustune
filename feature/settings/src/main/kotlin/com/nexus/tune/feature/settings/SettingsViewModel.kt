@@ -359,6 +359,11 @@ class SettingsViewModel(
         com.nexus.tune.core.player.visualizer.VisualizerManager.instance.setMode(mode)
     }
 
+    fun setVisualizerPalette(palette: VisualizerPalette) {
+        val current = themeConfig.value
+        updateTheme(current.copy(visualizerPalette = palette))
+    }
+
     fun setSleepTimerFadeSeconds(seconds: Int) {
         val current = themeConfig.value
         updateTheme(current.copy(sleepTimerFadeSeconds = seconds))

@@ -5,6 +5,16 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.1.0] - 2026-11-24
+
+### Added
+- **Audio Visualizer Suite Expansion: Stereo VU Meter & Liquid Wave**: Expanded `VisualizerMode` with `STEREO_VU` and `LIQUID_WAVE` in `:core:model`.
+- **Visualizer Color Mesh Palettes**: Introduced `VisualizerPalette` (`DYNAMIC`, `CYBERPUNK`, `SUNSET_EMBER`, `AURORA`, `ELECTRIC_VIOLET`, `GOLDEN_CHAMPAGNE`) allowing rich visual themes.
+- **Calibrated Twin Stereo VU Meter**: Implemented `StereoVuVisualizer` in `:core:ui` with dual Left/Right peak VU meters featuring Green (-20dB to -6dB), Amber (-6dB to -2dB), and Red (0dB peak) segments with needle falloff animation.
+- **Fluid Sinusoidal Liquid Wave Visualizer**: Implemented `LiquidWaveVisualizer` in `:core:ui` with dual-phase flowing sine curves reacting dynamically to low, mid, and high FFT magnitudes.
+- **Settings Console & Player Integration**: Added visualizer style and color palette selector chips in `SettingsScreen`, DataStore persistence in `SettingsDataStore`, and live rendering in `PlayerScreen`.
+- **Unit Test Coverage**: Added `setVisualizerPalette updates config` to `SettingsViewModelTest`.
+
 ## [6.0.0] - 2026-11-24
 
 ### Added

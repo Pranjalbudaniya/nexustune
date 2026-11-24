@@ -206,6 +206,16 @@ class SettingsViewModelTest {
     }
 
     @Test
+    fun `setVisualizerPalette updates config`() = runTest {
+        viewModel.setVisualizerPalette(VisualizerPalette.CYBERPUNK)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.visualizerPalette == VisualizerPalette.CYBERPUNK })
+        }
+    }
+
+    @Test
     fun `toggleInfiniteAutoPlay updates config`() = runTest {
         viewModel.toggleInfiniteAutoPlay(false)
         testDispatcher.scheduler.advanceUntilIdle()

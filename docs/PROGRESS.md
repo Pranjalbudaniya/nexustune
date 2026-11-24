@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 50 (v6.0.0 Grand Milestone: Acoustic Camelot Harmonic Mixing & BPM Transition Intelligence Engine)
+- Active Phase: Post-v1.0 Improvement Loop 51 (v6.1.0 Audio Visualizer Suite Expansion: Stereo VU Meter & Liquid Wave)
 - In Flight: Quality gate execution and release qualification
 - Branches: `main`
 
@@ -454,6 +454,16 @@
     - [x] Comprehensive unit tests in `HarmonicMixingEngineTest` and `PlayerViewModelTest`
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.0-1`
+
+- [x] Improvement Loop 51 (v6.1 Milestone - In Progress)
+  - [x] Audio Visualizer Suite Expansion: Stereo VU Meter & Liquid Wave:
+    - [x] `STEREO_VU` and `LIQUID_WAVE` modes in `VisualizerMode`
+    - [x] `VisualizerPalette` (`DYNAMIC`, `CYBERPUNK`, `SUNSET_EMBER`, `AURORA`, `ELECTRIC_VIOLET`, `GOLDEN_CHAMPAGNE`)
+    - [x] Calibrated `StereoVuVisualizer` and sinusoidal `LiquidWaveVisualizer` in `:core:ui`
+    - [x] Visualizer color palette and style selectors in `SettingsScreen` and `SettingsViewModel`
+    - [x] Unit test in `SettingsViewModelTest`
+  - [ ] Slice gate
+  - [ ] Final gate & tag: `v6.1-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.
