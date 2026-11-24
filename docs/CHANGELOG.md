@@ -5,6 +5,15 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.0] - 2026-11-24
+
+### Added
+- **In-Library Instant Search, Multi-Criteria Sort & Smart Filter Engine**: Implemented `LibrarySortOrder` (`RECENT`, `TITLE_ASC`, `ARTIST_ASC`, `DURATION_DESC`) in `:core:model` and `LibraryFilterEngine` in `:core:domain:library` for real-time sub-millisecond filtering across saved tracks and playlists.
+- **Library Screen Instant Search Bar**: Added an ergonomic search field with live character filtering and clear button, operating entirely offline on cached and saved tracks.
+- **Multi-Field Sorting & Filtering**: Added dynamic sort chips for Liked songs and History, sorting by chronological order, song title, artist name, and track duration.
+- **Batch Play Filtered Queue**: Added a "Play Matches" instant playback action streaming all filtered results into active playback.
+- **Unit Test Suites**: Added `LibraryFilterEngineTest` (`:core:domain`) and expanded `LibraryViewModelTest` (`:feature:library`).
+
 ## [5.0.0] - 2026-11-24
 
 ### Added

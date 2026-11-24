@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 40 (v5.0.0 Smart Listening Mood & Energy Radio Matrix Engine)
+- Active Phase: Post-v1.0 Improvement Loop 41 (v5.1.0 In-Library Instant Search, Multi-Criteria Sort & Smart Filter Engine)
 - In Flight: Running test suites and ./scripts/gate.sh slice
 - Branches: `main`
 
@@ -351,6 +351,16 @@
     - [x] Unit test suites in `MoodRadioEngineTest` (`:core:domain`) and `HomeViewModelTest` (`:feature:home`)
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v5.0-1`
+
+- [x] Improvement Loop 41 (v5.1 Milestone - Tagged `v5.1-1`)
+  - [x] In-Library Instant Search, Multi-Criteria Sort & Smart Filter Engine:
+    - [x] `LibrarySortOrder` domain enum in `:core:model`
+    - [x] `LibraryFilterEngine` in `:core:domain:library` for real-time substring matching and multi-field sorting
+    - [x] Reactive `filteredLikedTracks`, `filteredHistoryTracks`, and `filteredPlaylists` in `LibraryViewModel`
+    - [x] Search field with instant clear, dynamic sort chips, match count badge, and "Play Matches" button in `LibraryScreen`
+    - [x] Unit test suites in `LibraryFilterEngineTest` (`:core:domain`) and `LibraryViewModelTest` (`:feature:library`)
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v5.1-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

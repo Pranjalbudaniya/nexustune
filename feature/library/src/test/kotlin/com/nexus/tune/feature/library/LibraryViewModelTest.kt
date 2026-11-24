@@ -113,4 +113,34 @@ class LibraryViewModelTest {
 
         coVerify { musicRepository.deletePlaylist("p1") }
     }
+
+    @Test
+    fun `setSearchQuery and setSortOrder filter liked tracks reactively`() = runTest {
+        viewModel.setSearchQuery("Liked")
+        viewModel.setSortOrder(com.nexus.tune.core.model.LibrarySortOrder.TITLE_ASC)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.filteredLikedTracks.test {
+            val list = awaitItem()
+            val final = if (list.isEmpty()) awaitItem() else list
+            assertEquals(1, final.size)
+            assertEquals("Liked Track", final.first().title)
+        }
+
+        viewModel.setSearchQuery("NonExistent")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.filteredLikedTracks.test {
+            val list = awaitItem()
+            assertEquals(0, list.size)
+        }
+    }
+
+    @Test
+    fun `playAll delegates to manageQueueUseCase`() = runTest {
+        viewModel.playAll(sampleLiked)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { manageQueueUseCase.playTrackNow(sampleLiked.first(), sampleLiked) }
+    }
 }

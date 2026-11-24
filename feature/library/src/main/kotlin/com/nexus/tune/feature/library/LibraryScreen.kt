@@ -2,14 +2,19 @@ package com.nexus.tune.feature.library
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.QueueMusic
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Image
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,6 +25,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.nexus.tune.core.model.LibrarySortOrder
 import com.nexus.tune.core.model.Playlist
 import com.nexus.tune.core.model.Track
 import com.nexus.tune.core.ui.TrackListItem
@@ -35,25 +41,79 @@ fun LibraryScreen(
     val historyTracks by viewModel.historyTracks.collectAsState()
     val playlists by viewModel.playlists.collectAsState()
 
+    val filteredLikedTracks by viewModel.filteredLikedTracks.collectAsState()
+    val filteredHistoryTracks by viewModel.filteredHistoryTracks.collectAsState()
+    val filteredPlaylists by viewModel.filteredPlaylists.collectAsState()
+
+    val searchQuery by viewModel.searchQuery.collectAsState()
+    val sortOrder by viewModel.sortOrder.collectAsState()
+
     var showCreateDialog by remember { mutableStateOf(false) }
     var editingPlaylistForArtwork by remember { mutableStateOf<Playlist?>(null) }
 
     Column(modifier = modifier.fillMaxSize()) {
+        // In-Library Search Field
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { viewModel.setSearchQuery(it) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 6.dp),
+            placeholder = { Text("Search your library...", style = MaterialTheme.typography.bodyMedium) },
+            leadingIcon = {
+                Icon(Icons.Rounded.Search, contentDescription = "Search", modifier = Modifier.size(20.dp))
+            },
+            trailingIcon = if (searchQuery.isNotBlank()) {
+                {
+                    IconButton(onClick = { viewModel.clearSearch() }) {
+                        Icon(Icons.Rounded.Close, contentDescription = "Clear", modifier = Modifier.size(18.dp))
+                    }
+                }
+            } else null,
+            singleLine = true,
+            shape = MaterialTheme.shapes.medium
+        )
+
+        // Sort Order Filter Row (for Liked and History)
+        if (selectedTab != 1) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 2.dp)
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Sort:",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                LibrarySortOrder.values().forEach { order ->
+                    FilterChip(
+                        selected = sortOrder == order,
+                        onClick = { viewModel.setSortOrder(order) },
+                        label = { Text(order.displayName, style = MaterialTheme.typography.labelSmall) }
+                    )
+                }
+            }
+        }
+
         TabRow(selectedTabIndex = selectedTab) {
             Tab(
                 selected = selectedTab == 0,
                 onClick = { selectedTab = 0 },
-                text = { Text("Liked (${likedTracks.size})") }
+                text = { Text("Liked (${if (searchQuery.isNotBlank()) "${filteredLikedTracks.size}/" else ""}${likedTracks.size})") }
             )
             Tab(
                 selected = selectedTab == 1,
                 onClick = { selectedTab = 1 },
-                text = { Text("Playlists (${playlists.size})") }
+                text = { Text("Playlists (${if (searchQuery.isNotBlank()) "${filteredPlaylists.size}/" else ""}${playlists.size})") }
             )
             Tab(
                 selected = selectedTab == 2,
                 onClick = { selectedTab = 2 },
-                text = { Text("History (${historyTracks.size})") }
+                text = { Text("History (${if (searchQuery.isNotBlank()) "${filteredHistoryTracks.size}/" else ""}${historyTracks.size})") }
             )
         }
 
@@ -69,36 +129,59 @@ fun LibraryScreen(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                     )
                 }
-                if (likedTracks.isNotEmpty()) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 4.dp),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        OutlinedButton(
-                            onClick = { viewModel.deduplicateLikedTracks() },
-                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 2.dp)
-                        ) {
-                            Icon(Icons.Rounded.Delete, contentDescription = null, modifier = Modifier.size(14.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Clean Duplicates", style = MaterialTheme.typography.labelSmall)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (searchQuery.isNotBlank()) {
+                        Text(
+                            text = "${filteredLikedTracks.size} found",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    } else {
+                        Spacer(modifier = Modifier.width(1.dp))
+                    }
+
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        if (filteredLikedTracks.isNotEmpty() && searchQuery.isNotBlank()) {
+                            Button(
+                                onClick = { viewModel.playAll(filteredLikedTracks) },
+                                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 2.dp)
+                            ) {
+                                Icon(Icons.Rounded.PlayArrow, contentDescription = null, modifier = Modifier.size(14.dp))
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("Play Matches", style = MaterialTheme.typography.labelSmall)
+                            }
+                        }
+                        if (likedTracks.isNotEmpty()) {
+                            OutlinedButton(
+                                onClick = { viewModel.deduplicateLikedTracks() },
+                                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 2.dp)
+                            ) {
+                                Icon(Icons.Rounded.Delete, contentDescription = null, modifier = Modifier.size(14.dp))
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("Clean Duplicates", style = MaterialTheme.typography.labelSmall)
+                            }
                         }
                     }
                 }
                 TrackListTab(
-                    tracks = likedTracks,
-                    emptyMessage = "No liked songs yet.",
+                    tracks = filteredLikedTracks,
+                    emptyMessage = if (searchQuery.isNotBlank()) "No songs match \"$searchQuery\"." else "No liked songs yet.",
                     onTrackClick = { track ->
-                        viewModel.playTrack(track, likedTracks)
-                        onTrackClick(track, likedTracks)
+                        viewModel.playTrack(track, filteredLikedTracks)
+                        onTrackClick(track, filteredLikedTracks)
                     }
                 )
             }
             1 -> {
                 // Playlists Tab
                 PlaylistsTab(
-                    playlists = playlists,
+                    playlists = filteredPlaylists,
                     onCreateClick = { showCreateDialog = true },
                     onEditArtworkClick = { editingPlaylistForArtwork = it },
                     onDeleteClick = { viewModel.deletePlaylist(it.id) }
@@ -106,12 +189,37 @@ fun LibraryScreen(
             }
             2 -> {
                 // History Tab
+                if (searchQuery.isNotBlank()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "${filteredHistoryTracks.size} found in history",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        if (filteredHistoryTracks.isNotEmpty()) {
+                            Button(
+                                onClick = { viewModel.playAll(filteredHistoryTracks) },
+                                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 2.dp)
+                            ) {
+                                Icon(Icons.Rounded.PlayArrow, contentDescription = null, modifier = Modifier.size(14.dp))
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("Play Matches", style = MaterialTheme.typography.labelSmall)
+                            }
+                        }
+                    }
+                }
                 TrackListTab(
-                    tracks = historyTracks,
-                    emptyMessage = "Listening history will appear here.",
+                    tracks = filteredHistoryTracks,
+                    emptyMessage = if (searchQuery.isNotBlank()) "No history tracks match \"$searchQuery\"." else "Listening history will appear here.",
                     onTrackClick = { track ->
-                        viewModel.playTrack(track, historyTracks)
-                        onTrackClick(track, historyTracks)
+                        viewModel.playTrack(track, filteredHistoryTracks)
+                        onTrackClick(track, filteredHistoryTracks)
                     }
                 )
             }

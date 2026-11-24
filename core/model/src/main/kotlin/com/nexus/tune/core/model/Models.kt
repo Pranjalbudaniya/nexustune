@@ -329,3 +329,10 @@ enum class MoodCategory(
     SLEEP("Sleep", "Gentle lullabies, ambient tones & slow decay")
 }
 
+enum class LibrarySortOrder(val displayName: String) {
+    RECENT("Recently Added"),
+    TITLE_ASC("Title (A-Z)"),
+    ARTIST_ASC("Artist (A-Z)"),
+    DURATION_DESC("Duration (Longest)")
+}
+
