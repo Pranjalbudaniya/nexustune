@@ -124,6 +124,8 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             settingsViewModel.themeConfig.collect { config ->
                 app.playerController.setVolumeLimit(config.volumeLimitPercent)
+                com.nexus.tune.core.player.effects.NexusAudioEffects.instance.setSpatialAudioEnabled(config.spatialAudioEnabled)
+                com.nexus.tune.core.player.effects.NexusAudioEffects.instance.setSpatialAudioStage(config.spatialAudioStage)
             }
         }
 

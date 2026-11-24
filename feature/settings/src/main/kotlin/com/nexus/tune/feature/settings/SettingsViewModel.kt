@@ -30,6 +30,8 @@ class SettingsViewModel(
             themeConfig.collect { config ->
                 audioOutputRouteManager?.setBitPerfectEnabled(config.bitPerfectUsbAudioEnabled)
                 audioOutputRouteManager?.setForcedSampleRate(config.forceHiResSamplingRate)
+                NexusAudioEffects.instance.setSpatialAudioEnabled(config.spatialAudioEnabled)
+                NexusAudioEffects.instance.setSpatialAudioStage(config.spatialAudioStage)
             }
         }
     }
@@ -133,6 +135,27 @@ class SettingsViewModel(
     fun toggleAutoGenreEq(enabled: Boolean) {
         val current = themeConfig.value
         updateTheme(current.copy(autoGenreEqEnabled = enabled))
+    }
+
+    fun toggleSpatialAudio(enabled: Boolean) {
+        val current = themeConfig.value
+        val stage = if (enabled) {
+            if (current.spatialAudioStage == SpatialAudioStage.OFF) SpatialAudioStage.STUDIO else current.spatialAudioStage
+        } else {
+            SpatialAudioStage.OFF
+        }
+        updateTheme(current.copy(spatialAudioEnabled = enabled, spatialAudioStage = stage))
+        NexusAudioEffects.instance.setSpatialAudioEnabled(enabled)
+        if (enabled) {
+            NexusAudioEffects.instance.setSpatialAudioStage(stage)
+        }
+    }
+
+    fun setSpatialAudioStage(stage: SpatialAudioStage) {
+        val current = themeConfig.value
+        val enabled = stage != SpatialAudioStage.OFF
+        updateTheme(current.copy(spatialAudioEnabled = enabled, spatialAudioStage = stage))
+        NexusAudioEffects.instance.setSpatialAudioStage(stage)
     }
 
     fun setVolumeLimit(percent: Int) {

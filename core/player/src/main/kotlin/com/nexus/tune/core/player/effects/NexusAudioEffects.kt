@@ -3,15 +3,21 @@ package com.nexus.tune.core.player.effects
 import android.media.audiofx.BassBoost
 import android.media.audiofx.Equalizer
 import android.media.audiofx.LoudnessEnhancer
+import android.media.audiofx.Virtualizer
 import android.util.Log
 import com.nexus.tune.core.model.EqualizerPreset
+import com.nexus.tune.core.model.SpatialAudioStage
 
 class NexusAudioEffects {
 
     private var equalizer: Equalizer? = null
     private var bassBoost: BassBoost? = null
     private var loudnessEnhancer: LoudnessEnhancer? = null
+    private var virtualizer: Virtualizer? = null
     private var currentSessionId: Int = 0
+
+    private var spatialAudioEnabled: Boolean = false
+    private var currentSpatialStage: SpatialAudioStage = SpatialAudioStage.OFF
 
     fun attachToAudioSession(sessionId: Int) {
         if (sessionId == 0 || sessionId == currentSessionId) return
@@ -28,6 +34,12 @@ class NexusAudioEffects {
             loudnessEnhancer = LoudnessEnhancer(sessionId).apply {
                 enabled = false
                 setTargetGain(0)
+            }
+            virtualizer = Virtualizer(0, sessionId).apply {
+                enabled = spatialAudioEnabled
+                if (spatialAudioEnabled) {
+                    setStrength(stageToStrength(currentSpatialStage))
+                }
             }
         } catch (e: Exception) {
             Log.w("NexusAudioEffects", "AudioEffect initialization not supported on session $sessionId: ${e.message}")
@@ -179,14 +191,56 @@ class NexusAudioEffects {
             equalizer?.release()
             bassBoost?.release()
             loudnessEnhancer?.release()
+            virtualizer?.release()
         } catch (e: Exception) {
             // Ignore
         }
         equalizer = null
         bassBoost = null
         loudnessEnhancer = null
+        virtualizer = null
         currentSessionId = 0
     }
+
+    fun setSpatialAudioEnabled(enabled: Boolean) {
+        spatialAudioEnabled = enabled
+        try {
+            virtualizer?.enabled = enabled
+            if (enabled && currentSpatialStage != SpatialAudioStage.OFF) {
+                virtualizer?.setStrength(stageToStrength(currentSpatialStage))
+            }
+        } catch (e: Exception) {
+            Log.w("NexusAudioEffects", "Failed to toggle virtualizer: ${e.message}")
+        }
+    }
+
+    fun setSpatialAudioStage(stage: SpatialAudioStage) {
+        currentSpatialStage = stage
+        if (stage == SpatialAudioStage.OFF) {
+            setSpatialAudioEnabled(false)
+            return
+        }
+        spatialAudioEnabled = true
+        try {
+            virtualizer?.enabled = true
+            virtualizer?.setStrength(stageToStrength(stage))
+        } catch (e: Exception) {
+            Log.w("NexusAudioEffects", "Failed to set spatial audio stage: ${e.message}")
+        }
+    }
+
+    fun stageToStrength(stage: SpatialAudioStage): Short {
+        return when (stage) {
+            SpatialAudioStage.OFF -> 0
+            SpatialAudioStage.STUDIO -> 250
+            SpatialAudioStage.LOUNGE -> 500
+            SpatialAudioStage.CONCERT_HALL -> 750
+            SpatialAudioStage.WIDE_ARENA -> 1000
+        }.toShort()
+    }
+
+    fun getSpatialAudioStage(): SpatialAudioStage = currentSpatialStage
+    fun isSpatialAudioEnabled(): Boolean = spatialAudioEnabled
 
     companion object {
         val instance: NexusAudioEffects by lazy { NexusAudioEffects() }

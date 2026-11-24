@@ -296,4 +296,24 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { !it.safeListeningAlertEnabled })
         }
     }
+
+    @Test
+    fun `toggleSpatialAudio updates theme config`() = runTest {
+        viewModel.toggleSpatialAudio(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.spatialAudioEnabled && it.spatialAudioStage == SpatialAudioStage.STUDIO })
+        }
+    }
+
+    @Test
+    fun `setSpatialAudioStage updates stage in theme config`() = runTest {
+        viewModel.setSpatialAudioStage(SpatialAudioStage.CONCERT_HALL)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.spatialAudioEnabled && it.spatialAudioStage == SpatialAudioStage.CONCERT_HALL })
+        }
+    }
 }

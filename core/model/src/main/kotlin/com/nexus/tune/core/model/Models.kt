@@ -92,6 +92,10 @@ enum class VisualizerMode {
     OFF, SPECTRUM_BARS, CIRCULAR_WAVE, GLOW_PULSE
 }
 
+enum class SpatialAudioStage {
+    OFF, STUDIO, LOUNGE, CONCERT_HALL, WIDE_ARENA
+}
+
 data class VisualizerData(
     val magnitudes: FloatArray = FloatArray(32) { 0f },
     val amplitude: Float = 0f
@@ -134,7 +138,10 @@ data class ThemeConfig(
     val gaplessPreloadSeconds: Int = 5,
     val autoGenreEqEnabled: Boolean = false,
     val volumeLimitPercent: Int = 100,
-    val safeListeningAlertEnabled: Boolean = true
+    val safeListeningAlertEnabled: Boolean = true,
+    val spatialAudioEnabled: Boolean = false,
+    val spatialAudioStage: SpatialAudioStage = SpatialAudioStage.OFF,
+    val spatialAudioStrength: Int = 500
 )
 
 data class SoundDoseInfo(

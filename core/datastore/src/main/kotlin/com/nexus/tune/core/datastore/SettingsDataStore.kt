@@ -26,6 +26,9 @@ class SettingsDataStore(private val context: Context) {
         val AUDIO_QUALITY = stringPreferencesKey("audio_quality")
         val EQUALIZER_ENABLED = booleanPreferencesKey("equalizer_enabled")
         val EQUALIZER_PRESET = intPreferencesKey("equalizer_preset")
+        val SPATIAL_AUDIO_ENABLED = booleanPreferencesKey("spatial_audio_enabled")
+        val SPATIAL_AUDIO_STAGE = stringPreferencesKey("spatial_audio_stage")
+        val SPATIAL_AUDIO_STRENGTH = intPreferencesKey("spatial_audio_strength")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -38,7 +41,12 @@ class SettingsDataStore(private val context: Context) {
             playerLayout = PlayerLayout.valueOf(prefs[PreferencesKeys.PLAYER_LAYOUT] ?: PlayerLayout.ART_FORWARD.name),
             miniPlayerStyle = MiniPlayerStyle.valueOf(prefs[PreferencesKeys.MINI_PLAYER_STYLE] ?: MiniPlayerStyle.DOCKED_BAR.name),
             refreshRatePreferred = prefs[PreferencesKeys.REFRESH_RATE] ?: 120,
-            crossfadeSeconds = prefs[PreferencesKeys.CROSSFADE_SECONDS] ?: 0
+            crossfadeSeconds = prefs[PreferencesKeys.CROSSFADE_SECONDS] ?: 0,
+            spatialAudioEnabled = prefs[PreferencesKeys.SPATIAL_AUDIO_ENABLED] ?: false,
+            spatialAudioStage = runCatching {
+                SpatialAudioStage.valueOf(prefs[PreferencesKeys.SPATIAL_AUDIO_STAGE] ?: SpatialAudioStage.OFF.name)
+            }.getOrDefault(SpatialAudioStage.OFF),
+            spatialAudioStrength = prefs[PreferencesKeys.SPATIAL_AUDIO_STRENGTH] ?: 500
         )
     }
 
@@ -53,6 +61,9 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.MINI_PLAYER_STYLE] = config.miniPlayerStyle.name
             prefs[PreferencesKeys.REFRESH_RATE] = config.refreshRatePreferred
             prefs[PreferencesKeys.CROSSFADE_SECONDS] = config.crossfadeSeconds
+            prefs[PreferencesKeys.SPATIAL_AUDIO_ENABLED] = config.spatialAudioEnabled
+            prefs[PreferencesKeys.SPATIAL_AUDIO_STAGE] = config.spatialAudioStage.name
+            prefs[PreferencesKeys.SPATIAL_AUDIO_STRENGTH] = config.spatialAudioStrength
         }
     }
 

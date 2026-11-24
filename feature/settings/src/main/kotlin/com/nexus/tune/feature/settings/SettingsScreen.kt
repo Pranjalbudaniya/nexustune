@@ -244,6 +244,48 @@ fun SettingsScreen(
                     )
                 }
 
+                Spacer(modifier = Modifier.height(12.dp))
+
+                ListItem(
+                    headlineContent = { Text("Spatial Audio (3D Virtualizer)") },
+                    supportingContent = { Text("Simulate binaural room reflections and expansive soundstage") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.spatialAudioEnabled,
+                            onCheckedChange = { viewModel.toggleSpatialAudio(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.spatialAudioEnabled) {
+                    Text(
+                        text = "Acoustic Stage Mode",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        SpatialAudioStage.values().filter { it != SpatialAudioStage.OFF }.forEach { stage ->
+                            FilterChip(
+                                selected = themeConfig.spatialAudioStage == stage,
+                                onClick = { viewModel.setSpatialAudioStage(stage) },
+                                label = {
+                                    Text(
+                                        stage.name.replace("_", " ")
+                                            .lowercase()
+                                            .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+                                    )
+                                }
+                            )
+                        }
+                    }
+                }
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
                 // --- Hearing Protection & Safe Listening ---
@@ -715,8 +757,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v2.9.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Safe Listening Protection & Volume Limiter") }
+                    headlineContent = { Text("NexusTune v3.0.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Spatial Audio & 3D Stage Virtualization") }
                 )
             }
         }

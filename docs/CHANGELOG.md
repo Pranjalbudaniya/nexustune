@@ -5,6 +5,13 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2026-11-24
+
+### Added
+- **Spatial Audio Headphone Virtualization & 3D Stage Simulation**: Integrated Android hardware `Virtualizer` (`android.media.audiofx.Virtualizer`) in `NexusAudioEffects` providing binaural acoustic room emulation for headphones.
+- **Acoustic Stage Modes**: Added configurable stage emulation modes: `STUDIO` (250mB), `LOUNGE` (500mB), `CONCERT_HALL` (750mB), and `WIDE_ARENA` (1000mB).
+- **Settings UI Controls**: Added "Spatial Audio (3D Virtualizer)" toggle and acoustic stage mode filter chips in Settings under Equalizer & Sound Effects.
+
 ## [2.9.0] - 2026-11-24
 
 ### Added
