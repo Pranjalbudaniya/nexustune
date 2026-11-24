@@ -5,7 +5,7 @@ import com.nexus.tune.core.domain.preload.AudioPreloader
 import com.nexus.tune.core.domain.preload.GaplessPreloadManager
 import com.nexus.tune.core.domain.repository.QueueRepository
 import com.nexus.tune.core.domain.usecase.ResolveStreamUseCase
-import com.nexus.tune.core.model.StreamInfo
+import com.nexus.tune.core.model.AudioStream
 import com.nexus.tune.core.model.Track
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -81,7 +81,7 @@ class GaplessPreloadManagerTest {
     @Test
     fun `checkAndPreload preloads next track when within threshold`() = runTest {
         coEvery { resolveStreamUseCase("track_2") } returns MusicResult.Success(
-            StreamInfo(url = "https://audio.stream/track2.opus")
+            AudioStream(url = "https://audio.stream/track2.opus")
         )
 
         preloadManager.checkAndPreload(
@@ -100,7 +100,7 @@ class GaplessPreloadManagerTest {
     @Test
     fun `clear resets state and delegates to preloader`() = runTest {
         coEvery { resolveStreamUseCase("track_2") } returns MusicResult.Success(
-            StreamInfo(url = "https://audio.stream/track2.opus")
+            AudioStream(url = "https://audio.stream/track2.opus")
         )
 
         preloadManager.checkAndPreload(
@@ -122,7 +122,7 @@ class GaplessPreloadManagerTest {
     @Test
     fun `onTrackChanged resets preloaded ID when matching track starts`() = runTest {
         coEvery { resolveStreamUseCase("track_2") } returns MusicResult.Success(
-            StreamInfo(url = "https://audio.stream/track2.opus")
+            AudioStream(url = "https://audio.stream/track2.opus")
         )
 
         preloadManager.checkAndPreload(

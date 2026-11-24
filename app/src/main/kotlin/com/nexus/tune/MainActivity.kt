@@ -254,6 +254,7 @@ class MainActivity : ComponentActivity() {
                             val activeQueueIndex by playerViewModel.activeQueueIndex.collectAsState()
                             val djFxConfig by playerViewModel.djFxConfig.collectAsState()
                             val nextHarmonicTransition by playerViewModel.nextTrackHarmonicTransition.collectAsState()
+                            val karaokeConfig by playerViewModel.karaokeConfig.collectAsState()
                             LaunchedEffect(playbackState.currentTrack) {
                                 playbackState.currentTrack?.let { playerViewModel.loadLyrics(it) }
                             }
@@ -328,7 +329,13 @@ class MainActivity : ComponentActivity() {
                                 onToggleDjLoFi = { playerViewModel.toggleDjLoFiFilter() },
                                 onResetDjFx = { playerViewModel.resetDjFx() },
                                 nextTrackHarmonicTransition = nextHarmonicTransition,
-                                onHarmonizeQueue = { playerViewModel.harmonizeUpcomingQueue() }
+                                onHarmonizeQueue = { playerViewModel.harmonizeUpcomingQueue() },
+                                karaokeConfig = karaokeConfig,
+                                onToggleKaraoke = { playerViewModel.toggleKaraoke() },
+                                onSetKaraokeCutLevel = { playerViewModel.setKaraokeCutLevel(it) },
+                                onSetKaraokePitchSemitones = { playerViewModel.setKaraokePitchSemitones(it) },
+                                onToggleKaraokePrompter = { playerViewModel.toggleKaraokePrompter() },
+                                onResetKaraoke = { playerViewModel.resetKaraoke() }
                             )
                         }
                     }

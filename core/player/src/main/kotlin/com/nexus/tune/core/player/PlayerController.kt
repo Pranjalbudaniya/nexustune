@@ -278,6 +278,17 @@ class PlayerController(private val context: Context) {
         setPlaybackPitch(1.0f)
     }
 
+    fun applyKaraokeConfig(config: com.nexus.tune.core.model.KaraokeConfig) {
+        if (config.isActive) {
+            val offsets = com.nexus.tune.core.domain.audio.KaraokeEngine.calculateVocalCutEqOffsets(config.cutLevel)
+            com.nexus.tune.core.player.effects.NexusAudioEffects.instance.applyKaraokeOffsets(offsets)
+            setPlaybackSemitones(config.pitchSemitones)
+        } else {
+            com.nexus.tune.core.player.effects.NexusAudioEffects.instance.clearKaraokeOffsets()
+            setPlaybackSemitones(0)
+        }
+    }
+
     fun toggleShuffle(enabled: Boolean? = null) {
         val c = controller ?: return
         val target = enabled ?: !c.shuffleModeEnabled

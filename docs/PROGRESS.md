@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 51 (v6.1.0 Audio Visualizer Suite Expansion: Stereo VU Meter & Liquid Wave)
+- Active Phase: Post-v1.0 Improvement Loop 52 (v6.2.0 Real-Time Center-Channel Vocal Attenuation & Karaoke Sing-Along Studio)
 - In Flight: Quality gate execution and release qualification
 - Branches: `main`
 
@@ -455,15 +455,27 @@
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `v6.0-1`
 
-- [x] Improvement Loop 51 (v6.1 Milestone - In Progress)
+- [x] Improvement Loop 51 (v6.1 Milestone - Tagged `v6.1-1`)
   - [x] Audio Visualizer Suite Expansion: Stereo VU Meter & Liquid Wave:
     - [x] `STEREO_VU` and `LIQUID_WAVE` modes in `VisualizerMode`
     - [x] `VisualizerPalette` (`DYNAMIC`, `CYBERPUNK`, `SUNSET_EMBER`, `AURORA`, `ELECTRIC_VIOLET`, `GOLDEN_CHAMPAGNE`)
     - [x] Calibrated `StereoVuVisualizer` and sinusoidal `LiquidWaveVisualizer` in `:core:ui`
     - [x] Visualizer color palette and style selectors in `SettingsScreen` and `SettingsViewModel`
     - [x] Unit test in `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `v6.1-1`
+
+- [x] Improvement Loop 52 (v6.2 Milestone - In Progress)
+  - [x] Real-Time Center-Channel Vocal Attenuation & Karaoke Sing-Along Studio:
+    - [x] `VocalCutLevel`, `KaraokeReverb`, `KaraokeConfig`, and `KaraokeLyricProgress` in `:core:model`
+    - [x] `KaraokeEngine` in `:core:domain:audio` with linear gain conversions, 5-band vocal notch EQ offsets, chromatic pitch conversion, and real-time lyric progress calculation
+    - [x] Dynamic audio effects modulation in `NexusAudioEffects` and `PlayerController`
+    - [x] `PlayerViewModel` integration with reactive `karaokeConfig`, pitch clamping, and lyrics progress evaluation
+    - [x] Interactive top-bar `🎤` action and `ModalBottomSheet` Karaoke Studio Console in `PlayerScreen`
+    - [x] Settings integration card in `SettingsScreen`
+    - [x] Comprehensive test suites in `KaraokeEngineTest` and `PlayerViewModelTest`
   - [ ] Slice gate
-  - [ ] Final gate & tag: `v6.1-1`
+  - [ ] Final gate & tag: `v6.2-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

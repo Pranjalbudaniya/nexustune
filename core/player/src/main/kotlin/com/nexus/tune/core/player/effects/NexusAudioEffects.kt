@@ -19,6 +19,7 @@ class NexusAudioEffects {
     private var spatialAudioEnabled: Boolean = false
     private var currentSpatialStage: SpatialAudioStage = SpatialAudioStage.OFF
     private var customBandLevels: IntArray = IntArray(5) { 0 }
+    private var karaokeOffsets: List<Int> = List(5) { 0 }
 
     fun attachToAudioSession(sessionId: Int) {
         if (sessionId == 0 || sessionId == currentSessionId) return
@@ -195,10 +196,39 @@ class NexusAudioEffects {
         val eq = equalizer ?: return
         try {
             if (band in 0 until eq.numberOfBands.toInt()) {
-                eq.setBandLevel(band.toShort(), clamped.toShort())
+                val offset = karaokeOffsets.getOrElse(band) { 0 }
+                val combined = (clamped + offset).coerceIn(-1500, 1500)
+                eq.setBandLevel(band.toShort(), combined.toShort())
             }
         } catch (e: Exception) {
             Log.w("NexusAudioEffects", "Failed to set band $band level: ${e.message}")
+        }
+    }
+
+    fun applyKaraokeOffsets(offsets: List<Int>) {
+        karaokeOffsets = offsets
+        refreshBands()
+    }
+
+    fun clearKaraokeOffsets() {
+        karaokeOffsets = List(5) { 0 }
+        refreshBands()
+    }
+
+    fun getKaraokeOffsets(): List<Int> = karaokeOffsets
+
+    private fun refreshBands() {
+        val eq = equalizer ?: return
+        try {
+            val numBands = eq.numberOfBands.toInt().coerceAtMost(5)
+            for (i in 0 until numBands) {
+                val base = customBandLevels.getOrElse(i) { 0 }
+                val offset = karaokeOffsets.getOrElse(i) { 0 }
+                val combined = (base + offset).coerceIn(-1500, 1500)
+                eq.setBandLevel(i.toShort(), combined.toShort())
+            }
+        } catch (e: Exception) {
+            Log.w("NexusAudioEffects", "Failed to refresh bands: ${e.message}")
         }
     }
 

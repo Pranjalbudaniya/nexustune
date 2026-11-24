@@ -391,5 +391,57 @@ class PlayerViewModelTest {
             )
         }
     }
+
+    @Test
+    fun `toggleKaraoke toggles enabled state`() {
+        assertFalse(viewModel.karaokeConfig.value.isEnabled)
+        viewModel.toggleKaraoke()
+        assertTrue(viewModel.karaokeConfig.value.isEnabled)
+        viewModel.toggleKaraoke()
+        assertFalse(viewModel.karaokeConfig.value.isEnabled)
+    }
+
+    @Test
+    fun `setKaraokeCutLevel sets intensity and auto-enables karaoke`() {
+        viewModel.setKaraokeCutLevel(com.nexus.tune.core.model.VocalCutLevel.AGGRESSIVE)
+        assertTrue(viewModel.karaokeConfig.value.isEnabled)
+        assertEquals(com.nexus.tune.core.model.VocalCutLevel.AGGRESSIVE, viewModel.karaokeConfig.value.cutLevel)
+        assertTrue(viewModel.karaokeConfig.value.isActive)
+    }
+
+    @Test
+    fun `setKaraokePitchSemitones clamps pitch between minus 6 and plus 6`() {
+        viewModel.setKaraokePitchSemitones(3)
+        assertEquals(3, viewModel.karaokeConfig.value.pitchSemitones)
+
+        viewModel.setKaraokePitchSemitones(10)
+        assertEquals(6, viewModel.karaokeConfig.value.pitchSemitones)
+
+        viewModel.setKaraokePitchSemitones(-12)
+        assertEquals(-6, viewModel.karaokeConfig.value.pitchSemitones)
+    }
+
+    @Test
+    fun `toggleKaraokePrompter toggles prompter mode`() {
+        assertFalse(viewModel.karaokeConfig.value.prompterMode)
+        viewModel.toggleKaraokePrompter()
+        assertTrue(viewModel.karaokeConfig.value.prompterMode)
+        viewModel.toggleKaraokePrompter()
+        assertFalse(viewModel.karaokeConfig.value.prompterMode)
+    }
+
+    @Test
+    fun `resetKaraoke restores default configuration`() {
+        viewModel.setKaraokeCutLevel(com.nexus.tune.core.model.VocalCutLevel.MAXIMUM)
+        viewModel.setKaraokePitchSemitones(4)
+        viewModel.toggleKaraokePrompter()
+        assertTrue(viewModel.karaokeConfig.value.isActive)
+
+        viewModel.resetKaraoke()
+        assertFalse(viewModel.karaokeConfig.value.isEnabled)
+        assertEquals(com.nexus.tune.core.model.VocalCutLevel.MODERATE, viewModel.karaokeConfig.value.cutLevel)
+        assertEquals(0, viewModel.karaokeConfig.value.pitchSemitones)
+        assertFalse(viewModel.karaokeConfig.value.prompterMode)
+    }
 }
 

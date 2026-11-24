@@ -48,9 +48,9 @@ data class Playlist(
 
 data class AudioStream(
     val url: String,
-    val format: String, // Opus, AAC
-    val bitrateKbps: Int,
-    val expiresAtTimestampMs: Long
+    val format: String = "Opus", // Opus, AAC
+    val bitrateKbps: Int = 160,
+    val expiresAtTimestampMs: Long = 0L
 )
 
 enum class PlaybackStatus {
@@ -622,6 +622,45 @@ data class HarmonicTransition(
     val tempoCompatibility: TempoCompatibility,
     val recommendedCrossfadeSeconds: Int
 )
+
+enum class VocalCutLevel(
+    val label: String,
+    val attenuationDb: Float,
+    val description: String
+) {
+    OFF("Off", 0.0f, "Original stereo mix"),
+    GENTLE("Gentle (-6 dB)", -6.0f, "Subtle vocal dip for sing-along"),
+    MODERATE("Moderate (-12 dB)", -12.0f, "Standard karaoke vocal cut"),
+    AGGRESSIVE("Strong (-18 dB)", -18.0f, "Heavy center-channel vocal reduction"),
+    MAXIMUM("Full Isolation (-24 dB)", -24.0f, "Maximum vocal isolation / backing track focus")
+}
+
+enum class KaraokeReverb(val label: String, val strengthPercent: Int) {
+    DRY("Off", 0),
+    ROOM("Cozy Room", 25),
+    STAGE("Live Stage", 50),
+    CONCERT_HALL("Concert Hall", 85)
+}
+
+data class KaraokeConfig(
+    val isEnabled: Boolean = false,
+    val cutLevel: VocalCutLevel = VocalCutLevel.MODERATE,
+    val pitchSemitones: Int = 0,
+    val prompterMode: Boolean = false,
+    val reverb: KaraokeReverb = KaraokeReverb.STAGE
+) {
+    val isActive: Boolean get() = isEnabled && cutLevel != VocalCutLevel.OFF
+}
+
+data class KaraokeLyricProgress(
+    val currentLineIndex: Int = -1,
+    val currentLine: LyricsLine? = null,
+    val nextLine: LyricsLine? = null,
+    val lineProgressFraction: Float = 0f,
+    val timeRemainingInLineMs: Long = 0L,
+    val isVocalActive: Boolean = false
+)
+
 
 
 

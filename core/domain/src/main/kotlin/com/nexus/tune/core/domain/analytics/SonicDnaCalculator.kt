@@ -33,19 +33,25 @@ object SonicDnaCalculator {
         val eveningNightPlays = stats.eveningPlays + stats.nightPlays
         val totalTimePlays = (daytimePlays + eveningNightPlays).coerceAtLeast(1)
         val diurnalEnergyRatio = (daytimePlays.toFloat() / totalTimePlays) * 50f
-        val genreEnergyBoost = when (dominantGenre.lowercase(Locale.US)) {
-            "electronic", "dance", "hip-hop", "workout", "rock", "pop" -> 40f
-            "classical", "ambient", "sleep", "lo-fi" -> 10f
+        val genreLower = dominantGenre.lowercase(Locale.US)
+        val genreEnergyBoost = when {
+            genreLower.contains("electronic") || genreLower.contains("dance") ||
+            genreLower.contains("hip-hop") || genreLower.contains("workout") ||
+            genreLower.contains("rock") || genreLower.contains("pop") -> 50f
+            genreLower.contains("classical") || genreLower.contains("ambient") ||
+            genreLower.contains("sleep") || genreLower.contains("lo-fi") -> 10f
             else -> 25f
         }
         val energyScore = (diurnalEnergyRatio + genreEnergyBoost).toInt().coerceIn(10, 100)
 
         // Acoustic score: higher for classical, acoustic, jazz, folk, chill
-        val acousticScore = when (dominantGenre.lowercase(Locale.US)) {
-            "classical", "acoustic", "jazz", "folk", "ambient" -> 85
-            "rock", "country", "indie" -> 60
-            "pop", "r&b" -> 45
-            "electronic", "dance", "hip-hop" -> 20
+        val acousticScore = when {
+            genreLower.contains("classical") || genreLower.contains("acoustic") ||
+            genreLower.contains("jazz") || genreLower.contains("folk") ||
+            genreLower.contains("ambient") || genreLower.contains("lo-fi") -> 85
+            genreLower.contains("rock") || genreLower.contains("country") || genreLower.contains("indie") -> 60
+            genreLower.contains("pop") || genreLower.contains("r&b") -> 45
+            genreLower.contains("electronic") || genreLower.contains("dance") || genreLower.contains("hip-hop") -> 20
             else -> 50
         }
 

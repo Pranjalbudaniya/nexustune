@@ -553,6 +553,41 @@ fun SettingsScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
+                // Karaoke Sing-Along Studio Card
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Text(
+                        text = "Karaoke Sing-Along Studio",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Attenuates center-channel lead vocals and enables real-time scrolling lyric prompters",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    ListItem(
+                        headlineContent = { Text("Lead Vocal Attenuation") },
+                        supportingContent = { Text("Applies calibrated center-channel notch filter preserving stereo backing track") },
+                        trailingContent = {
+                            Icon(
+                                imageVector = Icons.Rounded.Mic,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
                 ListItem(
                     headlineContent = { Text("Spatial Audio (3D Virtualizer)") },
                     supportingContent = { Text("Simulate binaural room reflections and expansive soundstage") },

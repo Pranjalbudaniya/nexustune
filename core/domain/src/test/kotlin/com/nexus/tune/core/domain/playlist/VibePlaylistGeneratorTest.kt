@@ -44,7 +44,7 @@ class VibePlaylistGeneratorTest {
 
     @Test
     fun `generateVibeMix filters for High Octane Energy aesthetic`() {
-        val request = VibeMixRequest(theme = VibeTheme.HIGH_OCTANE_ENERGY, targetDurationMinutes = 10)
+        val request = VibeMixRequest(theme = VibeTheme.HIGH_OCTANE_ENERGY, targetDurationMinutes = 10, energyCurve = EnergyCurve.PEAK_SUSTAINED)
         val result = VibePlaylistGenerator.generateVibeMix(request, sampleTracks)
 
         assertTrue(result.tracks.isNotEmpty())

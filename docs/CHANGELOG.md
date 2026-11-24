@@ -5,6 +5,16 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.2.0] - 2026-11-24
+
+### Added
+- **Real-Time Center-Channel Vocal Attenuation & Karaoke Sing-Along Studio**: Added `VocalCutLevel` (`GENTLE`, `MODERATE`, `AGGRESSIVE`, `MAXIMUM`), `KaraokeReverb`, `KaraokeConfig`, and `KaraokeLyricProgress` in `:core:model`.
+- **Karaoke Audio DSP & Notching Engine**: Implemented `KaraokeEngine` in `:core:domain:audio` with linear gain conversions, 5-band parametric vocal cut EQ profiles (attenuating speech fundamentals around 910Hz/3.6kHz while leaving sub-bass intact and boosting air brilliance), chromatic pitch transposition math, and real-time lyric progress calculation.
+- **Audio Effects & Player Controller Modulations**: Added `applyKaraokeOffsets` and `clearKaraokeOffsets` in `NexusAudioEffects` and `applyKaraokeConfig` in `PlayerController` to dynamically modulate the active equalizer without corrupting user EQ presets.
+- **Player Screen Karaoke Studio Console & Teleprompter**: Added top-bar `🎤` Karaoke action button and an interactive `ModalBottomSheet` Karaoke Studio Console in `PlayerScreen` featuring intensity chips, key transposition chips (-3 to +3 st), and a live scrolling lyric teleprompter with upcoming line countdowns and syllable/line progress tracking.
+- **Settings Integration**: Added Karaoke Sing-Along Studio card to `SettingsScreen`.
+- **Unit Test Coverage**: Comprehensive test coverage across `KaraokeEngineTest` in `:core:domain` and `PlayerViewModelTest` in `:feature:player`.
+
 ## [6.1.0] - 2026-11-24
 
 ### Added

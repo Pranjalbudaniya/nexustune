@@ -1,6 +1,7 @@
 package com.nexus.tune.feature.player
 
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -9,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.QueueMusic
 import androidx.compose.material.icons.automirrored.rounded.VolumeUp
@@ -86,7 +88,13 @@ fun PlayerScreen(
     onToggleDjLoFi: () -> Unit = {},
     onResetDjFx: () -> Unit = {},
     nextTrackHarmonicTransition: com.nexus.tune.core.model.HarmonicTransition? = null,
-    onHarmonizeQueue: () -> Unit = {}
+    onHarmonizeQueue: () -> Unit = {},
+    karaokeConfig: com.nexus.tune.core.model.KaraokeConfig = com.nexus.tune.core.model.KaraokeConfig(),
+    onToggleKaraoke: () -> Unit = {},
+    onSetKaraokeCutLevel: (com.nexus.tune.core.model.VocalCutLevel) -> Unit = {},
+    onSetKaraokePitchSemitones: (Int) -> Unit = {},
+    onToggleKaraokePrompter: () -> Unit = {},
+    onResetKaraoke: () -> Unit = {}
 ) {
     val track = playbackState.currentTrack ?: return
     val isPlaying = playbackState.status == PlaybackStatus.PLAYING
@@ -95,6 +103,7 @@ fun PlayerScreen(
     var showAddBookmarkDialog by remember { mutableStateOf(false) }
     var showQueueSheet by remember { mutableStateOf(false) }
     var showDjSheet by remember { mutableStateOf(false) }
+    var showKaraokeSheet by remember { mutableStateOf(false) }
 
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -162,6 +171,13 @@ fun PlayerScreen(
                     }
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = { showKaraokeSheet = true }) {
+                        Icon(
+                            imageVector = Icons.Rounded.Mic,
+                            contentDescription = "Karaoke Studio",
+                            tint = if (karaokeConfig.isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                     IconButton(onClick = { showDjSheet = true }) {
                         Icon(
                             imageVector = Icons.Rounded.Tune,
@@ -1209,6 +1225,269 @@ fun PlayerScreen(
                             checked = djFxConfig.loFiFilterEnabled,
                             onCheckedChange = { onToggleDjLoFi() }
                         )
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+            }
+        }
+
+        // Karaoke Studio Bottom Sheet
+        if (showKaraokeSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showKaraokeSheet = false },
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 16.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Surface(
+                                shape = CircleShape,
+                                color = if (karaokeConfig.isActive) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                                modifier = Modifier.size(36.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Mic,
+                                        contentDescription = null,
+                                        tint = if (karaokeConfig.isActive) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = "Karaoke Studio",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = if (karaokeConfig.isActive) "Vocal Suppression Active (${karaokeConfig.cutLevel.label})" else "Center-channel vocal attenuation",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = if (karaokeConfig.isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                        if (karaokeConfig.isActive) {
+                            TextButton(onClick = onResetKaraoke) {
+                                Text("Reset", style = MaterialTheme.typography.labelMedium)
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Master Toggle Card
+                    Surface(
+                        shape = MaterialTheme.shapes.medium,
+                        color = if (karaokeConfig.isEnabled) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Vocal Attenuation",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = "Attenuates center lead vocals while preserving stereo instrumentation & bass foundation",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Switch(
+                                checked = karaokeConfig.isEnabled,
+                                onCheckedChange = { onToggleKaraoke() }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Vocal Cut Level Chips
+                    Text(
+                        text = "Vocal Reduction Intensity",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        com.nexus.tune.core.model.VocalCutLevel.entries.filter { it != com.nexus.tune.core.model.VocalCutLevel.OFF }.forEach { level ->
+                            val isSelected = karaokeConfig.isEnabled && karaokeConfig.cutLevel == level
+                            FilterChip(
+                                selected = isSelected,
+                                onClick = { onSetKaraokeCutLevel(level) },
+                                label = { Text(level.label, style = MaterialTheme.typography.labelSmall) },
+                                leadingIcon = if (isSelected) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                } else null
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Vocal Key / Pitch Transposition
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Vocal Range Pitch",
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = com.nexus.tune.core.domain.audio.KaraokeEngine.formatPitchKey(karaokeConfig.pitchSemitones),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = if (karaokeConfig.pitchSemitones != 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf(-3, -2, -1, 0, 1, 2, 3).forEach { st ->
+                            val isSelected = karaokeConfig.pitchSemitones == st
+                            FilterChip(
+                                selected = isSelected,
+                                onClick = { onSetKaraokePitchSemitones(st) },
+                                label = {
+                                    Text(
+                                        text = if (st == 0) "Original" else if (st > 0) "+$st st" else "$st st",
+                                        style = MaterialTheme.typography.labelSmall
+                                    )
+                                }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Prompter Mode Toggle Card
+                    Surface(
+                        shape = MaterialTheme.shapes.medium,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Sing-Along Teleprompter",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = "High-visibility scrolling prompter card with upcoming lyric countdowns",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Switch(
+                                checked = karaokeConfig.prompterMode,
+                                onCheckedChange = { onToggleKaraokePrompter() }
+                            )
+                        }
+                    }
+
+                    // Live Prompter Preview
+                    if (karaokeConfig.prompterMode && lyrics?.lines?.isNotEmpty() == true) {
+                        Spacer(modifier = Modifier.height(12.dp))
+                        val progress = com.nexus.tune.core.domain.audio.KaraokeEngine.calculateLyricProgress(
+                            playbackState.positionMs + lyricsOffsetMs,
+                            lyrics.lines
+                        )
+                        Surface(
+                            shape = MaterialTheme.shapes.medium,
+                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "TELEPROMPTER",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                    if (progress.timeRemainingInLineMs > 0L) {
+                                        Text(
+                                            text = "${(progress.timeRemainingInLineMs / 1000f).coerceAtLeast(0f).let { "%.1fs".format(it) }} next",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = progress.currentLine?.text ?: "...",
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                LinearProgressIndicator(
+                                    progress = { progress.lineProgressFraction },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(4.dp)
+                                        .clip(CircleShape),
+                                    color = MaterialTheme.colorScheme.primary,
+                                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                                )
+                                val next = progress.nextLine
+                                if (next != null) {
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = "Up next: ${next.text}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))

@@ -329,5 +329,48 @@ class PlayerViewModel(
             manageQueueUseCase.playPlaylist(reorderedFullQueue, idx)
         }
     }
+
+    private val _karaokeConfig = MutableStateFlow(KaraokeConfig())
+    val karaokeConfig: StateFlow<KaraokeConfig> = _karaokeConfig.asStateFlow()
+
+    fun toggleKaraoke() {
+        val current = _karaokeConfig.value
+        val updated = current.copy(isEnabled = !current.isEnabled)
+        _karaokeConfig.value = updated
+        playerController?.applyKaraokeConfig(updated)
+    }
+
+    fun setKaraokeCutLevel(level: VocalCutLevel) {
+        val updated = _karaokeConfig.value.copy(cutLevel = level, isEnabled = true)
+        _karaokeConfig.value = updated
+        playerController?.applyKaraokeConfig(updated)
+    }
+
+    fun setKaraokePitchSemitones(semitones: Int) {
+        val clamped = com.nexus.tune.core.domain.audio.KaraokeEngine.clampSemitones(semitones)
+        val updated = _karaokeConfig.value.copy(pitchSemitones = clamped)
+        _karaokeConfig.value = updated
+        playerController?.applyKaraokeConfig(updated)
+    }
+
+    fun toggleKaraokePrompter() {
+        val current = _karaokeConfig.value
+        _karaokeConfig.value = current.copy(prompterMode = !current.prompterMode)
+    }
+
+    fun setKaraokeReverb(reverb: KaraokeReverb) {
+        _karaokeConfig.value = _karaokeConfig.value.copy(reverb = reverb)
+    }
+
+    fun resetKaraoke() {
+        val reset = KaraokeConfig()
+        _karaokeConfig.value = reset
+        playerController?.applyKaraokeConfig(reset)
+    }
+
+    fun getKaraokeLyricProgress(positionMs: Long): KaraokeLyricProgress {
+        val lines = _lyrics.value?.lines ?: emptyList()
+        return com.nexus.tune.core.domain.audio.KaraokeEngine.calculateLyricProgress(positionMs, lines)
+    }
 }
 
