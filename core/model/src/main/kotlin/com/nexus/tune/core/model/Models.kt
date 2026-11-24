@@ -202,7 +202,8 @@ data class ThemeConfig(
     val wakeAlarmConfig: WakeAlarmConfig = WakeAlarmConfig(),
     val loudnessConfig: LoudnessConfig = LoudnessConfig(),
     val djFxConfig: DjFxConfig = DjFxConfig(),
-    val djRememberAcrossTracks: Boolean = false
+    val djRememberAcrossTracks: Boolean = false,
+    val harmonicMixingEnabled: Boolean = true
 )
 
 data class SoundDoseInfo(
@@ -532,5 +533,81 @@ data class SmartPlaylistDefinition(
     val limit: Int = 50,
     val isBuiltIn: Boolean = false
 )
+
+enum class CamelotScale(val letter: String) {
+    MINOR("A"),
+    MAJOR("B")
+}
+
+enum class CamelotKey(val number: Int, val scale: CamelotScale, val pitchName: String) {
+    KEY_1A(1, CamelotScale.MINOR, "Ab Minor / G# Minor"),
+    KEY_1B(1, CamelotScale.MAJOR, "B Major"),
+    KEY_2A(2, CamelotScale.MINOR, "Eb Minor / D# Minor"),
+    KEY_2B(2, CamelotScale.MAJOR, "F# Major / Gb Major"),
+    KEY_3A(3, CamelotScale.MINOR, "Bb Minor / A# Minor"),
+    KEY_3B(3, CamelotScale.MAJOR, "Db Major / C# Major"),
+    KEY_4A(4, CamelotScale.MINOR, "F Minor"),
+    KEY_4B(4, CamelotScale.MAJOR, "Ab Major"),
+    KEY_5A(5, CamelotScale.MINOR, "C Minor"),
+    KEY_5B(5, CamelotScale.MAJOR, "Eb Major"),
+    KEY_6A(6, CamelotScale.MINOR, "G Minor"),
+    KEY_6B(6, CamelotScale.MAJOR, "Bb Major"),
+    KEY_7A(7, CamelotScale.MINOR, "D Minor"),
+    KEY_7B(7, CamelotScale.MAJOR, "F Major"),
+    KEY_8A(8, CamelotScale.MINOR, "A Minor"),
+    KEY_8B(8, CamelotScale.MAJOR, "C Major"),
+    KEY_9A(9, CamelotScale.MINOR, "E Minor"),
+    KEY_9B(9, CamelotScale.MAJOR, "G Major"),
+    KEY_10A(10, CamelotScale.MINOR, "B Minor"),
+    KEY_10B(10, CamelotScale.MAJOR, "D Major"),
+    KEY_11A(11, CamelotScale.MINOR, "F# Minor"),
+    KEY_11B(11, CamelotScale.MAJOR, "A Major"),
+    KEY_12A(12, CamelotScale.MINOR, "Db Minor / C# Minor"),
+    KEY_12B(12, CamelotScale.MAJOR, "E Major");
+
+    val code: String get() = "$number${scale.letter}"
+}
+
+enum class HarmonicRelationship(
+    val title: String,
+    val description: String,
+    val baseCompatibilityPercent: Int,
+    val colorHex: String
+) {
+    PERFECT_MATCH("Perfect Key Match", "Harmonically identical key", 100, "#10B981"),
+    RELATIVE_KEY("Relative Shift", "Major/Minor emotional shift", 90, "#3B82F6"),
+    ADJACENT_STEP("Harmonic Step (±1)", "Smooth dominant/subdominant shift", 85, "#8B5CF6"),
+    ENERGY_BOOST("Energy Lift (+2)", "Euphoric harmonic lift", 80, "#F59E0B"),
+    ENERGY_DROP("Mellow Cool-Down (-2)", "Subtle relaxation step", 75, "#06B6D4"),
+    DISSONANT("Key Friction", "Harmonic clash / tonal friction", 25, "#EF4444")
+}
+
+enum class TempoCompatibility(val label: String, val isGoodMix: Boolean) {
+    SEAMLESS("Seamless Tempo (±3 BPM)", true),
+    SMOOTH("Smooth Tempo (±8 BPM)", true),
+    HALF_DOUBLE("Half / Double Beat Sync", true),
+    MODERATE_SHIFT("Moderate Shift (±15 BPM)", false),
+    TEMPO_JUMP("Tempo Jump (>15 BPM)", false)
+}
+
+data class TrackHarmonicProfile(
+    val trackId: String,
+    val key: CamelotKey = CamelotKey.KEY_8A,
+    val bpm: Int = 120,
+    val energyLevel: Int = 75
+) {
+    val displayKey: String get() = key.code
+    val fullLabel: String get() = "${key.code} • ${key.pitchName} • $bpm BPM"
+}
+
+data class HarmonicTransition(
+    val sourceProfile: TrackHarmonicProfile,
+    val targetProfile: TrackHarmonicProfile,
+    val relationship: HarmonicRelationship,
+    val compatibilityPercent: Int,
+    val tempoCompatibility: TempoCompatibility,
+    val recommendedCrossfadeSeconds: Int
+)
+
 
 

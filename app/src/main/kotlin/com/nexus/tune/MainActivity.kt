@@ -253,6 +253,7 @@ class MainActivity : ComponentActivity() {
                             val activeQueue by playerViewModel.activeQueue.collectAsState()
                             val activeQueueIndex by playerViewModel.activeQueueIndex.collectAsState()
                             val djFxConfig by playerViewModel.djFxConfig.collectAsState()
+                            val nextHarmonicTransition by playerViewModel.nextTrackHarmonicTransition.collectAsState()
                             LaunchedEffect(playbackState.currentTrack) {
                                 playbackState.currentTrack?.let { playerViewModel.loadLyrics(it) }
                             }
@@ -324,7 +325,9 @@ class MainActivity : ComponentActivity() {
                                 onSetDjSemitones = { playerViewModel.setDjSemitones(it) },
                                 onSetDjSoundstageWidth = { playerViewModel.setDjSoundstageWidth(it) },
                                 onToggleDjLoFi = { playerViewModel.toggleDjLoFiFilter() },
-                                onResetDjFx = { playerViewModel.resetDjFx() }
+                                onResetDjFx = { playerViewModel.resetDjFx() },
+                                nextTrackHarmonicTransition = nextHarmonicTransition,
+                                onHarmonizeQueue = { playerViewModel.harmonizeUpcomingQueue() }
                             )
                         }
                     }

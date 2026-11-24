@@ -1941,8 +1941,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v3.9.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Smart Playlist & Queue Deduplication Engine") }
+                    headlineContent = { Text("NexusTune v6.0.0") },
+                    supportingContent = { Text("Camelot Harmonic Mixing & BPM Intelligence | Dynamic Smart Playlists | 120Hz Ultra-Fluid M3 Expressive Audio Engine") }
                 )
             }
         }

@@ -341,5 +341,55 @@ class PlayerViewModelTest {
         vm.toggleDjLoFiFilter()
         assertTrue(vm.djFxConfig.value.loFiFilterEnabled)
     }
+
+    @Test
+    fun `currentHarmonicProfile and nextTrackHarmonicTransition evaluate active queue tracks`() = runTest {
+        val tracks = listOf(
+            Track("t1", "Track 1", "Artist 1", durationSeconds = 180L),
+            Track("t2", "Track 2", "Artist 2", durationSeconds = 240L)
+        )
+        every { manageQueueUseCase.getQueue() } returns flowOf(tracks)
+        every { manageQueueUseCase.getQueueIndex() } returns flowOf(0)
+
+        val vm = PlayerViewModel(musicRepository, manageQueueUseCase)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val profile = vm.currentHarmonicProfile.value
+        assertNotNull(profile)
+        assertEquals("t1", profile!!.trackId)
+
+        val transition = vm.nextTrackHarmonicTransition.value
+        assertNotNull(transition)
+        assertEquals("t1", transition!!.sourceProfile.trackId)
+        assertEquals("t2", transition.targetProfile.trackId)
+        assertTrue(transition.compatibilityPercent in 0..100)
+    }
+
+    @Test
+    fun `harmonizeUpcomingQueue reorders upcoming tracks via playPlaylist`() = runTest {
+        val tracks = listOf(
+            Track("t1", "Current Track", "Artist", durationSeconds = 180L),
+            Track("t2", "Upcoming 1", "Artist", durationSeconds = 200L),
+            Track("t3", "Upcoming 2", "Artist", durationSeconds = 220L),
+            Track("t4", "Upcoming 3", "Artist", durationSeconds = 240L)
+        )
+        every { manageQueueUseCase.getQueue() } returns flowOf(tracks)
+        every { manageQueueUseCase.getQueueIndex() } returns flowOf(0)
+
+        val vm = PlayerViewModel(musicRepository, manageQueueUseCase)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        vm.harmonizeUpcomingQueue()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            manageQueueUseCase.playPlaylist(
+                match { list ->
+                    list.size == 4 && list.first().id == "t1"
+                },
+                0
+            )
+        }
+    }
 }
 

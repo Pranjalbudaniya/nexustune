@@ -83,7 +83,9 @@ fun PlayerScreen(
     onSetDjSemitones: (Int) -> Unit = {},
     onSetDjSoundstageWidth: (Float) -> Unit = {},
     onToggleDjLoFi: () -> Unit = {},
-    onResetDjFx: () -> Unit = {}
+    onResetDjFx: () -> Unit = {},
+    nextTrackHarmonicTransition: com.nexus.tune.core.model.HarmonicTransition? = null,
+    onHarmonizeQueue: () -> Unit = {}
 ) {
     val track = playbackState.currentTrack ?: return
     val isPlaying = playbackState.status == PlaybackStatus.PLAYING
@@ -371,6 +373,45 @@ fun PlayerScreen(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.fillMaxWidth()
                 )
+
+                // Camelot Harmonic Key & Transition Pill
+                val currentHarmonicProfile = com.nexus.tune.core.domain.audio.HarmonicMixingEngine.deriveHarmonicProfile(track)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
+                        modifier = Modifier.padding(end = 6.dp)
+                    ) {
+                        Text(
+                            text = "🎹 ${currentHarmonicProfile.key.code} • ${currentHarmonicProfile.bpm} BPM",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                        )
+                    }
+
+                    nextTrackHarmonicTransition?.let { trans ->
+                        Surface(
+                            shape = MaterialTheme.shapes.small,
+                            color = androidx.compose.ui.graphics.Color(android.graphics.Color.parseColor(trans.relationship.colorHex)).copy(alpha = 0.2f)
+                        ) {
+                            Text(
+                                text = "Next: ${trans.relationship.title} (${trans.compatibilityPercent}%)",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = androidx.compose.ui.graphics.Color(android.graphics.Color.parseColor(trans.relationship.colorHex)),
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                            )
+                        }
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -794,6 +835,13 @@ fun PlayerScreen(
                         }
 
                         Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (upcomingCount >= 2) {
+                                TextButton(
+                                    onClick = onHarmonizeQueue
+                                ) {
+                                    Text("✨ Harmonize", color = MaterialTheme.colorScheme.primary)
+                                }
+                            }
                             TextButton(
                                 onClick = onDeduplicateQueue,
                                 enabled = queue.isNotEmpty()
@@ -885,8 +933,9 @@ fun PlayerScreen(
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis
                                         )
+                                        val itemProfile = com.nexus.tune.core.domain.audio.HarmonicMixingEngine.deriveHarmonicProfile(item)
                                         Text(
-                                            text = "${item.artist} • ${formatTime(item.durationSeconds * 1000L)}",
+                                            text = "${item.artist} • ${formatTime(item.durationSeconds * 1000L)} • ${itemProfile.key.code}",
                                             style = MaterialTheme.typography.bodySmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                                             maxLines = 1,

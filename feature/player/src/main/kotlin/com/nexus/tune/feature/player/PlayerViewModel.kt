@@ -5,17 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.nexus.tune.core.common.MusicResult
 import com.nexus.tune.core.domain.repository.MusicRepository
 import com.nexus.tune.core.domain.usecase.ManageQueueUseCase
-import com.nexus.tune.core.model.PlaybackState
-import com.nexus.tune.core.model.Track
-import com.nexus.tune.core.model.TrackBookmark
-import com.nexus.tune.core.model.TrackLyrics
+import com.nexus.tune.core.model.*
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
@@ -298,6 +290,44 @@ class PlayerViewModel(
 
     suspend fun exportCurrentLyrics(track: Track): String? {
         return musicRepository.exportLyricsToLrc(track.id)
+    }
+
+    val currentHarmonicProfile: StateFlow<TrackHarmonicProfile?> = combine(
+        activeQueue,
+        activeQueueIndex
+    ) { queue, index ->
+        if (queue.isNotEmpty() && index in 0 until queue.size) {
+            com.nexus.tune.core.domain.audio.HarmonicMixingEngine.deriveHarmonicProfile(queue[index])
+        } else {
+            null
+        }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    val nextTrackHarmonicTransition: StateFlow<HarmonicTransition?> = combine(
+        activeQueue,
+        activeQueueIndex
+    ) { queue, index ->
+        if (queue.size > index + 1 && index >= 0) {
+            val current = com.nexus.tune.core.domain.audio.HarmonicMixingEngine.deriveHarmonicProfile(queue[index])
+            val next = com.nexus.tune.core.domain.audio.HarmonicMixingEngine.deriveHarmonicProfile(queue[index + 1])
+            com.nexus.tune.core.domain.audio.HarmonicMixingEngine.evaluateTransition(current, next)
+        } else {
+            null
+        }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    fun harmonizeUpcomingQueue() {
+        val q = activeQueue.value
+        val idx = activeQueueIndex.value
+        if (q.size <= idx + 2) return // Need at least 2 upcoming tracks to reorder
+        val currentTrack = q[idx]
+        val pastTracks = q.take(idx + 1)
+        val upcomingTracks = q.drop(idx + 1)
+        val harmonizedUpcoming = com.nexus.tune.core.domain.audio.HarmonicMixingEngine.harmonizeQueue(currentTrack, upcomingTracks)
+        val reorderedFullQueue = pastTracks + harmonizedUpcoming
+        viewModelScope.launch {
+            manageQueueUseCase.playPlaylist(reorderedFullQueue, idx)
+        }
     }
 }
 

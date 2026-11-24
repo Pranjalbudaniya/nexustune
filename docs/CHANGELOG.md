@@ -5,6 +5,15 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.0.0] - 2026-11-24
+
+### Added
+- **Acoustic Camelot Harmonic Mixing & BPM Transition Intelligence Engine**: Implemented `CamelotScale`, `CamelotKey` (24 keys spanning 1A-12A Minor and 1B-12B Major), `HarmonicRelationship` (`PERFECT_MATCH`, `RELATIVE_KEY`, `ADJACENT_STEP`, `ENERGY_BOOST`, `ENERGY_DROP`, `DISSONANT`), `TempoCompatibility`, `TrackHarmonicProfile`, and `HarmonicTransition` domain models in `:core:model`.
+- **Harmonic Mixing Math & Circle of Fifths Engine**: Created `HarmonicMixingEngine` in `:core:domain:audio` evaluating Camelot step offsets, emotional scale shifts, half/double time tempo ratios, optimal crossfade ramp durations (2s to 8s), and a greedy nearest-neighbor harmonic queue reordering algorithm.
+- **Player Screen Live Camelot Key & Next Track Transition Pill**: Added interactive musical key and BPM readout pill (e.g. `🎹 8A • 124 BPM`) and dynamic colored transition badge on the full player screen showing live harmonic compatibility with the next track in queue.
+- **Up Next Queue Smart Harmonization Action**: Added "✨ Harmonize" one-tap action to the Up Next Queue bottom sheet, allowing listeners to reorganize upcoming tracks into a harmonically continuous musical set.
+- **Comprehensive Unit Test Suites**: Created `HarmonicMixingEngineTest` in `:core:domain` and expanded `PlayerViewModelTest` in `:feature:player`.
+
 ## [5.9.0] - 2026-11-24
 
 ### Added
