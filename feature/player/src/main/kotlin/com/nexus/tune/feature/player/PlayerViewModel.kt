@@ -16,7 +16,8 @@ import kotlinx.coroutines.launch
 class PlayerViewModel(
     private val musicRepository: MusicRepository,
     private val manageQueueUseCase: ManageQueueUseCase,
-    private val abLoopManager: com.nexus.tune.core.player.ABLoopManager? = null
+    private val abLoopManager: com.nexus.tune.core.player.ABLoopManager? = null,
+    private val playerController: com.nexus.tune.core.player.PlayerController? = null
 ) : ViewModel() {
 
     val abLoopState: StateFlow<com.nexus.tune.core.model.ABLoopState> =
@@ -72,6 +73,44 @@ class PlayerViewModel(
 
     fun setPlaybackSpeed(speed: Float) {
         _playbackSpeed.value = speed
+        playerController?.setPlaybackSpeed(speed)
+    }
+
+    private val _playbackPitchSemitones = MutableStateFlow(0)
+    val playbackPitchSemitones: StateFlow<Int> = _playbackPitchSemitones.asStateFlow()
+
+    private val _playbackPitchRatio = MutableStateFlow(1.0f)
+    val playbackPitchRatio: StateFlow<Float> = _playbackPitchRatio.asStateFlow()
+
+    fun setPlaybackSemitones(semitones: Int) {
+        val clamped = semitones.coerceIn(
+            com.nexus.tune.core.player.PitchTransposer.MIN_SEMITONES,
+            com.nexus.tune.core.player.PitchTransposer.MAX_SEMITONES
+        )
+        val ratio = com.nexus.tune.core.player.PitchTransposer.semitonesToPitchRatio(clamped)
+        _playbackPitchSemitones.value = clamped
+        _playbackPitchRatio.value = ratio
+        playerController?.setPlaybackSemitones(clamped)
+    }
+
+    fun setPlaybackPitch(pitch: Float) {
+        val clamped = pitch.coerceIn(0.5f, 2.0f)
+        val semitones = com.nexus.tune.core.player.PitchTransposer.pitchRatioToSemitones(clamped)
+        _playbackPitchSemitones.value = semitones
+        _playbackPitchRatio.value = clamped
+        playerController?.setPlaybackPitch(clamped)
+    }
+
+    fun transposeUp() {
+        setPlaybackSemitones(_playbackPitchSemitones.value + 1)
+    }
+
+    fun transposeDown() {
+        setPlaybackSemitones(_playbackPitchSemitones.value - 1)
+    }
+
+    fun resetPitch() {
+        setPlaybackSemitones(0)
     }
 
     fun adjustLyricsOffset(deltaMs: Long) {

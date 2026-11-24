@@ -41,6 +41,7 @@ class SettingsDataStore(private val context: Context) {
         val BEDTIME_HANDOFF_VOLUME = floatPreferencesKey("bedtime_handoff_volume")
         val BEDTIME_HANDOFF_DURATION = intPreferencesKey("bedtime_handoff_duration_minutes")
         val SEEKBAR_STYLE = stringPreferencesKey("theme_seekbar_style")
+        val RESET_PITCH_ON_TRACK_CHANGE = booleanPreferencesKey("reset_pitch_on_track_change")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -77,7 +78,8 @@ class SettingsDataStore(private val context: Context) {
             bedtimeHandoffDurationMinutes = prefs[PreferencesKeys.BEDTIME_HANDOFF_DURATION] ?: 60,
             seekbarStyle = runCatching {
                 SeekbarStyle.valueOf(prefs[PreferencesKeys.SEEKBAR_STYLE] ?: SeekbarStyle.WAVEFORM.name)
-            }.getOrDefault(SeekbarStyle.WAVEFORM)
+            }.getOrDefault(SeekbarStyle.WAVEFORM),
+            resetPitchOnTrackChange = prefs[PreferencesKeys.RESET_PITCH_ON_TRACK_CHANGE] ?: true
         )
     }
 
@@ -106,6 +108,7 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.BEDTIME_HANDOFF_VOLUME] = config.bedtimeHandoffVolume
             prefs[PreferencesKeys.BEDTIME_HANDOFF_DURATION] = config.bedtimeHandoffDurationMinutes
             prefs[PreferencesKeys.SEEKBAR_STYLE] = config.seekbarStyle.name
+            prefs[PreferencesKeys.RESET_PITCH_ON_TRACK_CHANGE] = config.resetPitchOnTrackChange
         }
     }
 

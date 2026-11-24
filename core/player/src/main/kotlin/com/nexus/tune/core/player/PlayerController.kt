@@ -29,6 +29,7 @@ class PlayerController(private val context: Context) {
     val playbackState: StateFlow<PlaybackState> = _playbackState.asStateFlow()
     private val _preloadedTrack = MutableStateFlow<Track?>(null)
     val preloadedTrack: StateFlow<Track?> = _preloadedTrack.asStateFlow()
+    var resetPitchOnTrackChange: Boolean = true
     private val coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     init {
@@ -108,6 +109,9 @@ class PlayerController(private val context: Context) {
             setMediaItem(mediaItem)
             prepare()
             play()
+        }
+        if (resetPitchOnTrackChange && (controller?.playbackParameters?.pitch ?: 1.0f) != 1.0f) {
+            setPlaybackPitch(1.0f)
         }
         if (track.loudnessGainDb != 0.0f) {
             com.nexus.tune.core.player.effects.NexusAudioEffects.instance.applyTrackLoudnessGain(track.loudnessGainDb)
@@ -234,6 +238,28 @@ class PlayerController(private val context: Context) {
         updateState()
     }
 
+    fun setPlaybackSemitones(semitones: Int) {
+        val clamped = semitones.coerceIn(PitchTransposer.MIN_SEMITONES, PitchTransposer.MAX_SEMITONES)
+        val ratio = PitchTransposer.semitonesToPitchRatio(clamped)
+        setPlaybackPitch(ratio)
+    }
+
+    fun transposeUp() {
+        val currentPitch = controller?.playbackParameters?.pitch ?: 1.0f
+        val currentSemitones = PitchTransposer.pitchRatioToSemitones(currentPitch)
+        setPlaybackSemitones(currentSemitones + 1)
+    }
+
+    fun transposeDown() {
+        val currentPitch = controller?.playbackParameters?.pitch ?: 1.0f
+        val currentSemitones = PitchTransposer.pitchRatioToSemitones(currentPitch)
+        setPlaybackSemitones(currentSemitones - 1)
+    }
+
+    fun resetPitch() {
+        setPlaybackPitch(1.0f)
+    }
+
     private fun updateState() {
         val c = controller ?: return
         val currentMediaId = c.currentMediaItem?.mediaId
@@ -246,13 +272,15 @@ class PlayerController(private val context: Context) {
         }
 
         val params = c.playbackParameters
+        val semitones = PitchTransposer.pitchRatioToSemitones(params.pitch)
 
         _playbackState.value = _playbackState.value.copy(
             status = status,
             positionMs = c.currentPosition.coerceAtLeast(0L),
             durationMs = c.duration.coerceAtLeast(0L),
             playbackSpeed = params.speed,
-            playbackPitch = params.pitch
+            playbackPitch = params.pitch,
+            playbackPitchSemitones = semitones
         )
         com.nexus.tune.core.player.visualizer.VisualizerManager.instance.updatePlayback(c.isPlaying)
     }

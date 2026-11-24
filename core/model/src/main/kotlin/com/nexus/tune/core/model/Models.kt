@@ -69,7 +69,8 @@ data class PlaybackState(
     val queue: List<Track> = emptyList(),
     val errorMessage: String? = null,
     val playbackSpeed: Float = 1.0f,
-    val playbackPitch: Float = 1.0f
+    val playbackPitch: Float = 1.0f,
+    val playbackPitchSemitones: Int = 0
 )
 
 enum class ThemeSeedMode {
@@ -168,7 +169,8 @@ data class ThemeConfig(
     val bedtimeHandoffSoundType: AmbientSoundType = AmbientSoundType.BROWN_NOISE,
     val bedtimeHandoffVolume: Float = 0.3f,
     val bedtimeHandoffDurationMinutes: Int = 60,
-    val seekbarStyle: SeekbarStyle = SeekbarStyle.WAVEFORM
+    val seekbarStyle: SeekbarStyle = SeekbarStyle.WAVEFORM,
+    val resetPitchOnTrackChange: Boolean = true
 )
 
 data class SoundDoseInfo(

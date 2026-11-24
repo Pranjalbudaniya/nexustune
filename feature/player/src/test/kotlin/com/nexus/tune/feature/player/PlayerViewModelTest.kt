@@ -14,6 +14,7 @@ import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -165,6 +166,36 @@ class PlayerViewModelTest {
 
         vm.clearABLoop()
         verify { mockAbLoop.clearLoop() }
+    }
+
+    @Test
+    fun `pitch and semitones controls update state and delegate to playerController`() {
+        val mockPlayerController = mockk<com.nexus.tune.core.player.PlayerController>(relaxed = true)
+        val vm = PlayerViewModel(
+            musicRepository = mockk(relaxed = true),
+            manageQueueUseCase = mockk(relaxed = true),
+            playerController = mockPlayerController
+        )
+
+        assertEquals(0, vm.playbackPitchSemitones.value)
+        assertEquals(1.0f, vm.playbackPitchRatio.value, 0.001f)
+
+        vm.setPlaybackSemitones(2)
+        assertEquals(2, vm.playbackPitchSemitones.value)
+        assertTrue(vm.playbackPitchRatio.value > 1.12f)
+        verify { mockPlayerController.setPlaybackSemitones(2) }
+
+        vm.transposeUp()
+        assertEquals(3, vm.playbackPitchSemitones.value)
+        verify { mockPlayerController.setPlaybackSemitones(3) }
+
+        vm.transposeDown()
+        assertEquals(2, vm.playbackPitchSemitones.value)
+
+        vm.resetPitch()
+        assertEquals(0, vm.playbackPitchSemitones.value)
+        assertEquals(1.0f, vm.playbackPitchRatio.value, 0.001f)
+        verify { mockPlayerController.setPlaybackSemitones(0) }
     }
 }
 

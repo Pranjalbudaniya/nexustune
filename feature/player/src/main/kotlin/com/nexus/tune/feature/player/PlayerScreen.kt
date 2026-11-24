@@ -49,7 +49,11 @@ fun PlayerScreen(
     onSetABPointB: () -> Unit = {},
     onToggleABLoop: () -> Unit = {},
     onClearABLoop: () -> Unit = {},
-    seekbarStyle: com.nexus.tune.core.model.SeekbarStyle = com.nexus.tune.core.model.SeekbarStyle.WAVEFORM
+    seekbarStyle: com.nexus.tune.core.model.SeekbarStyle = com.nexus.tune.core.model.SeekbarStyle.WAVEFORM,
+    onSetSemitones: (Int) -> Unit = {},
+    onTransposeUp: () -> Unit = {},
+    onTransposeDown: () -> Unit = {},
+    onResetPitch: () -> Unit = {}
 ) {
     val track = playbackState.currentTrack ?: return
     val isPlaying = playbackState.status == PlaybackStatus.PLAYING
@@ -450,6 +454,86 @@ fun PlayerScreen(
                         onClick = { onSetPlaybackSpeed(speed) },
                         label = { Text(label, style = MaterialTheme.typography.labelSmall) },
                         modifier = Modifier.padding(horizontal = 3.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Key & Pitch Transposition Controls
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Rounded.Tune,
+                        contentDescription = "Key Transpose",
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Key: ${com.nexus.tune.core.player.PitchTransposer.formatSemitones(playbackState.playbackPitchSemitones)}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    if (playbackState.playbackPitchSemitones != 0) {
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "(${com.nexus.tune.core.player.PitchTransposer.formatPitchMultiplier(playbackState.playbackPitch)})",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    FilledTonalIconButton(
+                        onClick = onTransposeDown,
+                        modifier = Modifier.size(30.dp),
+                        enabled = playbackState.playbackPitchSemitones > com.nexus.tune.core.player.PitchTransposer.MIN_SEMITONES
+                    ) {
+                        Text("-1", style = MaterialTheme.typography.labelSmall)
+                    }
+                    Spacer(modifier = Modifier.width(4.dp))
+                    FilledTonalIconButton(
+                        onClick = onTransposeUp,
+                        modifier = Modifier.size(30.dp),
+                        enabled = playbackState.playbackPitchSemitones < com.nexus.tune.core.player.PitchTransposer.MAX_SEMITONES
+                    ) {
+                        Text("+1", style = MaterialTheme.typography.labelSmall)
+                    }
+                    if (playbackState.playbackPitchSemitones != 0) {
+                        Spacer(modifier = Modifier.width(4.dp))
+                        FilledTonalIconButton(
+                            onClick = onResetPitch,
+                            modifier = Modifier.size(30.dp)
+                        ) {
+                            Icon(Icons.Rounded.Refresh, contentDescription = "Reset Key", modifier = Modifier.size(14.dp))
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Quick Transpose Chips
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                listOf(-2 to "-2 st", -1 to "-1 st", 0 to "Orig", 1 to "+1 st", 2 to "+2 st").forEach { (st, label) ->
+                    val isSelected = playbackState.playbackPitchSemitones == st
+                    FilterChip(
+                        selected = isSelected,
+                        onClick = { onSetSemitones(st) },
+                        label = { Text(label, style = MaterialTheme.typography.labelSmall) },
+                        modifier = Modifier.padding(horizontal = 2.dp)
                     )
                 }
             }

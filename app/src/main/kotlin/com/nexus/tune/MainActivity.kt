@@ -62,7 +62,12 @@ class MainActivity : ComponentActivity() {
         homeViewModel = HomeViewModel(app.getHomeFeedUseCase, app.manageQueueUseCase)
         searchViewModel = SearchViewModel(app.searchMusicUseCase, app.manageQueueUseCase)
         libraryViewModel = LibraryViewModel(app.musicRepository, app.manageQueueUseCase)
-        playerViewModel = PlayerViewModel(app.musicRepository, app.manageQueueUseCase)
+        playerViewModel = PlayerViewModel(
+            musicRepository = app.musicRepository,
+            manageQueueUseCase = app.manageQueueUseCase,
+            abLoopManager = app.abLoopManager,
+            playerController = app.playerController
+        )
         settingsViewModel = SettingsViewModel(
             settingsRepository = app.settingsRepository,
             getListeningStatsUseCase = app.getListeningStatsUseCase,
@@ -130,6 +135,7 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             settingsViewModel.themeConfig.collect { config ->
                 app.playerController.setVolumeLimit(config.volumeLimitPercent)
+                app.playerController.resetPitchOnTrackChange = config.resetPitchOnTrackChange
                 com.nexus.tune.core.player.effects.NexusAudioEffects.instance.setSpatialAudioEnabled(config.spatialAudioEnabled)
                 com.nexus.tune.core.player.effects.NexusAudioEffects.instance.setSpatialAudioStage(config.spatialAudioStage)
             }
@@ -239,6 +245,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             val lyrics by playerViewModel.lyrics.collectAsState()
                             val lyricsOffsetMs by playerViewModel.lyricsOffsetMs.collectAsState()
+                            val abLoopState by playerViewModel.abLoopState.collectAsState()
                             val audioOutputDevice by app.audioOutputRouteManager.currentOutputDevice.collectAsState()
                             val visualizerData by com.nexus.tune.core.player.visualizer.VisualizerManager.instance.visualizerData.collectAsState()
                             LaunchedEffect(playbackState.currentTrack) {
@@ -258,7 +265,17 @@ class MainActivity : ComponentActivity() {
                                 onAdjustLyricsOffset = { playerViewModel.adjustLyricsOffset(it) },
                                 onResetLyricsOffset = { playerViewModel.resetLyricsOffset() },
                                 onSetPlaybackSpeed = { app.playerController.setPlaybackSpeed(it) },
-                                onSetVisualizerMode = { settingsViewModel.setVisualizerMode(it) }
+                                onSetVisualizerMode = { settingsViewModel.setVisualizerMode(it) },
+                                abLoopState = abLoopState,
+                                onSetABPointA = { playerViewModel.setABLoopPointA() },
+                                onSetABPointB = { playerViewModel.setABLoopPointB() },
+                                onToggleABLoop = { playerViewModel.toggleABLoop() },
+                                onClearABLoop = { playerViewModel.clearABLoop() },
+                                seekbarStyle = themeConfig.seekbarStyle,
+                                onSetSemitones = { app.playerController.setPlaybackSemitones(it) },
+                                onTransposeUp = { app.playerController.transposeUp() },
+                                onTransposeDown = { app.playerController.transposeDown() },
+                                onResetPitch = { app.playerController.resetPitch() }
                             )
                         }
                     }

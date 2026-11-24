@@ -39,3 +39,4 @@ Implement a dynamic **Interactive Waveform Seekbar & Peak Profile Engine** in th
 - [ ] `SeekbarStyle` persists across app restarts.
 - [ ] `./scripts/gate.sh slice` passes 100%.
 - [ ] Production APK builds cleanly via `./scripts/gate.sh final`.
+

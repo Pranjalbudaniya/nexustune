@@ -1046,6 +1046,31 @@ fun SettingsScreen(
                     )
                 }
 
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Reset Key on Track Change",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "Reset musical key and pitch transposition to original when song changes",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(
+                        checked = themeConfig.resetPitchOnTrackChange,
+                        onCheckedChange = { viewModel.toggleResetPitchOnTrackChange(it) }
+                    )
+                }
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
             }
 

@@ -5,6 +5,14 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.5.0] - 2026-11-24
+
+### Added
+- **Vocal Pitch Shift & Semitone Transposition DSP Engine**: Implemented `PitchTransposer` in `:core:player` with mathematically precise semitone $\leftrightarrow$ pitch ratio conversions ($2^{s/12}$) spanning -6 to +6 semitones (full octave span centered on original key).
+- **Interactive Key Transpose Console**: Added tactile stepper buttons (`-1`, `+1`), dynamic key readout (e.g. `Key: +2 st (1.12x)`), reset button, and quick-jump semitone chips (`-2`, `-1`, `Orig`, `+1`, `+2`) in `PlayerScreen`.
+- **Automatic Track Reset Preference**: Added `resetPitchOnTrackChange` to `ThemeConfig` and `SettingsDataStore` with real-time toggle in `SettingsScreen`, automatically returning transposed tracks to their natural key when changing songs.
+- **Controller & ViewModel Integration**: Integrated `playbackPitchSemitones` into `PlaybackState`, with reactive synchronization across `PlayerController` and `PlayerViewModel`.
+
 ## [4.4.0] - 2026-11-24
 
 ### Added

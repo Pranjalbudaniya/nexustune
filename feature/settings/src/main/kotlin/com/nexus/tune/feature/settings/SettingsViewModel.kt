@@ -268,6 +268,11 @@ class SettingsViewModel(
         updateTheme(current.copy(seekbarStyle = style))
     }
 
+    fun toggleResetPitchOnTrackChange(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(resetPitchOnTrackChange = enabled))
+    }
+
     fun toggleSafeListeningAlert(enabled: Boolean) {
         val current = themeConfig.value
         updateTheme(current.copy(safeListeningAlertEnabled = enabled))

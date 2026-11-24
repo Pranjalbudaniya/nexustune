@@ -26,3 +26,4 @@ class WaveformProfileGeneratorTest {
         assertTrue(profile1 != profileDifferentTrack)
     }
 }
+

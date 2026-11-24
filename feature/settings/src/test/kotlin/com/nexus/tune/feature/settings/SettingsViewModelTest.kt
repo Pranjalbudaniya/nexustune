@@ -529,4 +529,14 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.seekbarStyle == SeekbarStyle.WAVEFORM })
         }
     }
+
+    @Test
+    fun `toggleResetPitchOnTrackChange updates theme config`() = runTest {
+        viewModel.toggleResetPitchOnTrackChange(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.resetPitchOnTrackChange })
+        }
+    }
 }

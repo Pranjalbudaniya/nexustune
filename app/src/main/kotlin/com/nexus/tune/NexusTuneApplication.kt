@@ -51,6 +51,8 @@ class NexusTuneApplication : Application() {
 
     lateinit var playerController: PlayerController
         private set
+    lateinit var abLoopManager: com.nexus.tune.core.player.ABLoopManager
+        private set
     lateinit var sleepTimerManager: com.nexus.tune.core.player.SleepTimerManager
         private set
     lateinit var skipSegmentManager: com.nexus.tune.core.player.SkipSegmentManager
@@ -100,6 +102,7 @@ class NexusTuneApplication : Application() {
         autoPlayQueueManager = com.nexus.tune.core.domain.queue.AutoPlayQueueManager(getAutoPlayRecommendationsUseCase, queueRepository)
 
         playerController = PlayerController(this)
+        abLoopManager = com.nexus.tune.core.player.ABLoopManager(playerController)
         val sensorManager = getSystemService(android.content.Context.SENSOR_SERVICE) as? android.hardware.SensorManager
         sleepTimerManager = com.nexus.tune.core.player.SleepTimerManager(
             playerController = playerController,
