@@ -245,7 +245,8 @@ data class ThemeConfig(
     val transientShaperConfig: TransientShaperConfig = TransientShaperConfig(),
     val dynamicStereoImagerConfig: DynamicStereoImagerConfig = DynamicStereoImagerConfig(),
     val tapeHysteresisConfig: TapeHysteresisConfig = TapeHysteresisConfig(),
-    val mainsHumIsolatorConfig: MainsHumIsolatorConfig = MainsHumIsolatorConfig()
+    val mainsHumIsolatorConfig: MainsHumIsolatorConfig = MainsHumIsolatorConfig(),
+    val acousticFeedbackConfig: AcousticFeedbackConfig = AcousticFeedbackConfig()
 )
 
 data class SoundDoseInfo(
@@ -1486,6 +1487,50 @@ data class MainsHumMetrics(
     val detectedGridFrequencyHz: Float,
     val dcOffsetMv: Float,
     val isolationRating: String
+)
+
+enum class FeedbackHuntMode(val displayName: String, val frequencyRangeHz: String, val description: String) {
+    SURGICAL_AUTO("Full-Band Surgical Auto", "400 Hz - 12 kHz", "Omni-directional feedback hunter detecting acoustic ringing anywhere in the audible spectrum"),
+    SPEAKER_BOUNDARY("Speaker Chamber & Room Mode", "800 Hz - 3.5 kHz", "Focuses notch hunters on mobile phone speaker acoustic feedback and room boundary eigenmodes"),
+    LIVE_CONCERT("Live Concert De-Squeal", "1.5 kHz - 7.5 kHz", "Optimized to eradicate stage microphone Larsen effect squeals captured in live concert streams"),
+    OPEN_BACK_HEADPHONE("Open-Back Headphone Anti-Resonance", "2.5 kHz - 9.0 kHz", "Damps ear-canal acoustic reflection spikes and open-ear cup cavity resonances")
+}
+
+enum class AcousticFeedbackPreset(
+    val displayName: String,
+    val mode: FeedbackHuntMode,
+    val sensitivityDb: Float,
+    val activeNotches: Int,
+    val notchQ: Float,
+    val suppressionDepthDb: Float,
+    val panicClamp: Boolean,
+    val description: String
+) {
+    OFF("Off (Bypassed)", FeedbackHuntMode.SURGICAL_AUTO, -15.0f, 0, 30.0f, 0.0f, false, "Direct sound path with zero dynamic feedback suppression"),
+    STUDIO_TRANSPARENT("Studio Transparent (Guard)", FeedbackHuntMode.SURGICAL_AUTO, -32.0f, 2, 35.0f, -18.0f, true, "Gentle high-Q feedback guard catching sudden acoustic peaks while preserving musical tone"),
+    LIVE_CONCERT_DE_SQUEAL("Live Concert De-Squeal", FeedbackHuntMode.LIVE_CONCERT, -36.0f, 4, 45.0f, -30.0f, true, "Aggressive feedback suppressor for live recordings with piercing microphone squeals"),
+    SPEAKER_ROOM_RESONANCE("Speaker Chamber & Room Mode", FeedbackHuntMode.SPEAKER_BOUNDARY, -26.0f, 3, 30.0f, -22.0f, true, "Targets device speaker enclosure buzzing and standing wave room resonances"),
+    OPEN_BACK_HEADPHONE_GUARD("Open-Back Headphone Ear Guard", FeedbackHuntMode.OPEN_BACK_HEADPHONE, -30.0f, 2, 40.0f, -20.0f, false, "Tames sharp 3-8 kHz treble peaks and ear canal resonance fatigue"),
+    HIGH_GAIN_PANIC_SHIELD("High-Gain Panic Limiter", FeedbackHuntMode.SURGICAL_AUTO, -20.0f, 4, 50.0f, -36.0f, true, "Emergency runaway protection instantly clamping loud feedback shrieks to safe levels")
+}
+
+data class AcousticFeedbackConfig(
+    val isEnabled: Boolean = false,
+    val preset: AcousticFeedbackPreset = AcousticFeedbackPreset.OFF,
+    val mode: FeedbackHuntMode = FeedbackHuntMode.SURGICAL_AUTO,
+    val sensitivityThresholdDb: Float = -28.0f,
+    val activeNotchesCount: Int = 3,
+    val notchSharpnessQ: Float = 35.0f,
+    val suppressionDepthDb: Float = -24.0f,
+    val fastPanicClamp: Boolean = true
+)
+
+data class AcousticFeedbackMetrics(
+    val detectedRingingFrequencyHz: Float,
+    val activeNotchCount: Int,
+    val peakFeedbackEnergyDb: Float,
+    val totalSuppressionDb: Float,
+    val safetyStatus: String
 )
 
 

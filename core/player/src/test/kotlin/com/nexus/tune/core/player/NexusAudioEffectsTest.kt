@@ -202,5 +202,14 @@ class NexusAudioEffectsTest {
         audioEffects.clearMainsHumOffset()
         assertEquals(0, audioEffects.getMainsHumOffset())
     }
+
+    @Test
+    fun `feedback guard offset can be applied and cleared`() {
+        audioEffects.applyFeedbackGuardOffset(-100)
+        assertEquals(-100, audioEffects.getFeedbackGuardOffset())
+
+        audioEffects.clearFeedbackGuardOffset()
+        assertEquals(0, audioEffects.getFeedbackGuardOffset())
+    }
 }
 

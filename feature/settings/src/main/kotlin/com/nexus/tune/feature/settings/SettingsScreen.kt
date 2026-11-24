@@ -26,6 +26,7 @@ import com.nexus.tune.core.domain.audio.TransientShaperEngine
 import com.nexus.tune.core.domain.audio.DynamicStereoImagerEngine
 import com.nexus.tune.core.domain.audio.TapeHysteresisEngine
 import com.nexus.tune.core.domain.audio.MainsHumIsolatorEngine
+import com.nexus.tune.core.domain.audio.AcousticFeedbackEngine
 import com.nexus.tune.core.ui.EqCurveVisualizer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -3340,6 +3341,204 @@ fun SettingsScreen(
                                 )
                                 Text(
                                     text = "DC: ${String.format(java.util.Locale.US, "%.1f mV", humMetrics.dcOffsetMv)}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            }
+
+            item {
+                // --- Dynamic Acoustic Feedback & Larsen Ringing Suppressor Studio ---
+                ListItem(
+                    headlineContent = { Text("Dynamic Acoustic Feedback & Ringing Suppressor Studio") },
+                    supportingContent = { Text("Real-time hunting notch filter bank detecting acoustic feedback, mic Larsen squeals, and phone speaker cavity resonances") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.acousticFeedbackConfig.isEnabled,
+                            onCheckedChange = { viewModel.setAcousticFeedbackEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.acousticFeedbackConfig.isEnabled) {
+                    val feedbackMetrics = remember(themeConfig.acousticFeedbackConfig) {
+                        AcousticFeedbackEngine.calculateMetrics(themeConfig.acousticFeedbackConfig)
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Feedback Suppressor Preset",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(bottom = 6.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        AcousticFeedbackPreset.entries.forEach { preset ->
+                            FilterChip(
+                                selected = themeConfig.acousticFeedbackConfig.preset == preset,
+                                onClick = { viewModel.setAcousticFeedbackPreset(preset) },
+                                label = { Text(preset.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "Feedback Hunt Spectral Target",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(bottom = 6.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        FeedbackHuntMode.entries.forEach { mode ->
+                            FilterChip(
+                                selected = themeConfig.acousticFeedbackConfig.mode == mode,
+                                onClick = { viewModel.setAcousticFeedbackMode(mode) },
+                                label = { Text(mode.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Detection Sensitivity: ${String.format(java.util.Locale.US, "%.0f dBFS", themeConfig.acousticFeedbackConfig.sensitivityThresholdDb)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Target f₀: ${feedbackMetrics.detectedRingingFrequencyHz.toInt()} Hz",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.acousticFeedbackConfig.sensitivityThresholdDb,
+                        onValueChange = { viewModel.setAcousticFeedbackSensitivity(it) },
+                        valueRange = -45.0f..-12.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Active Tracking Notches: ${themeConfig.acousticFeedbackConfig.activeNotchesCount}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Sharpness: Q = ${themeConfig.acousticFeedbackConfig.notchSharpnessQ.toInt()}",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.acousticFeedbackConfig.activeNotchesCount.toFloat(),
+                        onValueChange = { viewModel.setAcousticFeedbackNotchesCount(it.toInt()) },
+                        valueRange = 1.0f..4.0f,
+                        steps = 2,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Suppression Attenuation Depth: ${String.format(java.util.Locale.US, "%.0f dB", themeConfig.acousticFeedbackConfig.suppressionDepthDb)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Rejection: -${feedbackMetrics.totalSuppressionDb.toInt()} dB",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                    Slider(
+                        value = themeConfig.acousticFeedbackConfig.suppressionDepthDb,
+                        onValueChange = { viewModel.setAcousticFeedbackSuppressionDepth(it) },
+                        valueRange = -36.0f..-6.0f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Emergency Runaway Panic Clamp (Hearing Guard)",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Switch(
+                            checked = themeConfig.acousticFeedbackConfig.fastPanicClamp,
+                            onCheckedChange = { viewModel.setAcousticFeedbackPanicClamp(it) }
+                        )
+                    }
+
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = "ACOUSTIC FEEDBACK & LARSEN HUNTING HUD",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Status: ${feedbackMetrics.safetyStatus}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Notches: ${feedbackMetrics.activeNotchCount} Active",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                                Text(
+                                    text = "Lock: ${feedbackMetrics.detectedRingingFrequencyHz.toInt()} Hz",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.tertiary
                                 )

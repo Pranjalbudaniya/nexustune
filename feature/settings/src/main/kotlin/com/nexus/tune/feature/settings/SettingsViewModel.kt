@@ -1281,4 +1281,58 @@ class SettingsViewModel(
         val current = themeConfig.value
         updateTheme(current.copy(mainsHumIsolatorConfig = current.mainsHumIsolatorConfig.copy(dcBlockerEnabled = enabled)))
     }
+
+    fun setAcousticFeedbackEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(acousticFeedbackConfig = current.acousticFeedbackConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setAcousticFeedbackPreset(preset: AcousticFeedbackPreset) {
+        val current = themeConfig.value
+        val isEnabled = preset != AcousticFeedbackPreset.OFF
+        updateTheme(
+            current.copy(
+                acousticFeedbackConfig = current.acousticFeedbackConfig.copy(
+                    isEnabled = isEnabled,
+                    preset = preset,
+                    mode = if (preset != AcousticFeedbackPreset.OFF) preset.mode else current.acousticFeedbackConfig.mode,
+                    sensitivityThresholdDb = if (preset != AcousticFeedbackPreset.OFF) preset.sensitivityDb else current.acousticFeedbackConfig.sensitivityThresholdDb,
+                    activeNotchesCount = if (preset != AcousticFeedbackPreset.OFF) preset.activeNotches else current.acousticFeedbackConfig.activeNotchesCount,
+                    notchSharpnessQ = if (preset != AcousticFeedbackPreset.OFF) preset.notchQ else current.acousticFeedbackConfig.notchSharpnessQ,
+                    suppressionDepthDb = if (preset != AcousticFeedbackPreset.OFF) preset.suppressionDepthDb else current.acousticFeedbackConfig.suppressionDepthDb,
+                    fastPanicClamp = if (preset != AcousticFeedbackPreset.OFF) preset.panicClamp else current.acousticFeedbackConfig.fastPanicClamp
+                )
+            )
+        )
+    }
+
+    fun setAcousticFeedbackMode(mode: FeedbackHuntMode) {
+        val current = themeConfig.value
+        updateTheme(current.copy(acousticFeedbackConfig = current.acousticFeedbackConfig.copy(mode = mode)))
+    }
+
+    fun setAcousticFeedbackSensitivity(sensitivityDb: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(acousticFeedbackConfig = current.acousticFeedbackConfig.copy(sensitivityThresholdDb = sensitivityDb.coerceIn(-45.0f, -12.0f))))
+    }
+
+    fun setAcousticFeedbackNotchesCount(count: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(acousticFeedbackConfig = current.acousticFeedbackConfig.copy(activeNotchesCount = count.coerceIn(1, 4))))
+    }
+
+    fun setAcousticFeedbackNotchQ(q: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(acousticFeedbackConfig = current.acousticFeedbackConfig.copy(notchSharpnessQ = q.coerceIn(15.0f, 60.0f))))
+    }
+
+    fun setAcousticFeedbackSuppressionDepth(depthDb: Float) {
+        val current = themeConfig.value
+        updateTheme(current.copy(acousticFeedbackConfig = current.acousticFeedbackConfig.copy(suppressionDepthDb = depthDb.coerceIn(-36.0f, -6.0f))))
+    }
+
+    fun setAcousticFeedbackPanicClamp(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(acousticFeedbackConfig = current.acousticFeedbackConfig.copy(fastPanicClamp = enabled)))
+    }
 }

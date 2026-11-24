@@ -172,6 +172,14 @@ class SettingsDataStore(private val context: Context) {
         val MAINS_HUM_ISOLATOR_NOTCH_DEPTH = floatPreferencesKey("mains_hum_isolator_notch_depth")
         val MAINS_HUM_ISOLATOR_ADAPTIVE_MASKING = booleanPreferencesKey("mains_hum_isolator_adaptive_masking")
         val MAINS_HUM_ISOLATOR_DC_BLOCKER = booleanPreferencesKey("mains_hum_isolator_dc_blocker")
+        val ACOUSTIC_FEEDBACK_ENABLED = booleanPreferencesKey("acoustic_feedback_enabled")
+        val ACOUSTIC_FEEDBACK_PRESET = stringPreferencesKey("acoustic_feedback_preset")
+        val ACOUSTIC_FEEDBACK_MODE = stringPreferencesKey("acoustic_feedback_mode")
+        val ACOUSTIC_FEEDBACK_SENSITIVITY = floatPreferencesKey("acoustic_feedback_sensitivity")
+        val ACOUSTIC_FEEDBACK_NOTCHES = intPreferencesKey("acoustic_feedback_notches")
+        val ACOUSTIC_FEEDBACK_NOTCH_Q = floatPreferencesKey("acoustic_feedback_notch_q")
+        val ACOUSTIC_FEEDBACK_DEPTH = floatPreferencesKey("acoustic_feedback_depth")
+        val ACOUSTIC_FEEDBACK_PANIC_CLAMP = booleanPreferencesKey("acoustic_feedback_panic_clamp")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -462,6 +470,20 @@ class SettingsDataStore(private val context: Context) {
                 notchDepthDb = prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_NOTCH_DEPTH] ?: -24.0f,
                 adaptiveMasking = prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_ADAPTIVE_MASKING] ?: true,
                 dcBlockerEnabled = prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_DC_BLOCKER] ?: true
+            ),
+            acousticFeedbackConfig = AcousticFeedbackConfig(
+                isEnabled = prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_ENABLED] ?: false,
+                preset = runCatching {
+                    AcousticFeedbackPreset.valueOf(prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_PRESET] ?: AcousticFeedbackPreset.OFF.name)
+                }.getOrDefault(AcousticFeedbackPreset.OFF),
+                mode = runCatching {
+                    FeedbackHuntMode.valueOf(prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_MODE] ?: FeedbackHuntMode.SURGICAL_AUTO.name)
+                }.getOrDefault(FeedbackHuntMode.SURGICAL_AUTO),
+                sensitivityThresholdDb = prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_SENSITIVITY] ?: -28.0f,
+                activeNotchesCount = prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_NOTCHES] ?: 3,
+                notchSharpnessQ = prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_NOTCH_Q] ?: 35.0f,
+                suppressionDepthDb = prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_DEPTH] ?: -24.0f,
+                fastPanicClamp = prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_PANIC_CLAMP] ?: true
             )
         )
     }
@@ -617,6 +639,14 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_NOTCH_DEPTH] = config.mainsHumIsolatorConfig.notchDepthDb
             prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_ADAPTIVE_MASKING] = config.mainsHumIsolatorConfig.adaptiveMasking
             prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_DC_BLOCKER] = config.mainsHumIsolatorConfig.dcBlockerEnabled
+            prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_ENABLED] = config.acousticFeedbackConfig.isEnabled
+            prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_PRESET] = config.acousticFeedbackConfig.preset.name
+            prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_MODE] = config.acousticFeedbackConfig.mode.name
+            prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_SENSITIVITY] = config.acousticFeedbackConfig.sensitivityThresholdDb
+            prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_NOTCHES] = config.acousticFeedbackConfig.activeNotchesCount
+            prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_NOTCH_Q] = config.acousticFeedbackConfig.notchSharpnessQ
+            prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_DEPTH] = config.acousticFeedbackConfig.suppressionDepthDb
+            prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_PANIC_CLAMP] = config.acousticFeedbackConfig.fastPanicClamp
         }
     }
 
@@ -814,6 +844,19 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_NOTCH_DEPTH] = config.notchDepthDb
             prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_ADAPTIVE_MASKING] = config.adaptiveMasking
             prefs[PreferencesKeys.MAINS_HUM_ISOLATOR_DC_BLOCKER] = config.dcBlockerEnabled
+        }
+    }
+
+    suspend fun updateAcousticFeedbackConfig(config: AcousticFeedbackConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_PRESET] = config.preset.name
+            prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_MODE] = config.mode.name
+            prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_SENSITIVITY] = config.sensitivityThresholdDb
+            prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_NOTCHES] = config.activeNotchesCount
+            prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_NOTCH_Q] = config.notchSharpnessQ
+            prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_DEPTH] = config.suppressionDepthDb
+            prefs[PreferencesKeys.ACOUSTIC_FEEDBACK_PANIC_CLAMP] = config.fastPanicClamp
         }
     }
 

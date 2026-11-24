@@ -5,6 +5,17 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.30.0] - 2026-11-24
+
+### Added
+- **Audiophile Dynamic Acoustic Feedback & Larsen Ringing Suppressor Studio (`AcousticFeedbackEngine`)**: Added `FeedbackHuntMode` (`SURGICAL_AUTO`, `SPEAKER_BOUNDARY`, `LIVE_CONCERT`, `OPEN_BACK_HEADPHONE`), `AcousticFeedbackPreset` (`OFF`, `STUDIO_TRANSPARENT`, `LIVE_CONCERT_DE_SQUEAL`, `SPEAKER_ROOM_RESONANCE`, `OPEN_BACK_HEADPHONE_GUARD`, `HIGH_GAIN_PANIC_SHIELD`), `AcousticFeedbackConfig`, and `AcousticFeedbackMetrics` in `:core:model`.
+- **Dynamic Spectral Autocorrelation & Steerable Tracking Notch DSP**: Implemented `AcousticFeedbackEngine` in `:core:domain:audio`. Real-time autocorrelation feedback hunting engine scans incoming audio to distinguish narrow-band acoustic feedback spikes and microphone Larsen screeching from natural musical tones. Dynamically steers up to 4 high-Q ($Q=15\dots 60$) tracking notch filters with fast attack envelopes to instantly snuff out ringing, complemented by an emergency hyperbolic tangent ($\tanh$) panic clamp to protect listener hearing against sudden runaway amplitude spikes.
+- **Hardware Equalizer Integration**: Added `applyFeedbackGuardOffset`, `clearFeedbackGuardOffset`, and `getFeedbackGuardOffset` targeting Bands 2 & 3 in `NexusAudioEffects` in `:core:player` for physical speaker casing resonance trimming.
+- **DataStore Persistence**: Added `ACOUSTIC_FEEDBACK_ENABLED`, `ACOUSTIC_FEEDBACK_PRESET`, `ACOUSTIC_FEEDBACK_MODE`, `ACOUSTIC_FEEDBACK_SENSITIVITY`, `ACOUSTIC_FEEDBACK_NOTCHES`, `ACOUSTIC_FEEDBACK_NOTCH_Q`, `ACOUSTIC_FEEDBACK_DEPTH`, and `ACOUSTIC_FEEDBACK_PANIC_CLAMP` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen Feedback Suppressor Studio**: Added interactive "Dynamic Acoustic Feedback & Ringing Suppressor Studio" card in `SettingsScreen` with feedback presets, hunt mode chips, detection sensitivity slider, active notch count slider, notch sharpness Q slider, attenuation depth slider, emergency runaway clamp switch, and live feedback hunting HUD.
+- **Unit Test Coverage**: Comprehensive test suites in `AcousticFeedbackEngineTest` in `:core:domain`, `NexusAudioEffectsTest` in `:core:player`, and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.29.0] - 2026-11-24
 
 ### Added

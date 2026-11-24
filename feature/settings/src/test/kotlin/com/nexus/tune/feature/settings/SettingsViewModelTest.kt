@@ -1434,4 +1434,55 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { !it.mainsHumIsolatorConfig.dcBlockerEnabled })
         }
     }
+
+    @Test
+    fun `acoustic feedback settings update theme config`() = runTest {
+        viewModel.setAcousticFeedbackEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.acousticFeedbackConfig.isEnabled })
+        }
+
+        viewModel.setAcousticFeedbackPreset(AcousticFeedbackPreset.LIVE_CONCERT_DE_SQUEAL)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.acousticFeedbackConfig.preset == AcousticFeedbackPreset.LIVE_CONCERT_DE_SQUEAL })
+        }
+
+        viewModel.setAcousticFeedbackMode(FeedbackHuntMode.LIVE_CONCERT)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.acousticFeedbackConfig.mode == FeedbackHuntMode.LIVE_CONCERT })
+        }
+
+        viewModel.setAcousticFeedbackSensitivity(-32.0f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.acousticFeedbackConfig.sensitivityThresholdDb == -32.0f })
+        }
+
+        viewModel.setAcousticFeedbackNotchesCount(4)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.acousticFeedbackConfig.activeNotchesCount == 4 })
+        }
+
+        viewModel.setAcousticFeedbackNotchQ(45.0f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.acousticFeedbackConfig.notchSharpnessQ == 45.0f })
+        }
+
+        viewModel.setAcousticFeedbackSuppressionDepth(-28.0f)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.acousticFeedbackConfig.suppressionDepthDb == -28.0f })
+        }
+
+        viewModel.setAcousticFeedbackPanicClamp(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.acousticFeedbackConfig.fastPanicClamp })
+        }
+    }
 }
