@@ -125,4 +125,23 @@ class SleepTimerManagerTest {
         assertTrue(state.shakeToExtendEnabled)
         assertEquals(15, state.extensionMinutes)
     }
+
+    @Test
+    fun `setBedtimeHandoff updates handoff configuration`() = runTest {
+        val sleepTimerManager = SleepTimerManager(playerController, this)
+        assertFalse(sleepTimerManager.timerState.value.bedtimeHandoffEnabled)
+
+        sleepTimerManager.setBedtimeHandoff(
+            enabled = true,
+            soundType = com.nexus.tune.core.model.AmbientSoundType.BINAURAL_DELTA,
+            volume = 0.4f,
+            durationMinutes = 90
+        )
+
+        val state = sleepTimerManager.timerState.value
+        assertTrue(state.bedtimeHandoffEnabled)
+        assertEquals(com.nexus.tune.core.model.AmbientSoundType.BINAURAL_DELTA, state.handoffSoundType)
+        assertEquals(0.4f, state.handoffVolume, 0.001f)
+        assertEquals(90, state.handoffDurationMinutes)
+    }
 }

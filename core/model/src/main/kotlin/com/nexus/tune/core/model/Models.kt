@@ -158,7 +158,11 @@ data class ThemeConfig(
     val shakeExtendMinutes: Int = 10,
     val ambientSoundType: AmbientSoundType = AmbientSoundType.OFF,
     val ambientSoundVolume: Float = 0.5f,
-    val customEqBands: List<Int> = listOf(0, 0, 0, 0, 0)
+    val customEqBands: List<Int> = listOf(0, 0, 0, 0, 0),
+    val bedtimeHandoffEnabled: Boolean = false,
+    val bedtimeHandoffSoundType: AmbientSoundType = AmbientSoundType.BROWN_NOISE,
+    val bedtimeHandoffVolume: Float = 0.3f,
+    val bedtimeHandoffDurationMinutes: Int = 60
 )
 
 data class SoundDoseInfo(

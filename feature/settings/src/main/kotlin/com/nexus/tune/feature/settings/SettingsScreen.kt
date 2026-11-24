@@ -700,6 +700,107 @@ fun SettingsScreen(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(8.dp))
+
+                ListItem(
+                    headlineContent = { Text("Bedtime Sound Handoff") },
+                    supportingContent = { Text("Transition to ambient soundscapes when music timer expires") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.bedtimeHandoffEnabled,
+                            onCheckedChange = { viewModel.toggleBedtimeHandoff(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.bedtimeHandoffEnabled) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = "Handoff Sound Profile",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .horizontalScroll(rememberScrollState())
+                                    .padding(vertical = 6.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                listOf(
+                                    AmbientSoundType.BROWN_NOISE,
+                                    AmbientSoundType.PINK_NOISE,
+                                    AmbientSoundType.BINAURAL_DELTA,
+                                    AmbientSoundType.BINAURAL_THETA,
+                                    AmbientSoundType.SOLFEGGIO_432HZ
+                                ).forEach { soundType ->
+                                    FilterChip(
+                                        selected = themeConfig.bedtimeHandoffSoundType == soundType,
+                                        onClick = { viewModel.setBedtimeHandoffSoundType(soundType) },
+                                        label = { Text(soundType.displayName) }
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Rounded.VolumeUp,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Slider(
+                                    value = themeConfig.bedtimeHandoffVolume,
+                                    onValueChange = { viewModel.setBedtimeHandoffVolume(it) },
+                                    valueRange = 0.05f..0.8f,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Text(
+                                    text = "${(themeConfig.bedtimeHandoffVolume * 100).toInt()}%",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                text = "Handoff Duration",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 4.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                listOf(30 to "30m", 60 to "1h", 120 to "2h", 0 to "All Night").forEach { (duration, label) ->
+                                    FilterChip(
+                                        selected = themeConfig.bedtimeHandoffDurationMinutes == duration,
+                                        onClick = { viewModel.setBedtimeHandoffDuration(duration) },
+                                        label = { Text(label) }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
             }
 

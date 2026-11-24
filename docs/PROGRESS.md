@@ -7,7 +7,7 @@
 - Connected Device: V2518 (Android 16, 120Hz capable, Serial: 10BF7Q150G000LE)
 
 ## Current Status
-- Active Phase: Post-v1.0 Improvement Loop 31 (v4.1.0 Audiophile 5-Band Parametric Equalizer Faders)
+- Active Phase: Post-v1.0 Improvement Loop 32 (v4.2.0 Bedtime Sound Handoff Engine)
 - In Flight: Running test suites and ./scripts/gate.sh slice
 - Branches: `main`
 
@@ -248,14 +248,23 @@
   - [x] Slice gate passed
   - [x] Final gate passed & tagged: `git tag v4.0-1`
 
-## Improvement Loop 31 (v4.1 Milestone - In Progress)
-- [ ] Audiophile 5-Band Parametric Equalizer Faders:
-  - [x] Fine-grained band level tuning (`setBandLevel`, `setCustomBands`, `getBandLevels`) in `NexusAudioEffects`
-  - [x] Persistent custom band storage `customEqBands` in `ThemeConfig` and `SettingsDataStore`
-  - [x] Interactive 5-band slider console in `SettingsScreen` with dB readouts and reset button
-  - [x] Unit test suites in `NexusAudioEffectsTest` and `SettingsViewModelTest`
+- [x] Improvement Loop 31 (v4.1 Milestone - Tagged `v4.1-1`)
+  - [x] Audiophile 5-Band Parametric Equalizer Faders:
+    - [x] Fine-grained band level tuning (`setBandLevel`, `setCustomBands`, `getBandLevels`) in `NexusAudioEffects`
+    - [x] Persistent custom band storage `customEqBands` in `ThemeConfig` and `SettingsDataStore`
+    - [x] Interactive 5-band slider console in `SettingsScreen` with dB readouts and reset button
+    - [x] Unit test suites in `NexusAudioEffectsTest` and `SettingsViewModelTest`
+  - [x] Slice gate passed
+  - [x] Final gate passed & tagged: `git tag v4.1-1`
+
+## Improvement Loop 32 (v4.2 Milestone - In Progress)
+- [ ] Bedtime Sound Handoff Engine:
+  - [x] Integrated music-to-ambient procedural soundscape transition in `SleepTimerManager`
+  - [x] Handoff settings persistence (`bedtimeHandoffEnabled`, `bedtimeHandoffSoundType`, `bedtimeHandoffVolume`, `bedtimeHandoffDurationMinutes`) in `SettingsDataStore`
+  - [x] Interactive handoff card and profile/duration chips in `SettingsScreen` under Sleep Timer
+  - [x] Unit tests in `SleepTimerManagerTest` and `SettingsViewModelTest`
 - [ ] Slice gate passed
-- [ ] Final gate passed & tagged: `git tag v4.1-1`
+- [ ] Final gate passed & tagged: `git tag v4.2-1`
 
 ## Summary of Milestones
 1. Full 16-module Clean Architecture codebase implemented with 100% test pass rate.

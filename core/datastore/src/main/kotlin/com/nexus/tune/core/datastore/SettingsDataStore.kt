@@ -36,6 +36,10 @@ class SettingsDataStore(private val context: Context) {
         val AMBIENT_SOUND_TYPE = stringPreferencesKey("ambient_sound_type")
         val AMBIENT_SOUND_VOLUME = floatPreferencesKey("ambient_sound_volume")
         val CUSTOM_EQ_BANDS = stringPreferencesKey("custom_eq_bands_csv")
+        val BEDTIME_HANDOFF_ENABLED = booleanPreferencesKey("bedtime_handoff_enabled")
+        val BEDTIME_HANDOFF_SOUND_TYPE = stringPreferencesKey("bedtime_handoff_sound_type")
+        val BEDTIME_HANDOFF_VOLUME = floatPreferencesKey("bedtime_handoff_volume")
+        val BEDTIME_HANDOFF_DURATION = intPreferencesKey("bedtime_handoff_duration_minutes")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -63,7 +67,13 @@ class SettingsDataStore(private val context: Context) {
                 AmbientSoundType.valueOf(prefs[PreferencesKeys.AMBIENT_SOUND_TYPE] ?: AmbientSoundType.OFF.name)
             }.getOrDefault(AmbientSoundType.OFF),
             ambientSoundVolume = prefs[PreferencesKeys.AMBIENT_SOUND_VOLUME] ?: 0.5f,
-            customEqBands = prefs[PreferencesKeys.CUSTOM_EQ_BANDS]?.split(",")?.mapNotNull { it.trim().toIntOrNull() }?.takeIf { it.size == 5 } ?: listOf(0, 0, 0, 0, 0)
+            customEqBands = prefs[PreferencesKeys.CUSTOM_EQ_BANDS]?.split(",")?.mapNotNull { it.trim().toIntOrNull() }?.takeIf { it.size == 5 } ?: listOf(0, 0, 0, 0, 0),
+            bedtimeHandoffEnabled = prefs[PreferencesKeys.BEDTIME_HANDOFF_ENABLED] ?: false,
+            bedtimeHandoffSoundType = runCatching {
+                AmbientSoundType.valueOf(prefs[PreferencesKeys.BEDTIME_HANDOFF_SOUND_TYPE] ?: AmbientSoundType.BROWN_NOISE.name)
+            }.getOrDefault(AmbientSoundType.BROWN_NOISE),
+            bedtimeHandoffVolume = prefs[PreferencesKeys.BEDTIME_HANDOFF_VOLUME] ?: 0.3f,
+            bedtimeHandoffDurationMinutes = prefs[PreferencesKeys.BEDTIME_HANDOFF_DURATION] ?: 60
         )
     }
 
@@ -87,6 +97,10 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.AMBIENT_SOUND_TYPE] = config.ambientSoundType.name
             prefs[PreferencesKeys.AMBIENT_SOUND_VOLUME] = config.ambientSoundVolume
             prefs[PreferencesKeys.CUSTOM_EQ_BANDS] = config.customEqBands.joinToString(",")
+            prefs[PreferencesKeys.BEDTIME_HANDOFF_ENABLED] = config.bedtimeHandoffEnabled
+            prefs[PreferencesKeys.BEDTIME_HANDOFF_SOUND_TYPE] = config.bedtimeHandoffSoundType.name
+            prefs[PreferencesKeys.BEDTIME_HANDOFF_VOLUME] = config.bedtimeHandoffVolume
+            prefs[PreferencesKeys.BEDTIME_HANDOFF_DURATION] = config.bedtimeHandoffDurationMinutes
         }
     }
 

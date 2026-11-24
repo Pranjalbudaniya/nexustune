@@ -317,6 +317,51 @@ class SettingsViewModel(
         sleepTimerManager?.setShakeToExtend(current.shakeToExtendSleepTimerEnabled, minutes)
     }
 
+    fun toggleBedtimeHandoff(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(bedtimeHandoffEnabled = enabled))
+        sleepTimerManager?.setBedtimeHandoff(
+            enabled = enabled,
+            soundType = current.bedtimeHandoffSoundType,
+            volume = current.bedtimeHandoffVolume,
+            durationMinutes = current.bedtimeHandoffDurationMinutes
+        )
+    }
+
+    fun setBedtimeHandoffSoundType(type: AmbientSoundType) {
+        val current = themeConfig.value
+        updateTheme(current.copy(bedtimeHandoffSoundType = type))
+        sleepTimerManager?.setBedtimeHandoff(
+            enabled = current.bedtimeHandoffEnabled,
+            soundType = type,
+            volume = current.bedtimeHandoffVolume,
+            durationMinutes = current.bedtimeHandoffDurationMinutes
+        )
+    }
+
+    fun setBedtimeHandoffVolume(volume: Float) {
+        val current = themeConfig.value
+        val clamped = volume.coerceIn(0.05f, 1.0f)
+        updateTheme(current.copy(bedtimeHandoffVolume = clamped))
+        sleepTimerManager?.setBedtimeHandoff(
+            enabled = current.bedtimeHandoffEnabled,
+            soundType = current.bedtimeHandoffSoundType,
+            volume = clamped,
+            durationMinutes = current.bedtimeHandoffDurationMinutes
+        )
+    }
+
+    fun setBedtimeHandoffDuration(minutes: Int) {
+        val current = themeConfig.value
+        updateTheme(current.copy(bedtimeHandoffDurationMinutes = minutes))
+        sleepTimerManager?.setBedtimeHandoff(
+            enabled = current.bedtimeHandoffEnabled,
+            soundType = current.bedtimeHandoffSoundType,
+            volume = current.bedtimeHandoffVolume,
+            durationMinutes = minutes
+        )
+    }
+
     fun setEqualizerPreset(preset: EqualizerPreset) {
         _equalizerPreset.value = preset
         NexusAudioEffects.instance.applyPreset(preset)

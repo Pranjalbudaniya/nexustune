@@ -15,7 +15,11 @@ data class SleepTimerState(
     val fadeVolumeMultiplier: Float = 1.0f,
     val shakeToExtendEnabled: Boolean = false,
     val extensionMinutes: Int = 10,
-    val lastExtendedAtMs: Long = 0L
+    val lastExtendedAtMs: Long = 0L,
+    val bedtimeHandoffEnabled: Boolean = false,
+    val handoffSoundType: com.nexus.tune.core.model.AmbientSoundType = com.nexus.tune.core.model.AmbientSoundType.BROWN_NOISE,
+    val handoffVolume: Float = 0.3f,
+    val handoffDurationMinutes: Int = 60
 )
 
 class SleepTimerManager(
@@ -63,6 +67,20 @@ class SleepTimerManager(
         } else if (!enabled) {
             unregisterShakeListener()
         }
+    }
+
+    fun setBedtimeHandoff(
+        enabled: Boolean,
+        soundType: com.nexus.tune.core.model.AmbientSoundType = com.nexus.tune.core.model.AmbientSoundType.BROWN_NOISE,
+        volume: Float = 0.3f,
+        durationMinutes: Int = 60
+    ) {
+        _timerState.value = _timerState.value.copy(
+            bedtimeHandoffEnabled = enabled,
+            handoffSoundType = soundType,
+            handoffVolume = volume,
+            handoffDurationMinutes = durationMinutes
+        )
     }
 
     fun extendTimer(extraMinutes: Int) {
@@ -163,8 +181,24 @@ class SleepTimerManager(
         unregisterShakeListener()
         playerController.togglePlayPause()
         playerController.setVolume(1.0f)
-        runCatching {
-            com.nexus.tune.core.player.ambient.AmbientSoundSynthesizer.instance.stop()
+        val state = _timerState.value
+        if (state.bedtimeHandoffEnabled && state.handoffSoundType != com.nexus.tune.core.model.AmbientSoundType.OFF) {
+            runCatching {
+                com.nexus.tune.core.player.ambient.AmbientSoundSynthesizer.instance.start(
+                    state.handoffSoundType,
+                    state.handoffVolume
+                )
+                if (state.handoffDurationMinutes > 0) {
+                    coroutineScope.launch {
+                        delay(state.handoffDurationMinutes * 60L * 1000L)
+                        com.nexus.tune.core.player.ambient.AmbientSoundSynthesizer.instance.stop()
+                    }
+                }
+            }
+        } else {
+            runCatching {
+                com.nexus.tune.core.player.ambient.AmbientSoundSynthesizer.instance.stop()
+            }
         }
         _timerState.value = _timerState.value.copy(
             isActive = false,

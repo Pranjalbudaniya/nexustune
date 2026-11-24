@@ -5,6 +5,13 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.2.0] - 2026-11-24
+
+### Added
+- **Bedtime Sound Handoff Engine**: Integrated music fade-out with automatic ambient noise activation in `SleepTimerManager` when falling asleep. Smoothly hands off playback to procedural ambient soundscapes (`AmbientSoundSynthesizer`, e.g. Brown Noise or 2.5Hz Delta Waves).
+- **Configurable Handoff Profiles & Night Timer**: Added configurable handoff parameters (`bedtimeHandoffSoundType`, `bedtimeHandoffVolume`, `bedtimeHandoffDurationMinutes`) persisted in `SettingsDataStore`.
+- **Settings UI Controls**: Added interactive "Bedtime Sound Handoff" toggle, sound profile selector chips, volume slider, and duration chips (30m, 1h, 2h, All Night) in `SettingsScreen` under Sleep Timer.
+
 ## [4.1.0] - 2026-11-24
 
 ### Added

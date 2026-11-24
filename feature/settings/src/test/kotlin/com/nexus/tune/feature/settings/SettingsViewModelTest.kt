@@ -478,4 +478,45 @@ class SettingsViewModelTest {
         }
         assertEquals(EqualizerPreset.CUSTOM, viewModel.equalizerPreset.value)
     }
+
+    @Test
+    fun `toggleBedtimeHandoff updates themeConfig and sleepTimerManager`() = runTest {
+        viewModel.toggleBedtimeHandoff(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.bedtimeHandoffEnabled })
+        }
+        verify { sleepTimerManager.setBedtimeHandoff(true, any(), any(), any()) }
+    }
+
+    @Test
+    fun `setBedtimeHandoffSoundType updates sound profile`() = runTest {
+        viewModel.setBedtimeHandoffSoundType(AmbientSoundType.PINK_NOISE)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.bedtimeHandoffSoundType == AmbientSoundType.PINK_NOISE })
+        }
+    }
+
+    @Test
+    fun `setBedtimeHandoffVolume clamps and updates volume`() = runTest {
+        viewModel.setBedtimeHandoffVolume(0.35f)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { kotlin.math.abs(it.bedtimeHandoffVolume - 0.35f) < 0.001f })
+        }
+    }
+
+    @Test
+    fun `setBedtimeHandoffDuration updates duration minutes`() = runTest {
+        viewModel.setBedtimeHandoffDuration(120)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.bedtimeHandoffDurationMinutes == 120 })
+        }
+    }
 }
