@@ -19,6 +19,7 @@ import com.nexus.tune.core.domain.audio.InfrasonicFilterEngine
 import com.nexus.tune.core.domain.audio.AirBandExciterEngine
 import com.nexus.tune.core.domain.audio.SubHarmonicSynthEngine
 import com.nexus.tune.core.domain.audio.DeEsserEngine
+import com.nexus.tune.core.domain.audio.TruePeakGuardEngine
 import com.nexus.tune.core.ui.EqCurveVisualizer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -2218,6 +2219,117 @@ fun SettingsScreen(
                                 )
                                 Text(
                                     text = "Activity: ${deEsserMetrics.sibilanceActivityPercent}%",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+                ListItem(
+                    headlineContent = { Text("True Peak Inter-Sample Clipping Guard") },
+                    supportingContent = { Text("4x oversampled sinc reconstruction limiter protecting DACs and lossy Bluetooth encoders from inter-sample overshoots") },
+                    trailingContent = {
+                        Switch(
+                            checked = themeConfig.truePeakGuardConfig.isEnabled,
+                            onCheckedChange = { viewModel.setTruePeakGuardEnabled(it) }
+                        )
+                    }
+                )
+
+                if (themeConfig.truePeakGuardConfig.isEnabled) {
+                    val truePeakMetrics = remember(themeConfig.truePeakGuardConfig) {
+                        TruePeakGuardEngine.calculateMetrics(themeConfig.truePeakGuardConfig)
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "True Peak Mode",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        TruePeakMode.entries.forEach { mode ->
+                            FilterChip(
+                                selected = themeConfig.truePeakGuardConfig.mode == mode,
+                                onClick = { viewModel.setTruePeakGuardMode(mode) },
+                                label = { Text(mode.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "True Peak Ceiling",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        TruePeakCeiling.entries.forEach { ceiling ->
+                            FilterChip(
+                                selected = themeConfig.truePeakGuardConfig.ceiling == ceiling,
+                                onClick = { viewModel.setTruePeakGuardCeiling(ceiling) },
+                                label = { Text(ceiling.displayName) }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    ListItem(
+                        headlineContent = { Text("4x Polyphase Oversampling Detection") },
+                        supportingContent = { Text("ITU-R BS.1770 compliant sinc interpolation to reveal hidden inter-sample excursions") },
+                        trailingContent = {
+                            Switch(
+                                checked = themeConfig.truePeakGuardConfig.oversample4xEnabled,
+                                onCheckedChange = { viewModel.setTruePeakOversample4x(it) }
+                            )
+                        }
+                    )
+
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Text(
+                                text = themeConfig.truePeakGuardConfig.ceiling.description,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "True Peak: ${String.format(java.util.Locale.US, "%.2f", truePeakMetrics.maxEstimatedTruePeakDbTp)} dBTP",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (truePeakMetrics.maxEstimatedTruePeakDbTp > 0.0f) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "ISP Delta: +${String.format(java.util.Locale.US, "%.2f", truePeakMetrics.interSampleOvershootDb)} dB",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                                Text(
+                                    text = "Guard Gain: ${String.format(java.util.Locale.US, "%.2f", truePeakMetrics.appliedGuardAttenuationDb)} dB",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.tertiary
                                 )

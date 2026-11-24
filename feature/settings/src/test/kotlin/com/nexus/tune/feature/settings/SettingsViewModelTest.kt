@@ -1167,4 +1167,31 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.deEsserConfig.maxReductionDb == 6.0f })
         }
     }
+
+    @Test
+    fun `true peak guard settings update theme config`() = runTest {
+        viewModel.setTruePeakGuardEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.truePeakGuardConfig.isEnabled })
+        }
+
+        viewModel.setTruePeakGuardMode(TruePeakMode.EBU_R128_STANDARD)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.truePeakGuardConfig.mode == TruePeakMode.EBU_R128_STANDARD })
+        }
+
+        viewModel.setTruePeakGuardCeiling(TruePeakCeiling.CEILING_MINUS_1_0_DBTP)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.truePeakGuardConfig.ceiling == TruePeakCeiling.CEILING_MINUS_1_0_DBTP })
+        }
+
+        viewModel.setTruePeakOversample4x(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify {
+            settingsRepository.updateThemeConfig(match { !it.truePeakGuardConfig.oversample4xEnabled })
+        }
+    }
 }

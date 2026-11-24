@@ -238,7 +238,8 @@ data class ThemeConfig(
     val infrasonicFilterConfig: InfrasonicFilterConfig = InfrasonicFilterConfig(),
     val airBandExciterConfig: AirBandExciterConfig = AirBandExciterConfig(),
     val subHarmonicSynthConfig: SubHarmonicSynthConfig = SubHarmonicSynthConfig(),
-    val deEsserConfig: DeEsserConfig = DeEsserConfig()
+    val deEsserConfig: DeEsserConfig = DeEsserConfig(),
+    val truePeakGuardConfig: TruePeakGuardConfig = TruePeakGuardConfig()
 )
 
 data class SoundDoseInfo(
@@ -1202,6 +1203,42 @@ data class DeEsserBiquadCoefficients(
     val a1: Float,
     val a2: Float
 )
+
+enum class TruePeakCeiling(val ceilingDbTp: Float, val displayName: String, val description: String) {
+    CEILING_0_DBTP(0.0f, "0.0 dBTP", "Strict digital full scale brickwall ceiling"),
+    CEILING_MINUS_0_5_DBTP(-0.5f, "-0.5 dBTP", "Audiophile pristine headroom avoiding inter-sample overshoots"),
+    CEILING_MINUS_1_0_DBTP(-1.0f, "-1.0 dBTP", "EBU R128 / ITU-R BS.1770 broadcast standard headroom"),
+    CEILING_MINUS_2_0_DBTP(-2.0f, "-2.0 dBTP", "Extra safety margin preventing secondary Bluetooth lossy codec clipping")
+}
+
+enum class TruePeakMode(
+    val displayName: String,
+    val ceiling: TruePeakCeiling,
+    val oversampling4x: Boolean,
+    val description: String
+) {
+    OFF("Off (Bypassed)", TruePeakCeiling.CEILING_0_DBTP, false, "Standard discrete sample playback without ISP protection"),
+    EBU_R128_STANDARD("EBU R128 Standard (-1.0 dBTP)", TruePeakCeiling.CEILING_MINUS_1_0_DBTP, true, "Broadcast standard True Peak ceiling with 4x oversampled detection"),
+    AUDIOPHILE_PRISTINE("Audiophile Pristine (-0.5 dBTP)", TruePeakCeiling.CEILING_MINUS_0_5_DBTP, true, "Transparent inter-sample peak prevention preserving maximum dynamic range"),
+    HIGH_PRECISION_MARGIN("Bluetooth Codec Shield (-2.0 dBTP)", TruePeakCeiling.CEILING_MINUS_2_0_DBTP, true, "Prevents lossy AAC/SBC encoder clipping and inter-sample artifacts"),
+    AGGRESSIVE_PEAK_TRAP("Brickwall True Peak Trap (0.0 dBTP)", TruePeakCeiling.CEILING_0_DBTP, true, "Clamps any continuous analog reconstruction excursion above 0 dBFS")
+}
+
+data class TruePeakGuardConfig(
+    val isEnabled: Boolean = false,
+    val mode: TruePeakMode = TruePeakMode.OFF,
+    val ceiling: TruePeakCeiling = TruePeakCeiling.CEILING_MINUS_0_5_DBTP,
+    val oversample4xEnabled: Boolean = true
+)
+
+data class TruePeakMetrics(
+    val maxEstimatedTruePeakDbTp: Float,
+    val peakSampleDbFs: Float,
+    val interSampleOvershootDb: Float,
+    val appliedGuardAttenuationDb: Float,
+    val dacHeadroomRating: String
+)
+
 
 
 

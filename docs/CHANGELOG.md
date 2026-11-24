@@ -5,6 +5,16 @@ All notable changes to the NexusTune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.23.0] - 2026-11-24
+
+### Added
+- **True Peak Inter-Sample Clipping Guard & 4x Oversampled Reconstruction Limiter Studio (`TruePeakGuardEngine`)**: Added `TruePeakCeiling` (`CEILING_0_DBTP`, `CEILING_MINUS_0_5_DBTP`, `CEILING_MINUS_1_0_DBTP`, `CEILING_MINUS_2_0_DBTP`), `TruePeakMode` (`OFF`, `EBU_R128_STANDARD`, `AUDIOPHILE_PRISTINE`, `HIGH_PRECISION_MARGIN`, `AGGRESSIVE_PEAK_TRAP`), `TruePeakGuardConfig`, and `TruePeakMetrics` in `:core:model`.
+- **4x Polyphase FIR Sinc Oversampling & Inter-Sample Peak (ISP) Clamping DSP**: Implemented `TruePeakGuardEngine` in `:core:domain:audio` conforming to ITU-R BS.1770-4. Uncovers hidden inter-sample peak excursions between discrete digital sample points that cause continuous analog waveform clipping in DAC stages and lossy Bluetooth audio encoders (SBC/AAC). Dynamically clamps peaks against selected True Peak ceilings (up to -2.0 dBTP margin) while guaranteeing pristine DAC linearity.
+- **DataStore Persistence**: Added `TRUE_PEAK_ENABLED`, `TRUE_PEAK_MODE`, `TRUE_PEAK_CEILING`, and `TRUE_PEAK_OVERSAMPLE_4X` in `SettingsDataStore` and mapped to `ThemeConfig`.
+- **Settings Screen True Peak Studio**: Added interactive "True Peak Inter-Sample Clipping Guard" studio card in `SettingsScreen` with mode presets, ceiling chips, 4x polyphase oversampling switch, and live True Peak / ISP delta / guard gain meter badge.
+- **Unit Test Coverage**: Comprehensive test suites in `TruePeakGuardEngineTest` in `:core:domain` and `SettingsViewModelTest` in `:feature:settings`.
+
+
 ## [6.22.0] - 2026-11-24
 
 ### Added

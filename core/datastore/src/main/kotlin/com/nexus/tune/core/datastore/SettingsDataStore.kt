@@ -131,6 +131,10 @@ class SettingsDataStore(private val context: Context) {
         val DEESSER_CENTER_HZ = floatPreferencesKey("deesser_center_hz")
         val DEESSER_THRESHOLD = intPreferencesKey("deesser_threshold")
         val DEESSER_MAX_REDUCTION = floatPreferencesKey("deesser_max_reduction")
+        val TRUE_PEAK_ENABLED = booleanPreferencesKey("true_peak_enabled")
+        val TRUE_PEAK_MODE = stringPreferencesKey("true_peak_mode")
+        val TRUE_PEAK_CEILING = stringPreferencesKey("true_peak_ceiling")
+        val TRUE_PEAK_OVERSAMPLE_4X = booleanPreferencesKey("true_peak_oversample_4x")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -338,6 +342,16 @@ class SettingsDataStore(private val context: Context) {
                 centerFrequencyHz = prefs[PreferencesKeys.DEESSER_CENTER_HZ] ?: 6000.0f,
                 thresholdPercent = prefs[PreferencesKeys.DEESSER_THRESHOLD] ?: 28,
                 maxReductionDb = prefs[PreferencesKeys.DEESSER_MAX_REDUCTION] ?: 4.5f
+            ),
+            truePeakGuardConfig = TruePeakGuardConfig(
+                isEnabled = prefs[PreferencesKeys.TRUE_PEAK_ENABLED] ?: false,
+                mode = runCatching {
+                    TruePeakMode.valueOf(prefs[PreferencesKeys.TRUE_PEAK_MODE] ?: TruePeakMode.OFF.name)
+                }.getOrDefault(TruePeakMode.OFF),
+                ceiling = runCatching {
+                    TruePeakCeiling.valueOf(prefs[PreferencesKeys.TRUE_PEAK_CEILING] ?: TruePeakCeiling.CEILING_MINUS_0_5_DBTP.name)
+                }.getOrDefault(TruePeakCeiling.CEILING_MINUS_0_5_DBTP),
+                oversample4xEnabled = prefs[PreferencesKeys.TRUE_PEAK_OVERSAMPLE_4X] ?: true
             )
         )
     }
@@ -452,6 +466,10 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.DEESSER_CENTER_HZ] = config.deEsserConfig.centerFrequencyHz
             prefs[PreferencesKeys.DEESSER_THRESHOLD] = config.deEsserConfig.thresholdPercent
             prefs[PreferencesKeys.DEESSER_MAX_REDUCTION] = config.deEsserConfig.maxReductionDb
+            prefs[PreferencesKeys.TRUE_PEAK_ENABLED] = config.truePeakGuardConfig.isEnabled
+            prefs[PreferencesKeys.TRUE_PEAK_MODE] = config.truePeakGuardConfig.mode.name
+            prefs[PreferencesKeys.TRUE_PEAK_CEILING] = config.truePeakGuardConfig.ceiling.name
+            prefs[PreferencesKeys.TRUE_PEAK_OVERSAMPLE_4X] = config.truePeakGuardConfig.oversample4xEnabled
         }
     }
 
@@ -573,6 +591,15 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.DEESSER_CENTER_HZ] = config.centerFrequencyHz
             prefs[PreferencesKeys.DEESSER_THRESHOLD] = config.thresholdPercent
             prefs[PreferencesKeys.DEESSER_MAX_REDUCTION] = config.maxReductionDb
+        }
+    }
+
+    suspend fun updateTruePeakGuardConfig(config: TruePeakGuardConfig) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.TRUE_PEAK_ENABLED] = config.isEnabled
+            prefs[PreferencesKeys.TRUE_PEAK_MODE] = config.mode.name
+            prefs[PreferencesKeys.TRUE_PEAK_CEILING] = config.ceiling.name
+            prefs[PreferencesKeys.TRUE_PEAK_OVERSAMPLE_4X] = config.oversample4xEnabled
         }
     }
 

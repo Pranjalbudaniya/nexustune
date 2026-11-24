@@ -997,4 +997,34 @@ class SettingsViewModel(
         )
         NexusAudioEffects.instance.applyDeEsserOffset(offset)
     }
+
+    fun setTruePeakGuardEnabled(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(truePeakGuardConfig = current.truePeakGuardConfig.copy(isEnabled = enabled)))
+    }
+
+    fun setTruePeakGuardMode(mode: TruePeakMode) {
+        val current = themeConfig.value
+        val isEnabled = mode != TruePeakMode.OFF
+        updateTheme(
+            current.copy(
+                truePeakGuardConfig = current.truePeakGuardConfig.copy(
+                    isEnabled = isEnabled,
+                    mode = mode,
+                    ceiling = mode.ceiling,
+                    oversample4xEnabled = mode.oversampling4x
+                )
+            )
+        )
+    }
+
+    fun setTruePeakGuardCeiling(ceiling: TruePeakCeiling) {
+        val current = themeConfig.value
+        updateTheme(current.copy(truePeakGuardConfig = current.truePeakGuardConfig.copy(ceiling = ceiling)))
+    }
+
+    fun setTruePeakOversample4x(enabled: Boolean) {
+        val current = themeConfig.value
+        updateTheme(current.copy(truePeakGuardConfig = current.truePeakGuardConfig.copy(oversample4xEnabled = enabled)))
+    }
 }
