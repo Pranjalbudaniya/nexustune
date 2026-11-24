@@ -316,4 +316,14 @@ class SettingsViewModelTest {
             settingsRepository.updateThemeConfig(match { it.spatialAudioEnabled && it.spatialAudioStage == SpatialAudioStage.CONCERT_HALL })
         }
     }
+
+    @Test
+    fun `setCrossfadeCurve updates theme config`() = runTest {
+        viewModel.setCrossfadeCurve(CrossfadeCurve.EXPONENTIAL)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            settingsRepository.updateThemeConfig(match { it.crossfadeCurve == CrossfadeCurve.EXPONENTIAL })
+        }
+    }
 }

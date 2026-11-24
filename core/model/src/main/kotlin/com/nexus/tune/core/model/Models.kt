@@ -96,6 +96,10 @@ enum class SpatialAudioStage {
     OFF, STUDIO, LOUNGE, CONCERT_HALL, WIDE_ARENA
 }
 
+enum class CrossfadeCurve {
+    EQUAL_POWER, LINEAR, EXPONENTIAL
+}
+
 data class VisualizerData(
     val magnitudes: FloatArray = FloatArray(32) { 0f },
     val amplitude: Float = 0f
@@ -141,7 +145,8 @@ data class ThemeConfig(
     val safeListeningAlertEnabled: Boolean = true,
     val spatialAudioEnabled: Boolean = false,
     val spatialAudioStage: SpatialAudioStage = SpatialAudioStage.OFF,
-    val spatialAudioStrength: Int = 500
+    val spatialAudioStrength: Int = 500,
+    val crossfadeCurve: CrossfadeCurve = CrossfadeCurve.EQUAL_POWER
 )
 
 data class SoundDoseInfo(

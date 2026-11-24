@@ -88,6 +88,11 @@ class SettingsViewModel(
         updateTheme(current.copy(crossfadeSeconds = seconds))
     }
 
+    fun setCrossfadeCurve(curve: CrossfadeCurve) {
+        val current = themeConfig.value
+        updateTheme(current.copy(crossfadeCurve = curve))
+    }
+
     fun toggleAutoSkipSegments(enabled: Boolean) {
         val current = themeConfig.value
         updateTheme(current.copy(autoSkipSegments = enabled))

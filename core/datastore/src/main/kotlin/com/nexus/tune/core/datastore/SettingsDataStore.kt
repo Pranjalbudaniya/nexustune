@@ -29,6 +29,7 @@ class SettingsDataStore(private val context: Context) {
         val SPATIAL_AUDIO_ENABLED = booleanPreferencesKey("spatial_audio_enabled")
         val SPATIAL_AUDIO_STAGE = stringPreferencesKey("spatial_audio_stage")
         val SPATIAL_AUDIO_STRENGTH = intPreferencesKey("spatial_audio_strength")
+        val CROSSFADE_CURVE = stringPreferencesKey("crossfade_curve")
     }
 
     val themeConfig: Flow<ThemeConfig> = context.dataStore.data.map { prefs ->
@@ -46,7 +47,10 @@ class SettingsDataStore(private val context: Context) {
             spatialAudioStage = runCatching {
                 SpatialAudioStage.valueOf(prefs[PreferencesKeys.SPATIAL_AUDIO_STAGE] ?: SpatialAudioStage.OFF.name)
             }.getOrDefault(SpatialAudioStage.OFF),
-            spatialAudioStrength = prefs[PreferencesKeys.SPATIAL_AUDIO_STRENGTH] ?: 500
+            spatialAudioStrength = prefs[PreferencesKeys.SPATIAL_AUDIO_STRENGTH] ?: 500,
+            crossfadeCurve = runCatching {
+                CrossfadeCurve.valueOf(prefs[PreferencesKeys.CROSSFADE_CURVE] ?: CrossfadeCurve.EQUAL_POWER.name)
+            }.getOrDefault(CrossfadeCurve.EQUAL_POWER)
         )
     }
 
@@ -64,6 +68,7 @@ class SettingsDataStore(private val context: Context) {
             prefs[PreferencesKeys.SPATIAL_AUDIO_ENABLED] = config.spatialAudioEnabled
             prefs[PreferencesKeys.SPATIAL_AUDIO_STAGE] = config.spatialAudioStage.name
             prefs[PreferencesKeys.SPATIAL_AUDIO_STRENGTH] = config.spatialAudioStrength
+            prefs[PreferencesKeys.CROSSFADE_CURVE] = config.crossfadeCurve.name
         }
     }
 

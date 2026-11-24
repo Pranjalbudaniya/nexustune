@@ -639,6 +639,34 @@ fun SettingsScreen(
                     }
                 }
 
+                if (themeConfig.crossfadeSeconds > 0) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Crossfade Curve",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf(
+                            CrossfadeCurve.EQUAL_POWER to "Equal Power (DJ)",
+                            CrossfadeCurve.LINEAR to "Linear",
+                            CrossfadeCurve.EXPONENTIAL to "Exponential"
+                        ).forEach { (curve, label) ->
+                            FilterChip(
+                                selected = themeConfig.crossfadeCurve == curve,
+                                onClick = { viewModel.setCrossfadeCurve(curve) },
+                                label = { Text(label) }
+                            )
+                        }
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(8.dp))
 
                 ListItem(
@@ -757,8 +785,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(
-                    headlineContent = { Text("NexusTune v3.0.0") },
-                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Spatial Audio & 3D Stage Virtualization") }
+                    headlineContent = { Text("NexusTune v3.1.0") },
+                    supportingContent = { Text("NewPipeExtractor v0.27.1 | Material 3 Expressive | 120Hz Ultra-fluid | Dual-Engine Dynamic Crossfade DSP") }
                 )
             }
         }

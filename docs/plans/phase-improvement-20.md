@@ -38,3 +38,4 @@ Implement hardware-accelerated **Spatial Audio Virtualization & 3D Stage Simulat
    - Compile and execute `./scripts/gate.sh slice`.
    - Execute full release gate `./scripts/gate.sh final`.
    - Tag release `v3.0-1`.
+
