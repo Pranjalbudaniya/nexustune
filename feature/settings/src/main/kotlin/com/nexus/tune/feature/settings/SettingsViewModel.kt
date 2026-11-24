@@ -27,6 +27,9 @@ class SettingsViewModel(
     private val wakeAlarmManager: com.nexus.tune.core.player.alarm.WakeAlarmManager? = null
 ) : ViewModel() {
 
+    val themeConfig: StateFlow<ThemeConfig> = settingsRepository.getThemeConfig()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ThemeConfig())
+
     private val activeAmbientSynthesizer: com.nexus.tune.core.player.ambient.AmbientSoundSynthesizer by lazy {
         ambientSoundSynthesizer ?: com.nexus.tune.core.player.ambient.AmbientSoundSynthesizer.instance
     }
@@ -157,9 +160,6 @@ class SettingsViewModel(
             }
         }
     }
-
-    val themeConfig: StateFlow<ThemeConfig> = settingsRepository.getThemeConfig()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ThemeConfig())
 
     val sleepTimerState: StateFlow<SleepTimerState> = sleepTimerManager?.timerState
         ?: MutableStateFlow(SleepTimerState()).asStateFlow()
